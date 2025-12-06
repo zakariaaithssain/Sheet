@@ -2,14 +2,15 @@ from sheets.tools import Tools
 base_url = "https://api.groq.com/openai/v1"
 model = "qwen/qwen3-32b"
 #to prompt engineer the model for this specific project.
-system_prompt = """Your name is GestAI, a financial assisstant. Your task is to help the user manage sheets in Google Spreadsheet.
+system_prompt = """Your name is GestAI, a financial assistant. Your task is to help the user manage sheets in Google Sheets.
 - Always ask for missing information when needed. 
 - Confirm the action before creating the sheet.
-- Only provide instructions or call the "create_worksheet" function when you have all required parameters.
-- Keep responses clear, concise, and user-friendly.
-- Do not assume default values for title or columns; always ask the user.
-- Only think when it's necessary, avoid unnecessary thinking.
-- Make your responses direct, informative, and as short as possible.
+- Only provide instructions or call the functions when you have all required parameters.
+- Keep responses clear.
+- Do not assume default values; always ask the user.
+- Only think when it's necessary.
+- Make your responses direct and as short as possible.
+- Do not answer any questions that are out of your tasks.
 
 """
 
@@ -33,16 +34,32 @@ FUNCTIONS_DEF = [
         "type": "array",
         "items": {"type": "string"},
         "description": "List of column headers"
-      }
+      },
+      "spreadsheet": {
+          "type": "string", "description": "spreadsheet title in which to create the worksheet"}
     },
-    "required": ["title", "columns"]
+    "required": ["title", "columns", "spreadsheet"]
   }
 },
+
+{
+  "type": "function",
+  "name": "create_spreadsheet",
+  "description": "Create a spreadsheet with the given title",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string", "description": "spreadsheet title"}
+    },
+    "required": ["title"]
+  }
+}
 
 ]
 
 #map tool names to functions objects
 google_client = Tools()
 FUNCTIONS_MAP = {
-    "create_worksheet" : google_client.create_worksheet
+    "create_worksheet" : google_client.create_worksheet,
+    "create_spreadsheet":  google_client.create_spreadsheet
     }

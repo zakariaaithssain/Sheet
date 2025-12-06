@@ -10,9 +10,9 @@ class Agent:
         
 
 
-    def chat(self, prompt : str):
-        context = [{"role" : "system", "content" : system_prompt},
-                        {"role" : "user", "content" : prompt}]
+    def chat(self, prompt : list[dict]):
+        context = [{"role" : "system", "content" : system_prompt}]
+        context += prompt
         while True:
             response = self.client.chat.completions.create(
                     model = self.model, 
