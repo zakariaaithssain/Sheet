@@ -1,4 +1,7 @@
-from sheets.tools import Tools
+from sheets.auth import google_client
+
+
+
 base_url = "https://api.groq.com/openai/v1"
 model = "qwen/qwen3-32b"
 #to prompt engineer the model for this specific project.
@@ -84,7 +87,6 @@ FUNCTIONS_DEF = [
 ]
 
 #map tool names to functions objects
-google_client = Tools()
 FUNCTIONS_MAP = {
     "create_worksheet" : google_client.create_worksheet,
     "create_spreadsheet":  google_client.create_spreadsheet,

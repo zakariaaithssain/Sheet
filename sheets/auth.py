@@ -1,1 +1,5 @@
-#logic dyal google auth atkon hna bash ykon sahl nmigriw mn service acc l user acc (Oauth inshallah)
+from .tools import Tools
+
+
+
+google_client = Tools()
