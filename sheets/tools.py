@@ -29,6 +29,7 @@ class Tools:
         "status": status,
         "spreadsheet_url": self.spreadsheet.url
     }
+    
         
         
 
@@ -51,9 +52,50 @@ class Tools:
             return {
             "worksheet_title": self.worksheet.title,
             "status": status,
-            "contained_in": self.spreadsheet.title
+            "spreadsheet": self.spreadsheet.title
             }
         except gspread.SpreadsheetNotFound: 
-            return {"status" : f"no spreadsheed titled {spreadsheet}, create it first"}
+            return {"status" : f"spreadsheet {spreadsheet} not found"}
 
+
+
+
+    def delete_worksheet(self, title, spreadsheet: str):
+        try: 
+            self.spreadsheet = self.google_client.open(title=spreadsheet)
+            try:
+                self.worksheet = self.spreadsheet.worksheet(title=title)
+                self.spreadsheet.del_worksheet(self.worksheet)
+                status = "deleted"
+            except gspread.WorksheetNotFound: 
+                status = "not found"
+            return {
+            "worksheet_title": title,
+            "status": status,
+            "spreadsheet": spreadsheet
+            }
+        except gspread.SpreadsheetNotFound: 
+            return {"worksheet_title": title,
+                    "status": f"spreadsheet {spreadsheet} not found"}
+        except Exception as e: 
+            return {"worksheet_title": title,
+                    "status": e.args[0]} #this way the model would explain the error
+                            #because gspread don't separate technical errors
+                            #from practical ones.
+
+
+
+    def delete_spreadsheet(self, title): 
+        try: 
+            spread = self.google_client.open(title=title)
+            self.google_client.del_spreadsheet(spread.id)
+            status = "deleted"
+        except gspread.SpreadsheetNotFound: 
+            status = "not found"
+        
+        except Exception as e: 
+                    status = e.args[0]
+
+        return {"spreadsheet_title": title, 
+                "status": status}
 

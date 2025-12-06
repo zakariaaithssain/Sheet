@@ -10,6 +10,8 @@ context = []
 while True:
     message = str(input("User: "))
     context.append({"role" : "user", "content" : message})
-    response = agent.chat( prompt= context)
+
+    response = agent.chat(prompt= context)
+    print("Working...")
     print("GestAI: ", response)
     context.append({"role" : "assistant", "content": response})
