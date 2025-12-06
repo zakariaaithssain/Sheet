@@ -1,7 +1,8 @@
 import gspread
 from config.google_config import oauth_json
 
-
+#TODO: add more general purpose methods related to sheets management
+#TODO: then move to specific ones: adding data etc.
 class Tools:
 
     def __init__(self):
@@ -94,4 +95,5 @@ class Tools:
 
         return {"spreadsheet_title": title, 
                 "status": status}
+
 
