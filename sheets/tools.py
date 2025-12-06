@@ -1,19 +1,15 @@
 import gspread
-from config.google_config import oauth_json
-
+from gspread import Client
 #TODO: add more general purpose methods related to sheets management
 #TODO: then move to specific ones: adding data etc.
-class Tools:
+class ToolKit:
 
-    def __init__(self):
-        self.google_client = gspread.oauth(
-            scopes=['https://www.googleapis.com/auth/spreadsheets',
-                    'https://www.googleapis.com/auth/drive'],
-            credentials_filename=oauth_json)
+    def __init__(self, google_client: Client):
+        self.google_client = google_client
 
 
     
-    def create_spreadsheet(self, title):
+    def create_spreadsheet(self, title: str):
         try:
             self.spreadsheet = self.google_client.open(title=title)
             status = "exists"
@@ -57,7 +53,7 @@ class Tools:
 
 
 
-    def delete_worksheet(self, title, spreadsheet: str):
+    def delete_worksheet(self, title: str, spreadsheet: str):
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
             try:
@@ -82,7 +78,7 @@ class Tools:
 
 
 
-    def delete_spreadsheet(self, title): 
+    def delete_spreadsheet(self, title: str): 
         try: 
             spread = self.google_client.open(title=title)
             self.google_client.del_spreadsheet(spread.id)

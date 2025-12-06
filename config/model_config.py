@@ -1,4 +1,5 @@
 from sheets.auth import google_client
+from sheets.tools import ToolKit
 
 
 
@@ -87,9 +88,10 @@ FUNCTIONS_DEF = [
 ]
 
 #map tool names to functions objects
+toolkit = ToolKit(google_client)
 FUNCTIONS_MAP = {
-    "create_worksheet" : google_client.create_worksheet,
-    "create_spreadsheet":  google_client.create_spreadsheet,
-    "delete_spreadsheet": google_client.delete_spreadsheet, 
-    "delete_worksheet": google_client.delete_worksheet
+    "create_worksheet" : toolkit.create_worksheet,
+    "create_spreadsheet":  toolkit.create_spreadsheet,
+    "delete_spreadsheet": toolkit.delete_spreadsheet, 
+    "delete_worksheet": toolkit.delete_worksheet
     }
