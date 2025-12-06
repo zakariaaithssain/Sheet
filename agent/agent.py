@@ -1,7 +1,7 @@
 import json 
 from openai import OpenAI
 
-from config.model_config import system_prompt, TOOLS, FUNCTIONS
+from config.model_config import system_prompt, FUNCTIONS_DEF, FUNCTIONS_MAP
 
 class Agent: 
     def __init__(self, base_url : str, api_key : str, model : str):
@@ -14,19 +14,24 @@ class Agent:
                 model = self.model, 
                 messages = [{"role" : "system", "content" : system_prompt}, 
                             {"role" : "user", "content" : message}], 
-                tools= TOOLS, 
+                functions = FUNCTIONS_DEF, 
                 temperature = 0  #as the task is deterministic.                          
             )
         #TODO: implement tool calling flow
-        pass
-
+        calls = response.choices[0].message.tool_calls
+        results = []
+        for call in calls:
+            if call.type == 'function':
+                result = self.execute_fn_call(call)
+                results.append(result)
+        return results
     
-    def execute_tool_call(self, tool_call):
+    def execute_fn_call(self, fn_call):
         """Execute a Model's tool call and return the result."""
-        fn_name = tool_call.function.name
-        args = json.loads(tool_call.function.arguments)
+        fn_name = fn_call.function.name
+        args = json.loads(fn_call.function.arguments)
         
-        python_fn = FUNCTIONS[fn_name]
+        python_fn = FUNCTIONS_MAP[fn_name]
         result = python_fn(**args)
         return result
 
