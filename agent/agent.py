@@ -26,8 +26,12 @@ class Agent:
                 results.append(result)
         return results
     
+
+
+    
     def execute_fn_call(self, fn_call):
-        """Execute a Model's tool call and return the result."""
+        """Execute a Model's function call and return the result."""
+        #this parsing is based on the structure of the model's return (ChatCompletionMessageToolCallUnion)
         fn_name = fn_call.function.name
         args = json.loads(fn_call.function.arguments)
         
