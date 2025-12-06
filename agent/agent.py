@@ -7,25 +7,40 @@ class Agent:
     def __init__(self, base_url : str, api_key : str, model : str):
         self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
+        
 
 
-    def chat(self, message : str):
-        response = self.client.chat.completions.create(
-                model = self.model, 
-                messages = [{"role" : "system", "content" : system_prompt}, 
-                            {"role" : "user", "content" : message}], 
-                functions = FUNCTIONS_DEF, 
-                temperature = 0  #as the task is deterministic.                          
-            )
-        #TODO: implement tool calling flow
-        calls = response.choices[0].message.tool_calls
-        results = []
-        for call in calls:
-            if call.type == 'function':
-                result = self.execute_fn_call(call)
-                results.append(result)
-        return results
-    
+    def chat(self, prompt : str):
+        context = [{"role" : "system", "content" : system_prompt},
+                        {"role" : "user", "content" : prompt}]
+        while True:
+            response = self.client.chat.completions.create(
+                    model = self.model, 
+                    messages = context, 
+                    functions = FUNCTIONS_DEF, 
+                    temperature = 0  #as the task is deterministic.                          
+                )
+            
+            msg = response.choices[0].message
+            context.append(msg)
+
+            function_calls = msg.tool_calls
+            if function_calls: 
+                for call in function_calls:
+                    if call.type == 'function':
+                        result = self.execute_fn_call(call)
+                        #add function calls results to 'context' 
+                        context.append({
+                                "role": "function",
+                                "name": call.function.name,
+                                "content": json.dumps(result)})
+                continue
+            else: 
+                return msg.content
+            
+                
+                
+        
 
 
     
