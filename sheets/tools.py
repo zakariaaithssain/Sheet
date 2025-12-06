@@ -1,10 +1,6 @@
 import gspread
-from gspread import Worksheet
-from google_auth_oauthlib.flow import InstalledAppFlow
-
 from config.google_config import oauth_json
 
-#functions li ghaycalli lmodel.
 
 class Tools:
 
