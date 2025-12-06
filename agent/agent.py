@@ -3,6 +3,9 @@ from openai import OpenAI
 
 from config.model_config import system_prompt, FUNCTIONS_DEF, FUNCTIONS_MAP
 
+
+#TODO: add streaming
+
 class Agent: 
     def __init__(self, base_url : str, api_key : str, model : str):
         self.client = OpenAI(base_url=base_url, api_key=api_key)
