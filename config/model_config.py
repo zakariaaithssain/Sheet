@@ -5,6 +5,8 @@ from sheets.tools import ToolKit
 
 base_url = "https://api.groq.com/openai/v1"
 model = "qwen/qwen3-32b"
+
+
 #to prompt engineer the model for this specific project.
 system_prompt = """Your name is GestAI, a financial assistant. Your task is to help the user manage sheets in Google Sheets.
 - Always ask for missing information when needed. 

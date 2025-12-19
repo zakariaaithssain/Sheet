@@ -2,8 +2,9 @@ import gspread
 from gspread import Client
 #TODO: add more general purpose methods related to sheets management
 #TODO: then move to specific ones: adding data etc.
-class ToolKit:
 
+
+class ToolKit:
     def __init__(self, google_client: Client):
         self.google_client = google_client
 
