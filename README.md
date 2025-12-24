@@ -1,10 +1,14 @@
-# Run `python main.py` to test the interactive CLI PoC
-if you encounter this error:
- `google.auth.exceptions.RefreshError:
-('invalid_grant: Token has been expired or revoked.')`
-then you need to run this to delete old oauth: 
-`rm -rf ~/.config/gspread`
-after that run `python main.py` again.
+# Run `python main.py` to test the interactive CLI PoC  
+
+if you encounter this error:  
+
+ `google.auth.exceptions.RefreshError: ('invalid_grant: Token has been expired or revoked.')`   
+
+then you need to run this to delete old oauth:  
+
+`rm -rf ~/.config/gspread`  
+
+after that run `python main.py` again.  
 
 
 
