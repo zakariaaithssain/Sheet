@@ -92,5 +92,49 @@ class ToolKit:
 
         return {"spreadsheet_title": title, 
                 "status": status}
+    
+
+    
+
+    def list_spreadsheets(self):
+        spreadsheets = self.google_client.list_spreadsheet_files()
+
+        spreadsheets_metadata = [
+            {
+                "id": s["id"],
+                "name": s["name"],
+                "created_time": s.get("createdTime"),
+                "modified_time": s.get("modifiedTime"),
+            }
+               for s in spreadsheets]
+
+        return {
+            "spreadsheets_metadata": spreadsheets_metadata
+        }
+
+    
+    def list_worksheets(self, spreadsheet: str):
+        worksheets = self.google_client.open(title=spreadsheet).worksheets()
+
+        worksheets_metadata = [
+            {
+                "id": ws.id,
+                "title": ws.title,
+                "index": ws.index,
+                "rows": ws.row_count,
+                "cols": ws.col_count,
+                "sheet_type": ws._properties.get("sheetType"),
+                "grid_properties": ws._properties.get("gridProperties"),
+            }
+            for ws in worksheets
+        ]
+
+        return {
+            "spreadsheet": spreadsheet,
+            "worksheets_metadata": worksheets_metadata,
+        }
+
+
+
 
 

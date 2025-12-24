@@ -87,6 +87,23 @@ FUNCTIONS_DEF = [
     "required": ["title", "spreadsheet"]
   }
 },
+{
+  "type": "function",
+  "name": "list_spreadsheets",
+  "description": "list all spreadsheets metadata owned by/shared with the user",
+}, 
+{
+  "type": "function",
+  "name": "list_worksheets",
+  "description": "list all worksheets metadata in the given spreadsheet.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "spreadsheet": {"type": "string", "description": "spreadsheet title in which to look for worksheets"}
+    },
+    "required": ["spreadsheet"]
+  }
+}
 ]
 
 #map tool names to functions objects
@@ -95,5 +112,7 @@ FUNCTIONS_MAP = {
     "create_worksheet" : toolkit.create_worksheet,
     "create_spreadsheet":  toolkit.create_spreadsheet,
     "delete_spreadsheet": toolkit.delete_spreadsheet, 
-    "delete_worksheet": toolkit.delete_worksheet
+    "delete_worksheet": toolkit.delete_worksheet,
+    "list_spreadsheets": toolkit.list_spreadsheets, 
+    "list_worksheets": toolkit.list_worksheets,
     }
