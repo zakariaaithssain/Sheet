@@ -8,7 +8,7 @@ then you need to run this to delete old oauth:
 
 `rm -rf ~/.config/gspread`  
 
-after that run `python main.py` again.  
+after that run `python main.py` again, google authentication API popup will open, grant access to the app, and you're done. 
 
 
 
