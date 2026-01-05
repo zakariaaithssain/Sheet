@@ -1,11 +1,9 @@
-#orchestration
 from agent.agent import Agent
-from config.model_config import base_url, model
-from config.credentials.model_key import model_api_key
+from config.model_config import model_base_url, model_name, model_api_key
 
 #TODO: add loggings everywhere
 
-agent = Agent(base_url=base_url, model=model, api_key= model_api_key)
+agent = Agent(base_url=model_base_url, model=model_name, api_key= model_api_key)
 
 context = []
 
