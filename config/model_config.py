@@ -1,10 +1,15 @@
-from sheets.auth import google_client
-from sheets.tools import ToolKit
+from config.google_config import google_client
+from tools.tools import ToolKit
+from dotenv import load_dotenv 
+from os import getenv
 
 
+load_dotenv()
 
-base_url = "https://api.groq.com/openai/v1"
-model = "qwen/qwen3-32b"
+model_api_key = getenv('MODEL_API_KEY')
+model_base_url = getenv('MODEL_BASE_URL')
+model_name = getenv('MODEL_NAME')
+
 
 
 #to prompt engineer the model for this specific project.
