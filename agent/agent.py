@@ -1,7 +1,7 @@
 import json 
 from openai import OpenAI
 
-from config.model_config import system_prompt, FUNCTIONS_DEF, FUNCTIONS_MAP
+from config.model_config import SYSTEM_PROMPT, FUNCTIONS_DEF, FUNCTIONS_MAP
 
 
 #TODO: add streaming
@@ -14,7 +14,7 @@ class Agent:
 
 
     def chat(self, prompt : list[dict]):
-        context = [{"role" : "system", "content" : system_prompt}]
+        context = [{"role" : "system", "content" : SYSTEM_PROMPT}]
         context += prompt
         while True:
             response = self.client.chat.completions.create(

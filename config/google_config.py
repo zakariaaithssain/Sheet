@@ -29,7 +29,7 @@ try:
         json.dump(CREDENTIALS, temp_file)
 
     auth_file = temp_file.name
-    google_client = gspread.oauth(scopes=SCOPES,
+    GOOGLE_CLIENT = gspread.oauth(scopes=SCOPES,
                                     credentials_filename= auth_file
                                     )
     
