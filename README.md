@@ -19,5 +19,7 @@ Right now, the model can only:
 - Delete worksheets
 - List spreadsheets and their metadata
 - List worksheets within a spreadsheet and their metadata
+- Know worksheets headers
+- Insert data into a worksheet
 
 and understands all things associated with these actions
