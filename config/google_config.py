@@ -25,16 +25,13 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 
 #oauth requires a json file, so we dump the credentials
 try:
-    with NamedTemporaryFile(mode='w', suffix='.json', delete_on_close=True) as temp_file: 
-        json.dump(CREDENTIALS, temp_file)
-
-    auth_file = temp_file.name
+    with open('auth.json', 'w') as f: json.dump(CREDENTIALS, f)
     google_client = gspread.oauth(scopes=SCOPES,
-                                    credentials_filename= auth_file
-                                    )
+                                        credentials_filename= 'auth.json'
+                                        )
     
 finally: 
-    if os.path.exists(auth_file): os.remove(auth_file)
+    if os.path.exists('auth.json'): os.remove('auth.json')
 
 
 
