@@ -121,6 +121,20 @@ FUNCTIONS_DEF = [
     },
     "required": ["title", "spreadsheet"]
   }
+}, 
+{
+  "type": "function",
+  "name": "insert_row",
+  "description": "insert data to new row in given worksheet",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string", "description": "worksheet title"}, 
+      "spreadsheet": {"type": "string", "description": "spreadsheet title in which to look for worksheet"}, 
+      "data": {"type":"object", "description": "dictionary of key-value pairs"}
+    },
+    "required": ["title", "spreadsheet", "data"]
+  }
 }
 ]
 
@@ -134,4 +148,6 @@ FUNCTIONS_MAP = {
     "list_spreadsheets": toolkit.list_spreadsheets, 
     "list_worksheets": toolkit.list_worksheets,
     "get_worksheet_headers": toolkit.get_worksheet_headers,
+    "insert_row": toolkit.insert_row,
+    
     }
