@@ -1,3 +1,4 @@
+from google.auth.exceptions import RefreshError
 from agent.agent import Agent
 from config.model_config import model_base_url, model_name, model_api_key
 
@@ -18,3 +19,5 @@ try:
 
 except KeyboardInterrupt: 
     print("\nchat terminated.")
+except RefreshError: 
+    print("\n The Oauth is expired, run the following script and try again: rm -rf ~/.config/gspread")
