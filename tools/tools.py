@@ -142,7 +142,7 @@ class ToolKit:
             try:
                 self.worksheet = self.spreadsheet.worksheet(title=title)
                 headers = self.worksheet.row_values(1)
-                status = "done"
+                status = "found"
             except gspread.WorksheetNotFound: 
                 status = "worksheet not found"
                 headers = None
@@ -160,8 +160,44 @@ class ToolKit:
                     "status": status, 
                     "headers": headers}
 
-    def insert_item(self, spreadsheet: str, worksheet: str, **kwargs): 
-        ...
+
+
+    def insert_row(self, title: str, spreadsheet: str, data: dict): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=spreadsheet)
+            try:
+                self.worksheet = self.spreadsheet.worksheet(title=title)
+                #lower headers and data keys to compare
+                sheet_headers = [header.lower() for header in self.worksheet.row_values(1)]
+                lower_data = {k.lower(): v for k, v in data.items()}
+
+                #data should be compatible with headers
+                if all(header in sheet_headers for header in lower_data.keys()): 
+                    #data should be in the order of the columns (some gspread limitations)
+                    ordered_values = []
+                    for header in sheet_headers: 
+                        ordered_values.append(lower_data[header])
+
+                    self.worksheet.append_row(ordered_values, table_range="A1")
+                    status = "inserted"
+        
+                else: 
+                    status = "mismatch between headers and data"
+
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+
+        except Exception as e: 
+            status = e.args[0] 
+        
+        finally: 
+            return {"worksheet": title, 
+                    "spreadsheet": spreadsheet, 
+                    "status": status, 
+                    "headers": sheet_headers}
 
 
 
