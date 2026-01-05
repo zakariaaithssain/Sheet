@@ -1,4 +1,4 @@
-from config.google_config import google_client
+from config.google_config import GOOGLE_CLIENT
 from tools.tools import ToolKit
 from dotenv import load_dotenv 
 from os import getenv
@@ -13,7 +13,7 @@ model_name = getenv('MODEL_NAME')
 
 
 #to prompt engineer the model for this specific project.
-system_prompt = """Your name is GestAI, a financial assistant. Your task is to help the user manage sheets in Google Sheets.
+SYSTEM_PROMPT = """Your name is GestAI, a financial assistant. Your task is to help the user manage sheets in Google Sheets.
 - Always ask for missing information when needed. 
 - Confirm any action that might be risky.
 - Only provide instructions or call the functions when you have all required parameters.
@@ -112,7 +112,7 @@ FUNCTIONS_DEF = [
 ]
 
 #map tool names to functions objects
-toolkit = ToolKit(google_client)
+toolkit = ToolKit(GOOGLE_CLIENT)
 FUNCTIONS_MAP = {
     "create_worksheet" : toolkit.create_worksheet,
     "create_spreadsheet":  toolkit.create_spreadsheet,
