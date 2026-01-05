@@ -36,12 +36,12 @@ FUNCTIONS_DEF = [
     {
   "type": "function",
   "name": "create_worksheet",
-  "description": "Create a worksheet with the given title and columns in the spreadsheet",
+  "description": "Create a worksheet with the given title and headers in the spreadsheet",
   "parameters": {
     "type": "object",
     "properties": {
       "title": {"type": "string", "description": "Worksheet title"},
-      "columns": {
+      "headers": {
         "type": "array",
         "items": {"type": "string"},
         "description": "List of column headers"
@@ -49,7 +49,7 @@ FUNCTIONS_DEF = [
       "spreadsheet": {
           "type": "string", "description": "spreadsheet title in which to create the worksheet"}
     },
-    "required": ["title", "columns", "spreadsheet"]
+    "required": ["title", "headers", "spreadsheet"]
   }
 },
 
@@ -108,6 +108,19 @@ FUNCTIONS_DEF = [
     },
     "required": ["spreadsheet"]
   }
+}, 
+{
+  "type": "function",
+  "name": "get_worksheet_headers",
+  "description": "get headers of a given worksheet",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string", "description": "worksheet title"}, 
+      "spreadsheet": {"type": "string", "description": "spreadsheet title in which to look for worksheet"}
+    },
+    "required": ["title", "spreadsheet"]
+  }
 }
 ]
 
@@ -120,4 +133,5 @@ FUNCTIONS_MAP = {
     "delete_worksheet": toolkit.delete_worksheet,
     "list_spreadsheets": toolkit.list_spreadsheets, 
     "list_worksheets": toolkit.list_worksheets,
+    "get_worksheet_headers": toolkit.get_worksheet_headers,
     }

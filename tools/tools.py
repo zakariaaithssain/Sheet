@@ -15,39 +15,41 @@ class ToolKit:
         except gspread.SpreadsheetNotFound:
             self.spreadsheet = self.google_client.create(title=title)
             status = "created"
-
-        return {
-        "spreadsheet_title": self.spreadsheet.title,
-        "status": status,
-        "spreadsheet_url": self.spreadsheet.url
-    }
+        finally:
+            return {
+            "spreadsheet": self.spreadsheet.title,
+            "status": status,
+            "spreadsheet_url": self.spreadsheet.url
+        }
     
         
         
 
 
 
-    def create_worksheet(self, title: str, columns: list[str], spreadsheet: str) -> dict:
+    def create_worksheet(self, title: str, headers: list[str], spreadsheet: str) -> dict:
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
             try:
-                self.spreadsheet.worksheet(title=title)
+                self.worksheet = self.spreadsheet.worksheet(title=title)
                 status = "exists"
             except gspread.WorksheetNotFound: 
                 self.worksheet = self.spreadsheet.add_worksheet(title=title,
-                                                cols=len(columns), rows=1000)
+                                                cols=len(headers), rows=1000)
+                #add header
+                self.worksheet.update(values=[headers],
+                                    range_name="A1:" + chr(64+len(headers)) + "1")
+                
                 status = "created"
-            #header
-            self.worksheet.update(values=[columns],
-                                range_name="A1:" + chr(64+len(columns)) + "1")
-            
-            return {
-            "worksheet_title": self.worksheet.title,
-            "status": status,
-            "spreadsheet": self.spreadsheet.title
-            }
         except gspread.SpreadsheetNotFound: 
-            return {"status" : f"spreadsheet {spreadsheet} not found"}
+            status = "spreadsheet not found"
+        
+        finally: 
+            return {
+            "worksheet": title,
+            "status": status,
+            "spreadsheet": spreadsheet
+            }
 
 
 
@@ -60,20 +62,19 @@ class ToolKit:
                 self.spreadsheet.del_worksheet(self.worksheet)
                 status = "deleted"
             except gspread.WorksheetNotFound: 
-                status = "not found"
+                status = "worksheet not found"
+        except gspread.SpreadsheetNotFound: 
+            status = f"spreadsheet not found"
+        except Exception as e: 
+            status = e.args[0] #this way the model would explain the error
+                            #because gspread don't separate technical errors
+                            #from practical ones.
+        finally: 
             return {
-            "worksheet_title": title,
+            "worksheet": title,
             "status": status,
             "spreadsheet": spreadsheet
             }
-        except gspread.SpreadsheetNotFound: 
-            return {"worksheet_title": title,
-                    "status": f"spreadsheet {spreadsheet} not found"}
-        except Exception as e: 
-            return {"worksheet_title": title,
-                    "status": e.args[0]} #this way the model would explain the error
-                            #because gspread don't separate technical errors
-                            #from practical ones.
 
 
 
@@ -88,8 +89,9 @@ class ToolKit:
         except Exception as e: 
                     status = e.args[0]
 
-        return {"spreadsheet_title": title, 
-                "status": status}
+        finally: 
+            return {"spreadsheet": title, 
+                    "status": status}
     
 
     
@@ -132,6 +134,34 @@ class ToolKit:
             "worksheets_metadata": worksheets_metadata,
         }
 
+
+
+    def get_worksheet_headers(self, title:str, spreadsheet: str):
+        try: 
+            self.spreadsheet = self.google_client.open(title=spreadsheet)
+            try:
+                self.worksheet = self.spreadsheet.worksheet(title=title)
+                headers = self.worksheet.row_values(1)
+                status = "done"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+                headers = None
+
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+            headers = None
+        except Exception as e: 
+            status = e.args[0] 
+            headers = None
+        
+        finally: 
+            return {"worksheet": title, 
+                    "spreadsheet": spreadsheet, 
+                    "status": status, 
+                    "headers": headers}
+
+    def insert_item(self, spreadsheet: str, worksheet: str, **kwargs): 
+        ...
 
 
 
