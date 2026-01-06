@@ -134,7 +134,20 @@ FUNCTIONS_DEF = [
       "data": {"type":"object", "description": "dictionary of key-value pairs"}
     },
     "required": ["title", "spreadsheet", "data"]
-  }
+  },
+},
+{
+  "type": "function",
+  "name": "get_worksheet_data",
+  "description": "get all rows data from a given worksheet",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {"type": "string", "description": "worksheet title"}, 
+      "spreadsheet": {"type": "string", "description": "spreadsheet title in which to look for worksheet"}, 
+    },
+    "required": ["title", "spreadsheet"]
+  },
 }
 ]
 
@@ -149,5 +162,6 @@ FUNCTIONS_MAP = {
     "list_worksheets": toolkit.list_worksheets,
     "get_worksheet_headers": toolkit.get_worksheet_headers,
     "insert_row": toolkit.insert_row,
+    "get_worksheet_data": toolkit.get_worksheet_data,
     
     }
