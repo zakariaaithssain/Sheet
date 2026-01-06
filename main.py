@@ -14,7 +14,7 @@ try:
         context.append({"role" : "user", "content" : message})
 
         response = agent.chat(prompt= context)
-        print("GestAI: ", response)
+        print(f"\n{100*'-'}\nGestAI: ", response, end=f"\n{100*'-'}\n")
         context.append({"role" : "assistant", "content": response})
 
 except KeyboardInterrupt: 

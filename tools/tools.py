@@ -39,6 +39,7 @@ class ToolKit:
                 #add header
                 self.worksheet.update(values=[headers],
                                     range_name="A1:" + chr(64+len(headers)) + "1")
+                self.worksheet.format("A1:" + chr(64+len(headers)) + "1", {'textFormat': {'bold': True}})
                 
                 status = "created"
         except gspread.SpreadsheetNotFound: 
@@ -178,7 +179,7 @@ class ToolKit:
                     for header in sheet_headers: 
                         ordered_values.append(lower_data[header])
 
-                    self.worksheet.append_row(ordered_values, table_range="A1")
+                    self.worksheet.append_row(ordered_values)
                     status = "inserted"
         
                 else: 
