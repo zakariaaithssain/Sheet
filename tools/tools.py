@@ -199,7 +199,41 @@ class ToolKit:
                     "spreadsheet": spreadsheet, 
                     "status": status, 
                     "headers": sheet_headers}
+        
+    
 
+    def get_worksheet_data(self, title: str, spreadsheet: str): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=spreadsheet)
+            try:
+                self.worksheet = self.spreadsheet.worksheet(title=title)
+                data = self.worksheet.get_all_records(head=1)
+                #add a row key to every dict representing a row
+                for index, row in enumerate(data):
+                    row["row"] = index +1
+
+                status = "done"
+
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+                data = None
+
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+            data = None
+
+        except Exception as e: 
+            status = e.args[0] 
+            data = None
+
+        finally: 
+            return {"worksheet": title, 
+                    "spreadsheet": spreadsheet, 
+                    "status": status,
+                    "data": data}
+
+        
+    
 
 
 
