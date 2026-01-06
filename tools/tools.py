@@ -1,6 +1,8 @@
 import gspread
 from gspread import Client
 
+import datetime
+
 
 class ToolKit:
     def __init__(self, google_client: Client):
@@ -273,6 +275,11 @@ class ToolKit:
                     "spreadsheet": spreadsheet, 
                     "status": status,
                     "data": data}
+        
+
+    def get_today_date(self): 
+        return datetime.date.today().strftime("%d/%m/%Y")
+
 
         
     

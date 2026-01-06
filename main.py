@@ -11,11 +11,18 @@ context = []
 try: 
     while True:
         message = str(input("User: "))
+        print(f"{100*'-'}")
         context.append({"role" : "user", "content" : message})
+        full_response = ""
 
-        response = agent.chat(prompt= context)
-        print(f"\n{100*'-'}\nGestAI: ", response, end=f"\n{100*'-'}\n")
-        context.append({"role" : "assistant", "content": response})
+        #stream
+        print("GestAI: ",end="")
+        for chunk in agent.chat(prompt= context):
+            print(chunk, end="", flush=True)
+            full_response += chunk
+
+        print(f"\n{100*'-'}")
+        context.append({"role" : "assistant", "content": full_response})
 
 except KeyboardInterrupt: 
     print("\nchat terminated.")
