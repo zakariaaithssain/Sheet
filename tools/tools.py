@@ -5,9 +5,51 @@ from gspread import Client
 class ToolKit:
     def __init__(self, google_client: Client):
         self.google_client = google_client
+        self.spreadsheet = None
+        self.worksheet = None
 
 
+
+    #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
+    def get_active_sheets_metadata(self):
+        return {
+            "spreadsheet": (
+                {
+                    "title": self.spreadsheet.title,
+                    "url": self.spreadsheet.url,
+                    "last_update_time": self.spreadsheet.lastUpdateTime,
+                }
+                if self.spreadsheet
+                else None
+            ),
+            "worksheet": (
+                {
+                    "title": self.worksheet.title,
+                    "url": self.worksheet.url,
+                }
+                if self.worksheet
+                else None
+            ),
+        }
     
+
+    def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
+        try:
+            self.spreadsheet = self.google_client.open(spreadsheet)
+            if worksheet: self.worksheet = self.spreadsheet.worksheet(worksheet)
+            status = "done"
+        except gspread.SpreadsheetNotFound:
+            status= "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        finally:
+            return {
+            "status": status,
+            "spreadsheet_url": self.spreadsheet.url
+        }
+
+
+        
     def create_spreadsheet(self, title: str):
         try:
             self.spreadsheet = self.google_client.open(title=title)
@@ -35,7 +77,7 @@ class ToolKit:
                 status = "exists"
             except gspread.WorksheetNotFound: 
                 self.worksheet = self.spreadsheet.add_worksheet(title=title,
-                                                cols=len(headers), rows=1000)
+                                                cols=len(headers), rows=31)
                 #add header
                 self.worksheet.update(values=[headers],
                                     range_name="A1:" + chr(64+len(headers)) + "1")

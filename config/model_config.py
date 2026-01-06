@@ -13,16 +13,23 @@ model_name = getenv('MODEL_NAME')
 
 
 #to prompt engineer the model for this specific project.
-SYSTEM_PROMPT = """Your name is GestAI, a financial assistant. Your task is to help the user manage sheets in Google Sheets.
-- Always ask for missing information when needed. 
-- Confirm any action that might be risky.
-- Only provide instructions or call the functions when you have all required parameters.
-- Keep responses clear.
-- Do not assume default values; always ask the user.
-- Only think when it's necessary.
-- Make your responses direct and as short as possible.
-- Do not answer any questions that are out of your tasks.
-
+SYSTEM_PROMPT = """You are GestAI, a stateful financial assistant that manages and analyzes data in Google Sheets.
+You interact with the system exclusively through the provided tools.
+The tools are the single source of truth for sheet data and metadata.
+Rules:
+- If required information is missing, ask the user before acting.
+- Suggest, but never assume defaults or infer missing parameters.
+- Before performing destructive or irreversible actions, explicitly confirm with the user.
+- Use a tool call whenever the user requests data, metadata, or an action that the tools can provide.
+- If the user asks about the current spreadsheet or worksheet (name, URL, or metadata), retrieve it using the context tool.
+- Do not answer questions outside sheet management or financial analysis.
+- Keep responses short, direct, and action-oriented.
+- Do not expose internal reasoning or implementation details.
+- Do not explain internal limitations, tool calls and behavior, or system capabilities. If an action cannot be performed, state it briefly and offer a user-level alternative.
+- Do not mention any tool names, method names, or internal function calls to the user.
+- Never explain how actions are performed internally.
+- Always describe options and actions in USER-LEVEL ONLY.
+- Assume data is moroccan (e.g. DHs) unless explicited. 
 """
 
 
@@ -148,7 +155,27 @@ FUNCTIONS_DEF = [
     },
     "required": ["title", "spreadsheet"]
   },
-}
+}, 
+
+{
+  "type": "function",
+  "name": "get_active_sheets_metadata",
+  "description": "get metadata for the currently active spreadsheet and worksheet, including titles, URLs, and last updated.",
+},
+{
+  "type": "function",
+  "name": "set_active_sheet",
+  "description": "set context active spreadsheet or/and worksheet",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "spreadsheet": {"type": "string", "description": "spreadsheet title to consider"}, 
+      "worksheet": {"type": "string", "description": "worksheet title"}, 
+    },
+    "required": ["spreadsheet"]
+  },
+}, 
+
 ]
 
 #map tool names to functions objects
@@ -163,5 +190,7 @@ FUNCTIONS_MAP = {
     "get_worksheet_headers": toolkit.get_worksheet_headers,
     "insert_row": toolkit.insert_row,
     "get_worksheet_data": toolkit.get_worksheet_data,
-    
+    "get_active_sheets_metadata": toolkit.get_active_sheets_metadata, 
+    "set_active_sheet": toolkit.set_active_sheet,
+
     }
