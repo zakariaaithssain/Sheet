@@ -26,7 +26,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 #oauth requires a json file, so we dump the credentials
 try:
     with open('auth.json', 'w') as f: json.dump(CREDENTIALS, f)
-    google_client = gspread.oauth(scopes=SCOPES,
+    GOOGLE_CLIENT = gspread.oauth(scopes=SCOPES,
                                         credentials_filename= 'auth.json'
                                         )
     

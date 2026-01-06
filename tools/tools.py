@@ -179,7 +179,7 @@ class ToolKit:
                     for header in sheet_headers: 
                         ordered_values.append(lower_data[header])
 
-                    self.worksheet.append_row(ordered_values)
+                    self.worksheet.append_row(ordered_values, table_range="A1")
                     status = "inserted"
         
                 else: 
