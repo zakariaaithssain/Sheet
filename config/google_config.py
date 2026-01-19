@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
-from tempfile import NamedTemporaryFile
 
 import gspread
 import json
 import os
 
-load_dotenv()
+env = load_dotenv(".env")
+if not env: raise RuntimeError("env variables not found, create and configure .env file, see .env.example")
+
 #why not just use the json file? because with docker that will be a pain in the ass. 
 CREDENTIALS = {
     "installed":
