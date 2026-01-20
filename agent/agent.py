@@ -1,14 +1,42 @@
 from langchain.agents import create_agent
 
-#env variables are loaded inside model_config, so importing it would load them and Langchain detects them
-import config.model_config as conf
+import logging 
+
+from config.model_config import SYSTEM_PROMPT, TOOLS
+from config.settings import MODEL_PROVIDER #env variable
 
 
-agent = create_agent(model=conf.MODEL_PROVIDER,
-                      system_prompt=conf.SYSTEM_PROMPT,
-                      tools=conf.TOOLS,
+logger = logging.getLogger("agent")
+
+
+agent = create_agent(model=MODEL_PROVIDER,
+                      system_prompt=SYSTEM_PROMPT,
+                      tools=TOOLS
                         )
 
+def send_prompt(prompt: str): 
+  reasoning = ""
+  text_output = ""
+
+  for token, _ in agent.stream(input={'messages':
+                                        [{"role":"user",
+                                          "content": prompt}
+                                          ]}, 
+                            stream_mode="messages"): 
+      
+      blocks = token.content_blocks
+      if not blocks:
+          continue
+      
+      for block in blocks:
+          if block["type"] == "text":
+              text_output += block["text"]
+              print(block["text"], flush=True, end="")
+
+          elif block["type"] == "reasoning":
+              reasoning += block["reasoning"]
+              
+  logger.debug(f"USER: {prompt} REASONING: {reasoning}")
 
 
 

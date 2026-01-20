@@ -1,23 +1,21 @@
+from dotenv import load_dotenv
+import logging
 
-from agent.agent import agent
-
-response = agent.invoke(input={
-    'messages': [
-        {'role': 'user', 'content': 'hi'}
-        ]
-    }
-    )
+from agent.agent import send_prompt
+from config.settings import LOG_FORMAT, LOG_HANDLERS, LOG_LEVEL
 
 
-print(response["messages"][-1].content)
+load_dotenv()
+
+logging.basicConfig(format=LOG_FORMAT,
+                    handlers=LOG_HANDLERS, 
+                    level=LOG_LEVEL)
 
 
+logger = logging.getLogger("main")
+logger.info("starting the app")
 
-
-
-
-
-
+send_prompt("hi")
 
 
 

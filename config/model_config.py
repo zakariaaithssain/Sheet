@@ -1,19 +1,5 @@
 from config.google_config import GOOGLE_CLIENT
 from tools.tools import ToolKit
-from dotenv import load_dotenv 
-from os import getenv
-
-
-load_dotenv()
-
-#no longer needed
-model_api_key = getenv('MODEL_API_KEY')
-model_base_url = getenv('MODEL_BASE_URL')
-model_name = getenv('MODEL_NAME')
-
-
-#the only one needed by Langchain (API key is loaded directly)
-MODEL_PROVIDER=getenv('MODEL_PROVIDER')
 
 
 
