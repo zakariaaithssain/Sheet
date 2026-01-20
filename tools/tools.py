@@ -44,11 +44,11 @@ class ToolKit:
             status= "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        finally:
-            return {
-            "status": status,
-            "spreadsheet_url": self.spreadsheet.url
-        }
+
+        return {
+        "status": status,
+        "spreadsheet_url": self.spreadsheet.url
+    }
 
 
         
@@ -59,13 +59,13 @@ class ToolKit:
         except gspread.SpreadsheetNotFound:
             self.spreadsheet = self.google_client.create(title=title)
             status = "created"
-        finally:
-            return {
-            "spreadsheet": self.spreadsheet.title,
-            "status": status,
-            "spreadsheet_url": self.spreadsheet.url
-        }
-    
+
+        return {
+        "spreadsheet": self.spreadsheet.title,
+        "status": status,
+        "spreadsheet_url": self.spreadsheet.url
+    }
+
         
         
 
@@ -89,12 +89,11 @@ class ToolKit:
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         
-        finally: 
-            return {
-            "worksheet": title,
-            "status": status,
-            "spreadsheet": spreadsheet
-            }
+        return {
+        "worksheet": title,
+        "status": status,
+        "spreadsheet": spreadsheet
+        }
 
 
 
@@ -114,12 +113,11 @@ class ToolKit:
             status = e.args[0] #this way the model would explain the error
                             #because gspread don't separate technical errors
                             #from practical ones.
-        finally: 
-            return {
-            "worksheet": title,
-            "status": status,
-            "spreadsheet": spreadsheet
-            }
+        return {
+        "worksheet": title,
+        "status": status,
+        "spreadsheet": spreadsheet
+        }
 
 
 
@@ -134,10 +132,9 @@ class ToolKit:
         except Exception as e: 
                     status = e.args[0]
 
-        finally: 
-            return {"spreadsheet": title, 
-                    "status": status}
-    
+        return {"spreadsheet": title, 
+                "status": status}
+
 
     
 
@@ -199,11 +196,10 @@ class ToolKit:
             status = e.args[0] 
             headers = None
         
-        finally: 
-            return {"worksheet": title, 
-                    "spreadsheet": spreadsheet, 
-                    "status": status, 
-                    "headers": headers}
+        return {"worksheet": title, 
+                "spreadsheet": spreadsheet, 
+                "status": status, 
+                "headers": headers}
 
 
 
@@ -238,12 +234,11 @@ class ToolKit:
         except Exception as e: 
             status = e.args[0] 
         
-        finally: 
-            return {"worksheet": title, 
-                    "spreadsheet": spreadsheet, 
-                    "status": status, 
-                    "headers": sheet_headers}
-        
+        return {"worksheet": title, 
+                "spreadsheet": spreadsheet, 
+                "status": status, 
+                "headers": sheet_headers}
+    
     
 
     def get_worksheet_data(self, title: str, spreadsheet: str): 
@@ -270,11 +265,11 @@ class ToolKit:
             status = e.args[0] 
             data = None
 
-        finally: 
-            return {"worksheet": title, 
-                    "spreadsheet": spreadsheet, 
-                    "status": status,
-                    "data": data}
+        
+        return {"worksheet": title, 
+                "spreadsheet": spreadsheet, 
+                "status": status,
+                "data": data}
         
 
     def get_today_date(self): 
