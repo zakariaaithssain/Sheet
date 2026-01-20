@@ -1,7 +1,7 @@
 [project]
 name = "gestai"
 version = "0.1.0"
-description = "DAILY SHEETS AGENT"
+description = "AI Assistant for Google Sheets"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -33,7 +33,7 @@ dependencies = [
     "jiter==0.12.0",
     "jupyter-client==8.6.3",
     "jupyter-core==5.9.1",
-    "langchain-openai>=1.1.7",
+    "langchain[groq]>=1.2.6",
     "matplotlib-inline==0.2.1",
     "nest-asyncio==1.6.0",
     "oauthlib==3.3.1",
