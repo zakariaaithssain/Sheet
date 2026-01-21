@@ -2,7 +2,7 @@ from langchain.agents import create_agent
 
 import logging 
 
-from config.model_config import SYSTEM_PROMPT, TOOLS
+from config.agent_config import SYSTEM_PROMPT, TOOLS
 from config.settings import MODEL_PROVIDER #env variable
 
 
@@ -16,7 +16,6 @@ agent = create_agent(model=MODEL_PROVIDER,
 
 def send_prompt(prompt: str): 
   reasoning = ""
-  text_output = ""
 
   for token, _ in agent.stream(input={'messages':
                                         [{"role":"user",
@@ -30,7 +29,6 @@ def send_prompt(prompt: str):
       
       for block in blocks:
           if block["type"] == "text":
-              text_output += block["text"]
               print(block["text"], flush=True, end="")
 
           elif block["type"] == "reasoning":

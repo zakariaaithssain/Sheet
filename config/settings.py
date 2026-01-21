@@ -15,7 +15,7 @@ model_name = getenv('MODEL_NAME')
 
 
 #logs
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 LOG_HANDLERS = [logging.StreamHandler(sys.stdout), #print
                 logging.FileHandler("logs/app.log", mode="w") #write mode for dev 

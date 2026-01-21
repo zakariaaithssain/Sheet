@@ -1,5 +1,9 @@
+from langchain.tools import BaseTool
+
 from config.google_config import GOOGLE_CLIENT
 from tools.tools import ToolKit
+
+from langchain.tools import tool
 
 
 
@@ -26,21 +30,53 @@ Rules:
 
 
 toolkit = ToolKit(GOOGLE_CLIENT)
-TOOLS = [
-    toolkit.create_worksheet,
-    toolkit.create_spreadsheet,
-    toolkit.delete_spreadsheet, 
-    toolkit.delete_worksheet,
-    toolkit.list_spreadsheets, 
-    toolkit.list_worksheets,
-    toolkit.get_worksheet_headers,
-    toolkit.insert_row,
-    toolkit.get_worksheet_data,
-    toolkit.get_active_sheets_metadata, 
-    toolkit.set_active_sheet,
-    toolkit.get_today_date,
+methods = [
+    {"tool":toolkit.create_worksheet, 
+     "desc": "create worksheet with given title and headers inside given spreadsheet"},
+
+    {"tool":toolkit.create_spreadsheet,
+      "desc": "create spreadsheet with given title"},
+
+    {"tool":toolkit.delete_spreadsheet,
+      "desc": "delete spreadsheet with given title"}, 
+
+    {"tool":toolkit.delete_worksheet,
+      "desc": "delete worksheet with given title if found in given spreadsheet"},
+
+    {"tool":toolkit.list_spreadsheets,
+      "desc": "list spreadsheets metadata",}, 
+
+    {"tool":toolkit.list_worksheets,
+      "desc": "list worksheets metadata belonging to given spreadsheet"},
+
+    {"tool":toolkit.get_worksheet_headers,
+      "desc": "get headers of given worksheet"},
+
+    {"tool":toolkit.insert_row,
+      "desc": "insert given data to new row in given worksheet"},
+
+    {"tool":toolkit.get_worksheet_data,
+      "desc": "get data from given worksheet"},
+
+    {"tool":toolkit.get_active_sheets_metadata,
+      "desc": "get metadata, including title, URL, last updated time, for context spreadsheet and worksheet"}, 
+
+    {"tool":toolkit.set_active_sheet,
+      "desc": "set context sheets to given sheets"},
+
+    {"tool":toolkit.get_today_date,
+      "desc": "get current day's date"},
     ]
 
+TOOLS = []
+#transform the methods to Langchain methods
+#I can't decorate them directly in class definition, 
+#because the decoration will consider the self as an arg
+#so we need to instanciate the tools class first
+for method in methods: 
+    TOOLS.append(
+        tool(method["tool"], description=method["desc"])
+        )
 
 
 

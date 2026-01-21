@@ -14,7 +14,6 @@ class ToolKit:
 
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
-    @tool('get_active_sheets_metadata', description="get metadata for the currently active spreadsheet and worksheet, including titles, URLs, and last updated.")
     def get_active_sheets_metadata(self):
         return {
             "spreadsheet": (
@@ -37,7 +36,6 @@ class ToolKit:
         }
     
 
-    @tool('set_active_sheet', description="set context active spreadsheet or/and worksheet")
     def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
         try:
             self.spreadsheet = self.google_client.open(spreadsheet)
@@ -55,7 +53,6 @@ class ToolKit:
 
 
     
-    @tool('create_spreadsheet', description="Create a spreadsheet with the given title")
     def create_spreadsheet(self, title: str):
         try:
             self.spreadsheet = self.google_client.open(title=title)
@@ -74,7 +71,6 @@ class ToolKit:
         
 
 
-    @tool('create_worksheet', description="Create a worksheet with the given title and headers in the spreadsheet")
     def create_worksheet(self, title: str, headers: list[str], spreadsheet: str) -> dict:
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -101,7 +97,6 @@ class ToolKit:
 
 
 
-    @tool('delete_worksheet', description="delete a worksheet with the given title if found in the spreadsheet")
     def delete_worksheet(self, title: str, spreadsheet: str):
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -124,7 +119,6 @@ class ToolKit:
         }
 
 
-    @tool('delete_spreadsheet', description="delete a spreadsheet with the given title")
     def delete_spreadsheet(self, title: str): 
         try: 
             spread = self.google_client.open(title=title)
@@ -141,7 +135,6 @@ class ToolKit:
 
 
     
-    @tool('list_spreadsheets', description="list all spreadsheets metadata owned by/shared with the user",)
     def list_spreadsheets(self):
         spreadsheets = self.google_client.list_spreadsheet_files()
 
@@ -160,7 +153,6 @@ class ToolKit:
 
 
 
-    @tool('list_worksheets', description="list all worksheets metadata in the given spreadsheet.")
     
     def list_worksheets(self, spreadsheet: str):
         worksheets = self.google_client.open(title=spreadsheet).worksheets()
@@ -186,7 +178,6 @@ class ToolKit:
 
 
 
-    @tool('get_worksheet_headers', description="get headers of a given worksheet")
     def get_worksheet_headers(self, title:str, spreadsheet: str):
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -213,7 +204,6 @@ class ToolKit:
 
 
 
-    @tool('insert_row', description="insert data to new row in given worksheet")
     def insert_row(self, title: str, spreadsheet: str, data: dict): 
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -253,7 +243,6 @@ class ToolKit:
     
 
 
-    @tool('get_worksheet_data', description="get all rows data from a given worksheet")
     def get_worksheet_data(self, title: str, spreadsheet: str): 
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -287,7 +276,6 @@ class ToolKit:
 
 
 
-    @tool('get_today_date', description="get current day's date in d/m/y format")
     def get_today_date(self): 
         return datetime.date.today().strftime("%d/%m/%Y")
 
