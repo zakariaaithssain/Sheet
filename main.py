@@ -15,7 +15,7 @@ logging.basicConfig(format=LOG_FORMAT,
 logger = logging.getLogger("main")
 logger.info("starting the app")
 
-send_prompt("hi")
+send_prompt("what is today's date? ")
 
 
 
