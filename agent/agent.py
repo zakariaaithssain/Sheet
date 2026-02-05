@@ -14,13 +14,11 @@ agent = create_agent(model=MODEL_PROVIDER,
                       tools=TOOLS
                         )
 
-def send_prompt(prompt: str): 
+def send_prompt(messages: list[dict]): 
   reasoning = ""
+  full_response = ""
 
-  for token, _ in agent.stream(input={'messages':
-                                        [{"role":"user",
-                                          "content": prompt}
-                                          ]}, 
+  for token, _ in agent.stream(input={'messages': messages}, 
                             stream_mode="messages"): 
       
       blocks = token.content_blocks
@@ -30,11 +28,15 @@ def send_prompt(prompt: str):
       for block in blocks:
           if block["type"] == "text":
               print(block["text"], flush=True, end="")
+              full_response += block["text"]
 
           elif block["type"] == "reasoning":
               reasoning += block["reasoning"]
-              
-  logger.debug(f"USER: {prompt} REASONING: {reasoning}")
+  
+  user_mssg = messages[-1]["prompt"] if messages[-1]["role"] == "user" else ""            
+  logger.debug(f"USER: {user_mssg} REASONING: {reasoning}")
+
+  return full_response
 
 
 
