@@ -1,76 +1,44 @@
 from langchain.agents import create_agent
-
-import logging 
-
-from config.agent_config import SYSTEM_PROMPT, TOOLS
-from config.settings import MODEL_PROVIDER #env variable
+from langchain.messages import SystemMessage
 
 
 
-
-class LLMClient:
-    def __init__(self, model_name, temperature):
-        self.model_name = model_name
-        self.temperature = temperature
-
-    def run(self, messages, tools=None):
-        """
-        - takes standardized messages
-        - returns a string or structured output
-        """
-        # call provider here
-        # handle retries
-        # raise domain-specific errors
-        return "response"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-logger = logging.getLogger("agent")
-
-
-agent = create_agent(model=MODEL_PROVIDER,
-                      system_prompt=SYSTEM_PROMPT,
-                      tools=TOOLS
+class Agent:
+    def __init__(self, model_provider:str, tools:list, system_prompt: SystemMessage):
+        self.model_provider = model_provider
+        self.system = system_prompt     
+        self.agent = create_agent(self.model_provider,
+                      system_prompt=self.system,
+                      tools=tools
                         )
 
-def send_prompt(messages: list[dict]): 
-  reasoning = ""
-  full_response = ""
+    def run(self, messages: list): 
+        
+        reasoning = ""
+        full_response = ""
 
-  for token, _ in agent.stream(input={'messages': messages}, 
-                            stream_mode="messages"): 
-      
-      blocks = token.content_blocks
-      if not blocks:
-          continue
-      
-      for block in blocks:
-          if block["type"] == "text":
-              print(block["text"], flush=True, end="")
-              full_response += block["text"]
+        for token, _ in self.agent.stream(input={'messages': messages}, 
+                                    stream_mode="messages"): 
+            
+            blocks = token.content_blocks
+            if not blocks:
+                continue
+            
+            for block in blocks:
+                if block["type"] == "text":
+                    print(block["text"], flush=True, end="")
+                    full_response += block["text"]
 
-          elif block["type"] == "reasoning":
-              reasoning += block["reasoning"]
-  
-  user_mssg = messages[-1]["prompt"] if messages[-1]["role"] == "user" else ""            
-  logger.debug(f"USER: {user_mssg} REASONING: {reasoning}")
+                elif block["type"] == "reasoning":
+                    reasoning += block["reasoning"]
+        
+        return full_response
 
-  return full_response
+
+
+
+
+
 
 
 

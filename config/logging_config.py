@@ -1,7 +1,10 @@
 import logging
+from config.settings import Settings
 
-def setup_logging(settings):
+
+def setup_logging(settings: Settings):
     logging.basicConfig(
         level=settings.log_level,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        format= settings.log_format, 
+        handlers= settings.log_handlers
     )
