@@ -1,8 +1,48 @@
 from dotenv import load_dotenv
 import logging
 
-from agent.agent import send_prompt
+from agent.llm import send_prompt
 from config.settings import LOG_FORMAT, LOG_HANDLERS, LOG_LEVEL
+
+
+
+
+
+from dotenv import load_dotenv
+from config.settings import Settings
+from config.logging_config import setup_logging
+from agent.runtime import AgentRuntime
+from agent.memory import InMemoryConversationStore
+from agent.llm import LLMClient
+from agent.tools import ToolRegistry
+from interface import start_api
+
+def main():
+    load_dotenv()
+
+    settings = Settings()
+    setup_logging(settings)
+
+    memory = InMemoryConversationStore(settings.max_context_messages)
+    llm = LLMClient(settings.model_name, settings.temperature)
+    tools = ToolRegistry()
+
+    agent = AgentRuntime(llm, memory, tools)
+
+    start_api(settings)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
 
 
 load_dotenv()
