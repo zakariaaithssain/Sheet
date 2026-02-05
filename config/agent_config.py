@@ -1,7 +1,7 @@
 from langchain.tools import BaseTool
 
 from config.google_config import GOOGLE_CLIENT
-from tools.tools import ToolKit
+from agent.tools import ToolKit
 
 from langchain.tools import tool
 

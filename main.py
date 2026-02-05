@@ -15,7 +15,21 @@ logging.basicConfig(format=LOG_FORMAT,
 logger = logging.getLogger("main")
 logger.info("starting the app")
 
-send_prompt("what is today's date? ")
+prompt = []
+
+
+while True:
+    print("\n\n-------------------------------")
+    question = input("Ask anything! (q to quit): ")
+    if question == "q":
+        break
+    print("\n\n-------------------------------")
+    #this function streams response and also returns the full response at the end
+    prompt.append({"role": "user", "prompt": question})
+    full_resp = send_prompt(prompt)
+    prompt.append({"role": "assistant", "prompt": full_resp})
+   
+    
 
 
 
