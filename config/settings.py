@@ -3,6 +3,48 @@ import logging
 import sys
 
 
+
+from dataclasses import dataclass
+import os
+
+@dataclass(frozen=True)
+class Settings:
+    env: str = os.getenv("ENV", "dev")
+    log_level: str = os.getenv("LOG_LEVEL", "INFO")
+
+    # LLM
+    model_name: str = os.getenv("MODEL_NAME", "gpt-4.1")
+    temperature: float = float(os.getenv("TEMPERATURE", "0.2"))
+
+    # Agent limits
+    max_context_messages: int = int(os.getenv("MAX_CONTEXT_MESSAGES", "30"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #the only one needed by Langchain (API key is loaded directly)
 MODEL_PROVIDER=getenv('MODEL_PROVIDER')
 

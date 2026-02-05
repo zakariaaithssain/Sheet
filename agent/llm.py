@@ -6,6 +6,40 @@ from config.agent_config import SYSTEM_PROMPT, TOOLS
 from config.settings import MODEL_PROVIDER #env variable
 
 
+
+
+class LLMClient:
+    def __init__(self, model_name, temperature):
+        self.model_name = model_name
+        self.temperature = temperature
+
+    def run(self, messages, tools=None):
+        """
+        - takes standardized messages
+        - returns a string or structured output
+        """
+        # call provider here
+        # handle retries
+        # raise domain-specific errors
+        return "response"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 logger = logging.getLogger("agent")
 
 
