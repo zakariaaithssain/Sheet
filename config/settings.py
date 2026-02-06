@@ -2,10 +2,9 @@
 from dataclasses import dataclass
 from langchain.messages import SystemMessage
 
-from config.agent_config import TOOLS, GOOGLE_CLIENT
-import os
-import logging
+from config.tools_config import TOOLS, GOOGLE_CLIENT
 
+import os
 
 
 

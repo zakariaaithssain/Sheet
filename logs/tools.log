@@ -1,0 +1,12 @@
+2026-02-07 00:12:53,041 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: list_spreadsheets, call args: None
+2026-02-07 00:12:54,000 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-07 00:13:07,733 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_active_sheet, call args: {'spreadsheet': 'Monthly budget', 'worksheet': None}
+2026-02-07 00:13:07,738 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
+2026-02-07 00:13:09,058 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-07 00:13:09,830 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-07 00:13:39,030 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_starting_balance, call args: {'balance': 3000.0}
+2026-02-07 00:13:39,030 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
+2026-02-07 00:13:40,486 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-07 00:13:41,921 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-07 00:14:11,080 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_today_date, call args: None
+2026-02-07 00:14:11,081 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
