@@ -8,15 +8,66 @@ from config.logging_config import log_tool
 
 
 logger = logging.getLogger("tools")
-
+""" NOTE: Whenever we add a method to this class, to make it a tool that is accessible for the 
+agent, we need to configure it in the config/tools_config file."""
 
 class ToolKit:
     def __init__(self, google_client: Client):
         self.google_client = google_client
         self.spreadsheet = None
         self.worksheet = None
+        self.spread_title: str = "Monthly budget"
+        self.summary_title: str = "Summary"
+        self.transactions_title: str = "Transactions"
+        self.balance_cell: str = "L8"
         logger.info("ToolKit initialized.")
 
+    
+    @log_tool(logger)
+    def set_starting_balance(self, balance:float): 
+        old_balance = self.get_starting_balance()["balance"]
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            self.worksheet.update_acell(label=self.balance_cell, value=balance)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0] #this way the model would explain the error
+                            #because gspread don't separate technical errors
+                            #from practical ones.
+        return {
+            "new_starting_balance": balance, 
+            "old_starting_balance": old_balance, 
+            "status": status
+        }
+        
+
+    @log_tool(logger)
+    def get_starting_balance(self): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            balance = self.worksheet.acell(label=self.balance_cell).value
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0] #this way the model would explain the error
+                            #because gspread don't separate technical errors
+                            #from practical ones.
+        return {
+            "status": status, 
+            "balance": balance if status == "done" else None
+        }
+        
+
+    
 
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
@@ -55,7 +106,7 @@ class ToolKit:
 
         return {
         "status": status,
-        "spreadsheet_url": self.spreadsheet.url
+        "spreadsheet_url": self.spreadsheet.url if self.spreadsheet else None
     }
 
 
@@ -71,7 +122,7 @@ class ToolKit:
         return {
         "spreadsheet": self.spreadsheet.title,
         "status": status,
-        "spreadsheet_url": self.spreadsheet.url
+        "spreadsheet_url": self.spreadsheet.url 
     }
 
         
@@ -144,43 +195,81 @@ class ToolKit:
 
     @log_tool(logger)
     def list_spreadsheets(self):
-        spreadsheets = self.google_client.list_spreadsheet_files()
-
-        spreadsheets_metadata = [
-            {
-                "id": s["id"],
-                "name": s["name"],
-                "created_time": s.get("createdTime"),
-                "modified_time": s.get("modifiedTime"),
-            }
-               for s in spreadsheets]
+        try:
+            spreadsheets = self.google_client.list_spreadsheet_files()
+            spreadsheets_names = [ s["name"] for s in spreadsheets]
+            status = "done"
+        except Exception as e: 
+            status = e.args[0]
 
         return {
-            "spreadsheets_metadata": spreadsheets_metadata
+            "status": status, 
+            "available_spreadsheets" : spreadsheets_names if status == "done" else None
         }
 
+    @log_tool(logger)
+    def get_spreadsheet_metadata(self, spreadsheet:str): 
+        try: 
+            self.spreadsheet = self.google_client.open(spreadsheet)
+            spreadsheet_metadata = {
+                "id": self.spreadsheet.id,
+                "name": spreadsheet,
+                "creation_time": self.spreadsheet.creationTime,
+                "last_modif_time": self.spreadsheet.lastUpdateTime,
+            }
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+
+        return {
+            "status": status,
+            "spreadsheet_metadata": spreadsheet_metadata if status == "done" else None
+        }
+    
 
 
     @log_tool(logger)
     def list_worksheets(self, spreadsheet: str):
-        worksheets = self.google_client.open(title=spreadsheet).worksheets()
+        try:
+            worksheets = self.google_client.open(title=spreadsheet).worksheets()
+            worksheets_names = [ws.title for ws in worksheets]
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
 
-        worksheets_metadata = [
-            {
-                "id": ws.id,
-                "title": ws.title,
-                "index": ws.index,
-                "rows": ws.row_count,
-                "cols": ws.col_count,
-                "sheet_type": ws._properties.get("sheetType"),
-                "grid_properties": ws._properties.get("gridProperties"),
-            }
-            for ws in worksheets
-        ]
+        except Exception as e: 
+            status = e.args[0]
 
         return {
+            "status": status, 
             "spreadsheet": spreadsheet,
-            "worksheets_metadata": worksheets_metadata,
+            "available_worksheets" : worksheets_names if status == "done" else None
+        }
+    
+
+
+    @log_tool(logger)
+    def get_worksheet_metadata(self, title: str, spreadsheet:str): 
+        try: 
+            self.spreadsheet = self.google_client.open(spreadsheet)
+            self.worksheet = self.spreadsheet.worksheet(title=title)
+            worksheet_metadata = {
+                "id": self.worksheet.id,
+                "title": self.worksheet.title,
+                "index": self.worksheet.index,
+                "rows": self.worksheet.row_count,
+                "cols": self.worksheet.col_count
+            }
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        
+        
+        return {
+            "status": status,
+            "worksheet_metadata": worksheet_metadata if status == "done" else None
         }
 
 

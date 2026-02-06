@@ -6,8 +6,23 @@ from langchain.tools import tool
 
 
 
+"""
+transform the ToolKit class methods to Langchain tools,
+I can't decorate them directly in class definition, 
+because the decoration will consider the self arg as a tool arg,
+so we need to instanciate the class first
+
+"""
+
+
 toolkit = ToolKit(GOOGLE_CLIENT)
 methods = [
+    {"tool": toolkit.get_starting_balance, 
+     "desc": "get the starting balance defined in the monthly budget spreadsheet"},
+
+     {"tool": toolkit.set_starting_balance, 
+      "desc": "set the starting balance of monthly budget spreadsheet to the given value"}, 
+
     {"tool":toolkit.create_worksheet, 
      "desc": "create worksheet with given title and headers inside given spreadsheet"},
 
@@ -21,10 +36,16 @@ methods = [
       "desc": "delete worksheet with given title if found in given spreadsheet"},
 
     {"tool":toolkit.list_spreadsheets,
-      "desc": "list spreadsheets metadata",}, 
+      "desc": "list available spreadsheets names"}, 
+
+    {"tool": toolkit.get_spreadsheet_metadata, 
+     "desc": "get given spreadsheet name, id, creation time, and last modification time"},
 
     {"tool":toolkit.list_worksheets,
-      "desc": "list worksheets metadata belonging to given spreadsheet"},
+      "desc": "list available worksheets names belonging to given spreadsheet"},
+    
+    {"tool": toolkit.get_worksheet_metadata, 
+     "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
 
     {"tool":toolkit.get_worksheet_headers,
       "desc": "get headers of given worksheet"},
@@ -46,13 +67,10 @@ methods = [
     ]
 
 TOOLS = []
-#transform the methods to Langchain methods
-#I can't decorate them directly in class definition, 
-#because the decoration will consider the self as an arg
-#so we need to instanciate the tools class first
+
 for method in methods: 
     TOOLS.append(
-        tool(method["tool"], description=method["desc"])
+                  tool(method["tool"], description=method["desc"])
         )
 
 
@@ -69,10 +87,6 @@ for method in methods:
 
 
 #DEPRECATED (I USED IT BEFORE SWITCHING TO LANGCHAIN THAT WILL HANDLE ALL THIS FOR ME)
-
-
-
-
 
 #tools that will be defined in sheets/tools.py
 #gspread API docs: 
