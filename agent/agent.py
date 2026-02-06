@@ -1,6 +1,10 @@
+import logging
+
 from langchain.agents import create_agent
 from langchain.messages import SystemMessage
 
+
+logger = logging.getLogger("agent")
 
 
 class Agent:
@@ -11,27 +15,30 @@ class Agent:
                       system_prompt=self.system,
                       tools=tools
                         )
+        logger.info("agent initialized.")
 
     def run(self, messages: list): 
-        
+        logger.debug("called Agent.run")
         reasoning = ""
         full_response = ""
 
-        for token, _ in self.agent.stream(input={'messages': messages}, 
+        for token, meta in self.agent.stream(input={'messages': messages}, 
                                     stream_mode="messages"): 
-            
             blocks = token.content_blocks
             if not blocks:
                 continue
-            
             for block in blocks:
-                if block["type"] == "text":
+                if block.get("type") == "text":
                     print(block["text"], flush=True, end="")
                     full_response += block["text"]
 
                 elif block["type"] == "reasoning":
                     reasoning += block["reasoning"]
         
+        logging.debug(f"user prompt (trimmed): {list(messages[-1])[:30]}")
+        logging.debug(f"model reasoning (trimmed): {reasoning[:30]}")
+        logging.debug(f"model response (trimmed): {full_response[:30]}")
+
         return full_response
 
 
