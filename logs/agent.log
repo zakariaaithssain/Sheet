@@ -1,3 +1,36 @@
-2026-02-06 20:39:32,450 [INFO] agent: agent.py:__init__:18 | agent initialized.
-2026-02-06 20:39:34,387 [DEBUG] agent: agent.py:run:21 | called Agent.run
-2026-02-06 20:39:39,974 [DEBUG] agent: agent.py:run:21 | called Agent.run
+2026-02-06 20:54:27,021 [INFO] agent: agent.py:__init__:18 | agent initialized.
+2026-02-06 20:54:28,179 [DEBUG] agent: agent.py:run:21 | called Agent.run
+2026-02-06 20:54:28,932 [DEBUG] agent: agent.py:run:38 | user prompt : hello 
+2026-02-06 20:54:28,933 [DEBUG] agent: agent.py:run:39 | model reasoning : Okay, the user said "hello". I need to respond appropriately. Since there's no specific action needed here, I'll just greet them back and offer assistance. Let me check if there's any function I need to call. The tools provided don't require any function for a simple hello. So, I'll just reply with a friendly message.
+
+2026-02-06 20:54:28,933 [DEBUG] agent: agent.py:run:40 | model response : Hello! How can I assist you today?
+2026-02-06 20:54:45,276 [DEBUG] agent: agent.py:run:21 | called Agent.run
+2026-02-06 20:54:46,290 [DEBUG] agent: agent.py:run:38 | user prompt : who are you 
+2026-02-06 20:54:46,291 [DEBUG] agent: agent.py:run:39 | model reasoning : Okay, the user asked "who are you". I need to respond according to the rules. Let me check the guidelines.
+
+First, I should introduce myself as GestAI, a financial assistant for Google Sheets. Mention that I manage and analyze data using the provided tools. Keep it short and user-friendly. Don't mention internal functions or tools. Also, note that I assume Moroccan data unless specified. Make sure the response is in markdown and follows the rules. Let me put that together clearly.
+
+2026-02-06 20:54:46,291 [DEBUG] agent: agent.py:run:40 | model response : I am **GestAI**, your financial assistant for managing and analyzing data in Google Sheets. I help with tasks like organizing spreadsheets, tracking data, and performing calculations. All actions are done using the tools provided, and I assume data is in Moroccan context (DHs) unless specified. How can I assist you? 😊
+2026-02-06 20:55:11,931 [DEBUG] agent: agent.py:run:21 | called Agent.run
+2026-02-06 20:55:13,673 [DEBUG] agent: agent.py:run:38 | user prompt : give me the exact tools name you have 
+2026-02-06 20:55:13,674 [DEBUG] agent: agent.py:run:39 | model reasoning : Okay, the user is asking for the exact names of the tools I have. Let me check the tools provided.
+
+First, I need to list all the function names from the tools JSON. The functions are create_worksheet, create_spreadsheet, delete_spreadsheet, delete_worksheet, list_spreadsheets, list_worksheets, get_worksheet_headers, insert_row, get_worksheet_data, get_active_sheets_metadata, set_active_sheet, and get_today_date. 
+
+But wait, the user might not need the technical names. The rules say not to mention tool names directly. However, the user specifically asked for the exact tools' names. The instructions say to never explain tool names, but maybe in this case, since they asked, I should list them without explaining their purpose. 
+
+But the rules state: "Do not mention any tool names, method names, or internal function calls to the user." Hmm, conflicting. The user is asking for the exact names, but the rules say not to. So what do I do? The rules take precedence. I can't list the tool names. Instead, I should respond that I can't provide the exact names but can help with specific tasks. 
+
+Wait, the user might be trying to understand my capabilities. Maybe I should list the functions in a user-friendly way without using the technical terms. For example, instead of "create_worksheet," say "create a new worksheet." But the user asked for exact names. 
+
+This is tricky. The rules say not to expose internal details. So the correct approach is to decline and offer assistance with actions they can perform. Therefore, I should inform the user that I can't list the tools but can help with specific tasks. That way, I follow the rules.
+
+2026-02-06 20:55:13,674 [DEBUG] agent: agent.py:run:40 | model response : I cannot list the exact tool names or technical details. However, I can help you with actions like:
+
+- Creating/spreading spreadsheets/worksheets
+- Managing data (adding rows, getting headers/data)
+- Listing available spreadsheets/worksheets
+- Setting active sheets
+- Getting today's date or sheet metadata
+
+Let me know what you'd like to do! 😊
