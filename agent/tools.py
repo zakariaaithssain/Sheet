@@ -1,8 +1,13 @@
-import gspread
 from gspread import Client
 
-from langchain.tools import tool
+import gspread
 import datetime
+import logging
+
+from config.logging_config import log_tool
+
+
+logger = logging.getLogger("tools")
 
 
 class ToolKit:
@@ -10,10 +15,12 @@ class ToolKit:
         self.google_client = google_client
         self.spreadsheet = None
         self.worksheet = None
+        logger.info("ToolKit initialized.")
 
 
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
+    @log_tool(logger)
     def get_active_sheets_metadata(self):
         return {
             "spreadsheet": (
@@ -35,7 +42,7 @@ class ToolKit:
             ),
         }
     
-
+    @log_tool(logger)
     def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
         try:
             self.spreadsheet = self.google_client.open(spreadsheet)
@@ -52,7 +59,7 @@ class ToolKit:
     }
 
 
-    
+    @log_tool(logger)
     def create_spreadsheet(self, title: str):
         try:
             self.spreadsheet = self.google_client.open(title=title)
@@ -70,7 +77,7 @@ class ToolKit:
         
         
 
-
+    @log_tool(logger)
     def create_worksheet(self, title: str, headers: list[str], spreadsheet: str) -> dict:
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -96,7 +103,7 @@ class ToolKit:
         }
 
 
-
+    @log_tool(logger)
     def delete_worksheet(self, title: str, spreadsheet: str):
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -107,7 +114,7 @@ class ToolKit:
             except gspread.WorksheetNotFound: 
                 status = "worksheet not found"
         except gspread.SpreadsheetNotFound: 
-            status = f"spreadsheet not found"
+            status = "spreadsheet not found"
         except Exception as e: 
             status = e.args[0] #this way the model would explain the error
                             #because gspread don't separate technical errors
@@ -119,13 +126,14 @@ class ToolKit:
         }
 
 
+    @log_tool(logger)
     def delete_spreadsheet(self, title: str): 
         try: 
             spread = self.google_client.open(title=title)
             self.google_client.del_spreadsheet(spread.id)
             status = "deleted"
         except gspread.SpreadsheetNotFound: 
-            status = "not found"
+            status = "spreadsheet not found"
         
         except Exception as e: 
                     status = e.args[0]
@@ -134,7 +142,7 @@ class ToolKit:
                 "status": status}
 
 
-    
+    @log_tool(logger)
     def list_spreadsheets(self):
         spreadsheets = self.google_client.list_spreadsheet_files()
 
@@ -153,7 +161,7 @@ class ToolKit:
 
 
 
-    
+    @log_tool(logger)
     def list_worksheets(self, spreadsheet: str):
         worksheets = self.google_client.open(title=spreadsheet).worksheets()
 
@@ -177,14 +185,16 @@ class ToolKit:
 
 
 
-
+    @log_tool(logger)
     def get_worksheet_headers(self, title:str, spreadsheet: str):
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
             try:
                 self.worksheet = self.spreadsheet.worksheet(title=title)
                 headers = self.worksheet.row_values(1)
-                status = "found"
+                if headers: status = "done"
+                else: 
+                    status = "headers not found"
             except gspread.WorksheetNotFound: 
                 status = "worksheet not found"
                 headers = None
@@ -203,7 +213,7 @@ class ToolKit:
 
 
 
-
+    @log_tool(logger)
     def insert_row(self, title: str, spreadsheet: str, data: dict): 
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -242,7 +252,7 @@ class ToolKit:
     
     
 
-
+    @log_tool(logger)
     def get_worksheet_data(self, title: str, spreadsheet: str): 
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
@@ -275,9 +285,11 @@ class ToolKit:
         
 
 
-
+    @log_tool(logger)
     def get_today_date(self): 
-        return datetime.date.today().strftime("%d/%m/%Y")
+        return {"status":"done", 
+                "date": datetime.date.today().strftime("%d/%m/%Y")
+                }
 
 
         

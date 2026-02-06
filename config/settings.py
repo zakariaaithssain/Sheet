@@ -5,8 +5,6 @@ from langchain.messages import SystemMessage
 from config.agent_config import TOOLS, GOOGLE_CLIENT
 import os
 import logging
-import sys
-
 
 
 
@@ -14,12 +12,103 @@ import sys
 
 @dataclass(frozen=True)
 class Settings:
-    log_level: str = os.getenv("LOG_LEVEL", "INFO")
-    log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-    handler_mode = "w"#write mode for dev
-    log_handlers = [
-                logging.FileHandler("logs/app.log", mode=handler_mode)  
-                ]
+    env : str = os.getenv("ENV", "dev")
+    if env == "dev": 
+        log_level: str = "DEBUG"
+        handler_mode: str = "w" #to recreate logs at each run 
+    else: 
+        log_leve: str = "INFO"
+        handler_mode: str = "a"
+        
+    log_format = "%(asctime)s [%(levelname)s] %(name)s: %(filename)s:%(funcName)s:%(lineno)d | %(message)s"
+    log_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    
+    "formatters": {
+        "standard": {
+            "format": log_format,
+        }
+    },
+    "handlers": {
+        "agent_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/agent.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+        "memory_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/memory.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+        "runtime_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/runtime.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+        "tools_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/tools.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+        "interface_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/interface.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+        "main_file": {
+            "class": "logging.FileHandler",
+            "filename": "logs/main.log",
+            "mode": handler_mode,
+            "formatter": "standard",
+            "level": log_level,
+        },
+    },
+
+    "loggers": {
+        "agent": {
+            "handlers": ["agent_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+        "memory": {
+            "handlers": ["memory_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+        "runtime": {
+            "handlers": ["runtime_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+        "tools": {
+            "handlers": ["tools_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+        "interface": {
+            "handlers": ["interface_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+        "main": {
+            "handlers": ["main_file"],
+            "level": log_level,
+            "propagate": False,
+        },
+    },
+}
+
 
     model_provider: str = os.getenv("MODEL_PROVIDER","groq:qwen/qwen3-32b" )
     max_context_messages: int = int(os.getenv("MAX_CONTEXT_MESSAGES", "30"))
