@@ -35,9 +35,9 @@ class Agent:
                 elif block["type"] == "reasoning":
                     reasoning += block["reasoning"]
         
-        logging.debug(f"user prompt (trimmed): {list(messages[-1])[:30]}")
-        logging.debug(f"model reasoning (trimmed): {reasoning[:30]}")
-        logging.debug(f"model response (trimmed): {full_response[:30]}")
+        logger.debug(f"user prompt : {messages[-1].content}")
+        logger.debug(f"model reasoning : {reasoning}")
+        logger.debug(f"model response : {full_response}")
 
         return full_response
 
