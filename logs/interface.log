@@ -1,9 +1,7 @@
-2026-02-07 00:12:45,832 [DEBUG] interface: interface.py:start_api:10 | called Interface.start_api
-2026-02-07 00:12:45,832 [DEBUG] interface: interface.py:start_api:12 | inside runtime context manager
-2026-02-07 00:12:55,242 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 1
-2026-02-07 00:13:10,973 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 2
-2026-02-07 00:13:42,929 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 3
-2026-02-07 00:14:00,803 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 4
-2026-02-07 00:14:32,227 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 5
-2026-02-07 00:14:54,481 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 6
-2026-02-07 00:14:54,481 [INFO] interface: interface.py:start_api:17 | user input was 'q', breaked from loop.
+2026-02-07 10:16:59,970 [DEBUG] interface: interface.py:start_api:10 | called Interface.start_api
+2026-02-07 10:16:59,971 [DEBUG] interface: interface.py:start_api:12 | inside runtime context manager
+2026-02-07 10:17:08,904 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 1
+2026-02-07 10:17:37,962 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 2
+2026-02-07 10:17:49,123 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 3
+2026-02-07 10:18:29,397 [DEBUG] interface: interface.py:start_api:23 | step (1-indexed): 4
+2026-02-07 10:18:43,757 [INFO] interface: interface.py:start_api:17 | user input was 'q', breaked from loop.

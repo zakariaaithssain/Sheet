@@ -58,9 +58,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0] #this way the model would explain the error
-                            #because gspread don't separate technical errors
-                            #from practical ones.
+            status = e.args[0] 
         return {
             "status": status, 
             "balance": balance if status == "done" else None
@@ -167,9 +165,7 @@ class ToolKit:
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except Exception as e: 
-            status = e.args[0] #this way the model would explain the error
-                            #because gspread don't separate technical errors
-                            #from practical ones.
+            status = e.args[0] 
         return {
         "worksheet": title,
         "status": status,
