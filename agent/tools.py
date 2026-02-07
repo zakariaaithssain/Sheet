@@ -20,6 +20,7 @@ class ToolKit:
         self.summary_title: str = "Summary"
         self.transactions_title: str = "Transactions"
         self.balance_cell: str = "L8"
+        self.expenses_categ_range = "B28:B41"
         logger.info("ToolKit initialized.")
 
     
@@ -65,8 +66,35 @@ class ToolKit:
         }
         
 
+
+    @log_tool(logger)
+    def get_expenses_categories(self): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            categories = self.worksheet.get(range_name=self.expenses_categ_range)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0]
+        
+        return {
+            "status": status, 
+            "expenses_categories": categories if status == "done" else None
+        }
+
     
 
+
+
+
+
+
+
+#=================================================
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
     @log_tool(logger)
@@ -375,7 +403,7 @@ class ToolKit:
         return {"status":"done", 
                 "date": datetime.date.today().strftime("%d/%m/%Y")
                 }
-
+    
 
         
     
