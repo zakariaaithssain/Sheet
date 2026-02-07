@@ -14,15 +14,21 @@ agent, we need to configure it in the config/tools_config file."""
 class ToolKit:
     def __init__(self, google_client: Client):
         self.google_client = google_client
+
         self.spreadsheet = None
         self.worksheet = None
+
         self.spread_title: str = "Monthly budget"
         self.summary_title: str = "Summary"
         self.transactions_title: str = "Transactions"
+
         self.balance_cell: str = "L8"
+
         self.expenses_categ_range = "B28:B41"
         self.planned_expenses_range = "B28:D41"
+
         self.income_categ_range = "H28:H33"
+        self.planned_income_range = "H28:J33"
         logger.info("ToolKit initialized.")
 
     
@@ -131,6 +137,25 @@ class ToolKit:
         }
 
 
+    @log_tool(logger)
+    def get_planned_incomes(self): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            categories = self.worksheet.get(range_name=self.planned_income_range, combine_merged_cells=True)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0]
+        
+        return {
+            "status": status, 
+            "planned_incomes": categories if status == "done" else None
+        }
+    
 
 
 
