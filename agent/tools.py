@@ -29,6 +29,34 @@ class ToolKit:
 
         self.income_categ_range = "H28:H33"
         self.planned_income_range = "H28:J33"
+
+        self.categs_map = {
+            "expenses": {
+            "food": "D28",
+            "gifts": "D29",
+            "health/medical": "D30",
+            "home": "D31",
+            "transportation": "D32",
+            "personal": "D33",
+            "pets": "D34",
+            "utilities": "D35",
+            "travel": "D36",
+            "debt": "D37",
+            "other": "D38",
+            "custom category 1": "D39",
+            "custom category 2": "D40",
+            "custom category 3": "D41",
+            },
+            "income": {
+            "savings": "J28",
+            "paycheck": "J29",
+            "bonus": "J30",
+            "interest": "J31",
+            "other": "J32",
+            "custom category": "J33",
+            },
+        }
+        
         logger.info("ToolKit initialized.")
 
     
@@ -122,7 +150,7 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.planned_expenses_range, combine_merged_cells=True)
+            categories = self.worksheet.get(range_name=self.planned_expenses_range)
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -142,7 +170,7 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.planned_income_range, combine_merged_cells=True)
+            categories = self.worksheet.get(range_name=self.planned_income_range)
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -157,6 +185,43 @@ class ToolKit:
         }
     
 
+    
+    @log_tool(logger)
+    def set_planned_expense(self, expense_categ:str, planned_expense: float): 
+        old_planned_expenses = self.get_planned_expenses()["planned_expenses"]
+        #we look for the categ, and get the old expense
+        old_categ_expense = ''
+        for categ in old_planned_expenses: 
+            if categ[0].lower().strip() == expense_categ.lower().strip(): 
+                old_categ_expense = categ[-1]
+                break
+        if old_categ_expense == '':
+            status = "category not found"
+
+        else:  
+            expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                self.worksheet.update_acell(label=expense_cell, value=planned_expense)
+                status = "done"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = e.args[0] #this way the model would explain the error
+                                #because gspread don't separate technical errors
+                                #from practical ones.
+            return {
+                "expense_category": expense_categ,
+                "new_planned_expense": planned_expense, 
+                "old_planned_expense": old_categ_expense, 
+                "status": status
+            } if status == "done" else {"status": status}            
+
+   
+    
 
 
 #=================================================
