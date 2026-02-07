@@ -38,6 +38,10 @@ methods = [
      {"tool": toolkit.set_planned_expense, 
       "desc": "set planned expense for given expense category if defined in the monthly budget spreadsheet"}, 
 
+     {"tool": toolkit.set_planned_income, 
+      "desc": "set planned income for given income category if defined in the monthly budget spreadsheet"}, 
+
+
 
   #============================================
 
