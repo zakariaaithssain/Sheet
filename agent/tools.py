@@ -189,31 +189,33 @@ class ToolKit:
     @log_tool(logger)
     def set_planned_expense(self, expense_categ:str, planned_expense: float): 
         old_planned_expenses = self.get_planned_expenses()["planned_expenses"]
-        #we look for the categ, and get the old expense
-        old_categ_expense = ''
-        for categ in old_planned_expenses: 
-            if categ[0].lower().strip() == expense_categ.lower().strip(): 
-                old_categ_expense = categ[-1]
-                break
-        if old_categ_expense == '':
+        if not old_planned_expenses:
             status = "category not found"
+        else: 
+            #we look for the categ, and get the old expense
+            old_categ_expense = ''
+            for categ in old_planned_expenses: 
+                if categ[0].lower().strip() == expense_categ.lower().strip(): 
+                    old_categ_expense = categ[-1]
+                    break
+            if old_categ_expense == '':
+                status = "category not found"
 
-        else:  
-            expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
-            try: 
-                self.spreadsheet = self.google_client.open(title=self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                self.worksheet.update_acell(label=expense_cell, value=planned_expense)
-                status = "done"
-            except gspread.SpreadsheetNotFound: 
-                status = "spreadsheet not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-            except Exception as e: 
-                status = e.args[0] #this way the model would explain the error
-                                #because gspread don't separate technical errors
-                                #from practical ones.
-            return {
+            else:  
+                try: 
+                    expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
+                    self.spreadsheet = self.google_client.open(title=self.spread_title)
+                    self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                    self.worksheet.update_acell(label=expense_cell, value=planned_expense)
+                    status = "done"
+                except gspread.SpreadsheetNotFound: 
+                    status = "spreadsheet not found"
+                except gspread.WorksheetNotFound: 
+                    status = "worksheet not found"
+                except Exception as e: 
+                    status = e.args[0] 
+                                   
+        return {
                 "expense_category": expense_categ,
                 "new_planned_expense": planned_expense, 
                 "old_planned_expense": old_categ_expense, 
