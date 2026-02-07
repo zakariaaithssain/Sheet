@@ -23,6 +23,14 @@ methods = [
      {"tool": toolkit.set_starting_balance, 
       "desc": "set the starting balance of monthly budget spreadsheet to the given value"}, 
 
+     {"tool": toolkit.get_expenses_categories, 
+      "desc": "get expenses categories defined in the monthly budget spreadsheet"}, 
+
+
+
+
+  #============================================
+
     {"tool":toolkit.create_worksheet, 
      "desc": "create worksheet with given title and headers inside given spreadsheet"},
 
@@ -43,6 +51,9 @@ methods = [
 
     {"tool":toolkit.list_worksheets,
       "desc": "list available worksheets names belonging to given spreadsheet"},
+
+    {"tool":toolkit.list_worksheets,
+      "desc": "list available worksheets names belonging to given spreadsheet"},
     
     {"tool": toolkit.get_worksheet_metadata, 
      "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
@@ -57,7 +68,7 @@ methods = [
       "desc": "get data from given worksheet"},
 
     {"tool":toolkit.get_active_sheets_metadata,
-      "desc": "get metadata, including title, URL, last updated time, for context spreadsheet and worksheet"}, 
+      "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
 
     {"tool":toolkit.set_active_sheet,
       "desc": "set context sheets to given sheets"},
@@ -248,6 +259,9 @@ for method in methods:
 #     "get_worksheet_headers": toolkit.get_worksheet_headers,
 #     "insert_row": toolkit.insert_row,
 #     "get_worksheet_data": toolkit.get_worksheet_data,
+#     "get_active_sheets_metadata": toolkit.get_active_sheets_metadata, 
+#     "set_active_sheet": toolkit.set_active_sheet,
+#     "get_today_date": toolkit.get_today_date,
 #     "get_active_sheets_metadata": toolkit.get_active_sheets_metadata, 
 #     "set_active_sheet": toolkit.set_active_sheet,
 #     "get_today_date": toolkit.get_today_date,
