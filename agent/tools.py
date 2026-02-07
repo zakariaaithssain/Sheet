@@ -32,29 +32,30 @@ class ToolKit:
 
         self.categs_map = {
             "expenses": {
-            "food": "D28",
-            "gifts": "D29",
-            "health/medical": "D30",
-            "home": "D31",
-            "transportation": "D32",
-            "personal": "D33",
-            "pets": "D34",
-            "utilities": "D35",
-            "travel": "D36",
-            "debt": "D37",
-            "other": "D38",
-            "custom category 1": "D39",
-            "custom category 2": "D40",
-            "custom category 3": "D41",
-            },
+                    "food": "D28",
+                    "gifts": "D29",
+                    "health/medical": "D30",
+                    "home": "D31",
+                    "transportation": "D32",
+                    "personal": "D33",
+                    "pets": "D34",
+                    "utilities": "D35",
+                    "travel": "D36",
+                    "debt": "D37",
+                    "other": "D38",
+                    "custom category 1": "D39",
+                    "custom category 2": "D40",
+                    "custom category 3": "D41",
+                    },
+                    
             "income": {
-            "savings": "J28",
-            "paycheck": "J29",
-            "bonus": "J30",
-            "interest": "J31",
-            "other": "J32",
-            "custom category": "J33",
-            },
+                    "savings": "J28",
+                    "paycheck": "J29",
+                    "bonus": "J30",
+                    "interest": "J31",
+                    "other": "J32",
+                    "custom category": "J33",
+                    },
         }
         
         logger.info("ToolKit initialized.")
@@ -220,7 +221,46 @@ class ToolKit:
                 "new_planned_expense": planned_expense, 
                 "old_planned_expense": old_categ_expense, 
                 "status": status
+            } if status == "done" else {"status": status}
+
+
+    @log_tool(logger)
+    def set_planned_income(self, income_categ:str, planned_income: float): 
+        old_planned_incomes = self.get_planned_incomes()["planned_incomes"]
+        if not old_planned_incomes:
+            status = "category not found"
+        else: 
+            #we look for the categ, and get the old expense
+            old_categ_income = ''
+            for categ in old_planned_incomes: 
+                if categ[0].lower().strip() == income_categ.lower().strip(): 
+                    old_categ_income = categ[-1]
+                    break
+            if old_categ_income == '':
+                status = "category not found"
+
+            else:  
+                try: 
+                    income_cell = self.categs_map["income"][income_categ.lower().strip()]
+                    self.spreadsheet = self.google_client.open(title=self.spread_title)
+                    self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                    self.worksheet.update_acell(label=income_cell, value=planned_income)
+                    status = "done"
+                except gspread.SpreadsheetNotFound: 
+                    status = "spreadsheet not found"
+                except gspread.WorksheetNotFound: 
+                    status = "worksheet not found"
+                except Exception as e: 
+                    status = e.args[0] 
+                                   
+        return {
+                "income_category": income_categ,
+                "new_planned_income": planned_income, 
+                "old_planned_income": old_categ_income, 
+                "status": status
             } if status == "done" else {"status": status}            
+
+            
 
    
     
