@@ -41,6 +41,16 @@ methods = [
      {"tool": toolkit.set_planned_income, 
       "desc": "set planned income for given income category if defined in the monthly budget spreadsheet"}, 
 
+     {"tool": toolkit.get_renameable_categs, 
+      "desc": "get income and expenses categories that can be renamed. the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
+
+       {"tool": toolkit.get_number_empty_categs_places, 
+      "desc": "get the number of places left to add new expenses and income categories by the user"}, 
+
+
+
+
+
 
 
   #============================================
