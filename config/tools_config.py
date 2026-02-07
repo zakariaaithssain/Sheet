@@ -26,6 +26,9 @@ methods = [
      {"tool": toolkit.get_expenses_categories, 
       "desc": "get expenses categories defined in the monthly budget spreadsheet"}, 
 
+     {"tool": toolkit.get_income_categories, 
+      "desc": "get income categories defined in the monthly budget spreadsheet"}, 
+
 
 
 
@@ -70,8 +73,8 @@ methods = [
     {"tool":toolkit.get_active_sheets_metadata,
       "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
 
-    {"tool":toolkit.set_active_sheet,
-      "desc": "set context sheets to given sheets"},
+    #{"tool":toolkit.set_active_sheet,
+     # "desc": "set context sheets to given sheets"},
 
     {"tool":toolkit.get_today_date,
       "desc": "get current day's date"},

@@ -21,6 +21,7 @@ class ToolKit:
         self.transactions_title: str = "Transactions"
         self.balance_cell: str = "L8"
         self.expenses_categ_range = "B28:B41"
+        self.income_categ_range = "H28:H33"
         logger.info("ToolKit initialized.")
 
     
@@ -88,6 +89,25 @@ class ToolKit:
 
     
 
+
+    @log_tool(logger)
+    def get_income_categories(self): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            categories = self.worksheet.get(range_name=self.income_categ_range)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0]
+        
+        return {
+            "status": status, 
+            "income_categories": categories if status == "done" else None
+        }
 
 
 
