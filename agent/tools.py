@@ -21,6 +21,7 @@ class ToolKit:
         self.transactions_title: str = "Transactions"
         self.balance_cell: str = "L8"
         self.expenses_categ_range = "B28:B41"
+        self.planned_expenses_range = "B28:D41"
         self.income_categ_range = "H28:H33"
         logger.info("ToolKit initialized.")
 
@@ -109,6 +110,25 @@ class ToolKit:
             "income_categories": categories if status == "done" else None
         }
 
+
+    @log_tool(logger)
+    def get_planned_expenses(self): 
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+            categories = self.worksheet.get(range_name=self.planned_expenses_range, combine_merged_cells=True)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = e.args[0]
+        
+        return {
+            "status": status, 
+            "planned_expenses": categories if status == "done" else None
+        }
 
 
 

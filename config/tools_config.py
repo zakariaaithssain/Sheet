@@ -29,6 +29,9 @@ methods = [
      {"tool": toolkit.get_income_categories, 
       "desc": "get income categories defined in the monthly budget spreadsheet"}, 
 
+     {"tool": toolkit.get_planned_expenses, 
+      "desc": "get planned expense per category defined in the monthly budget spreadsheet"}, 
+
 
 
 
