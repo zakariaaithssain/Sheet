@@ -32,31 +32,51 @@ class ToolKit:
 
         self.categs_map = {
             "expenses": {
-                    "food": "D28",
-                    "gifts": "D29",
-                    "health/medical": "D30",
-                    "home": "D31",
-                    "transportation": "D32",
-                    "personal": "D33",
-                    "pets": "D34",
-                    "utilities": "D35",
-                    "travel": "D36",
-                    "debt": "D37",
-                    "other": "D38",
-                    "custom category 1": "D39",
-                    "custom category 2": "D40",
-                    "custom category 3": "D41",
-                    },
-                    
+                "food": "D28",
+                "gifts": "D29",
+                "health/medical": "D30",
+                "home": "D31",
+                "transportation": "D32",
+                "personal": "D33",
+                "pets": "D34",
+                "utilities": "D35",
+                "travel": "D36",
+                "debt": "D37",
+                "other": "D38",
+                #initial empty places to add new categs
+                "empty": [
+                {"cell": "B39", "planned_expense": "D39"},
+                {"cell": "B40", "planned_expense": "D40"},
+                {"cell": "B41", "planned_expense": "D41"}
+                ],
+
+                #when we add a new categ, it becomes renameable. add only the name
+                "renameable": []
+                },
+                
             "income": {
                     "savings": "J28",
                     "paycheck": "J29",
                     "bonus": "J30",
                     "interest": "J31",
                     "other": "J32",
-                    "custom category": "J33",
+
+                    #only one place initial place to add new income categ
+                    "empty": [
+                        {"cell": "H33", "planned_income": "J33"}
+                        ],
+
+                    #add only the name
+                    "renameable": []
                     },
         }
+
+
+        self.renameable_expense_categs = self.categs_map["expenses"]["renameable"]
+        self.empty_expense_categs_places = self.categs_map["expenses"]["empty"]
+
+        self.renameable_income_categs = self.categs_map["income"]["renameable"]
+        self.empty_income_categs_places = self.categs_map["income"]["empty"]
         
         logger.info("ToolKit initialized.")
 
@@ -258,7 +278,54 @@ class ToolKit:
                 "new_planned_income": planned_income, 
                 "old_planned_income": old_categ_income, 
                 "status": status
-            } if status == "done" else {"status": status}            
+            } if status == "done" else {"status": status}      
+
+
+    @log_tool(logger)
+    def get_renameable_categs(self):
+        return {"renameable_expenses_categories": self.renameable_expense_categs, 
+                "renameable_income_categories": self.renameable_income_categs}
+    
+    @log_tool(logger)
+    def get_number_empty_categs_places(self):
+        return {"empty_places_for_expenses_categories": len(self.empty_expense_categs_places), 
+                "empty_places_for_income_categories": len(self.empty_income_categs_places)}
+
+
+
+    @log_tool(logger)
+    def add_new_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
+        empty_places = self.get_renameable_expenses_categs()["empty_places_to_add_new_categs"]
+        if empty_places == 0: 
+            status = "no empty places left"
+        else: 
+            try: 
+                categ_name_cell = self.categs_map["expenses"][self.empty_expense_categs_places.pop()]["cell"]
+                planned_expense_cell = self.categs_map["expenses"][self.empty_expense_categs_places]["planned_expense"]
+
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #create categ name
+                self.worksheet.update_acell(label=categ_name_cell, value=categ_name)
+                #add planned expense: 
+                self.worksheet.update_acell(label=planned_expense_cell, value=planned_expense)
+                status = "done"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = e.args[0] 
+            
+            return {"status": status, 
+                    "new_categ_name": categ_name, 
+                    "new_categ_planned_expense": planned_expense, 
+                    "empty_places_left": len(self.empty_expense_categs_places)} if status == "done" else {"status": status}
+
+
+
+
+              
 
             
 
