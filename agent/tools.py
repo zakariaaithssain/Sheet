@@ -308,7 +308,9 @@ class ToolKit:
 
     @log_tool(logger)
     def create_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
-        if categ_name.lower().strip() in self.get_expenses_categories()["expenses_categories"]: 
+        if categ_name.lower().strip().startswith("empty"): 
+            status = "category name cannot start with prefix 'empty'"
+        elif categ_name.lower().strip() in self.get_expenses_categories()["expenses_categories"]: 
             status = "category already exists"
             
         elif not len(self.empty_expense_categs_places): 
@@ -350,7 +352,10 @@ class ToolKit:
 
     @log_tool(logger)
     def create_income_categ(self, categ_name: str, planned_income:float = 0): 
-        if categ_name.lower().strip() in self.get_income_categories()["income_categories"]: 
+        if categ_name.lower().strip().startswith("empty"): 
+            status = "category name cannot start with prefix 'empty'"
+            
+        elif categ_name.lower().strip() in self.get_income_categories()["income_categories"]: 
             status = "category already exists"
 
         elif not len(self.empty_income_categs_places): 
