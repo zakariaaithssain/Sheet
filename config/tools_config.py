@@ -47,9 +47,11 @@ methods = [
      {"tool": toolkit.get_number_empty_categs_places, 
       "desc": "get the number of places left to add new expenses and income categories by the user"}, 
 
-     {"tool": toolkit.add_new_expenses_categ, 
-      "desc": "add new custom expenses category if possible"}, 
+     {"tool": toolkit.create_expenses_categ, 
+      "desc": "add new custom expenses category if possible. the maximum is 3"}, 
 
+     {"tool": toolkit.create_income_categ, 
+      "desc": "add new custom income category if possible. the maximum is 1"}, 
 
 
 

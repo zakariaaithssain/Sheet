@@ -94,7 +94,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e) #this way the model would explain the error
+            status = f"internal error: {e}" #this way the model would explain the error
                             #because gspread don't separate technical errors
                             #from practical ones.
         return {
@@ -116,7 +116,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e) 
+            status = f"internal error: {e}" 
         return {
             "status": status, 
             "balance": balance if status == "done" else None
@@ -129,14 +129,14 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.expenses_categ_range)
+            categories = [categ[0].lower().strip() for categ in self.worksheet.get(range_name=self.expenses_categ_range)]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
         
         return {
             "status": status, 
@@ -151,14 +151,14 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.income_categ_range)
+            categories = [categ[0].lower().strip() for categ in self.worksheet.get(range_name=self.income_categ_range)]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
         
         return {
             "status": status, 
@@ -171,18 +171,18 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.planned_expenses_range)
+            expenses = self.worksheet.get(range_name=self.planned_expenses_range)
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
         
         return {
             "status": status, 
-            "planned_expenses": categories if status == "done" else None
+            "planned_expenses": expenses if status == "done" else None
         }
 
 
@@ -191,18 +191,18 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = self.worksheet.get(range_name=self.planned_income_range)
+            incomes = self.worksheet.get(range_name=self.planned_income_range)
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
         
         return {
             "status": status, 
-            "planned_incomes": categories if status == "done" else None
+            "planned_incomes": incomes if status == "done" else None
         }
     
 
@@ -211,7 +211,7 @@ class ToolKit:
     def set_planned_expense(self, expense_categ:str, planned_expense: float): 
         old_planned_expenses = self.get_planned_expenses()["planned_expenses"]
         if not old_planned_expenses:
-            status = "category not found"
+            status = "no categories found"
         else: 
             #we look for the categ, and get the old expense
             old_categ_expense = ''
@@ -234,7 +234,7 @@ class ToolKit:
                 except gspread.WorksheetNotFound: 
                     status = "worksheet not found"
                 except Exception as e: 
-                    status = str(e) 
+                    status = f"internal error: {e}" 
                                    
         return {
                 "expense_category": expense_categ,
@@ -248,7 +248,7 @@ class ToolKit:
     def set_planned_income(self, income_categ:str, planned_income: float): 
         old_planned_incomes = self.get_planned_incomes()["planned_incomes"]
         if not old_planned_incomes:
-            status = "category not found"
+            status = "no categories found"
         else: 
             #we look for the categ, and get the old expense
             old_categ_income = ''
@@ -271,7 +271,7 @@ class ToolKit:
                 except gspread.WorksheetNotFound: 
                     status = "worksheet not found"
                 except Exception as e: 
-                    status = str(e) 
+                    status = f"internal error: {e}" 
                                    
         return {
                 "income_category": income_categ,
@@ -294,8 +294,11 @@ class ToolKit:
 
 
     @log_tool(logger)
-    def add_new_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
-        if not len(self.empty_expense_categs_places): 
+    def create_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
+        if categ_name.lower().strip() in self.get_expenses_categories()["expenses_categories"]: 
+            status = "category already exists"
+            
+        elif not len(self.empty_expense_categs_places): 
             status = "no places left for new expenses categories"
         else: 
             try: 
@@ -321,12 +324,52 @@ class ToolKit:
             except gspread.WorksheetNotFound: 
                 status = "worksheet not found"
             except Exception as e: 
-                status = str(e) 
+                status = f"internal error: {e}" 
             
-            return {"status": status, 
-                    "new_categ_name": categ_name, 
-                    "new_categ_planned_expense": planned_expense, 
-                    "empty_places_left": len(self.empty_expense_categs_places)} if status == "done" else {"status": status}
+        return {"status": status, 
+                "new_categ_name": categ_name, 
+                "new_categ_planned_expense": planned_expense, 
+                "empty_places_left": len(self.empty_expense_categs_places)} if status == "done" else {"status": status}
+
+
+
+    @log_tool(logger)
+    def create_income_categ(self, categ_name: str, planned_income:float = 0): 
+        if categ_name.lower().strip() in self.get_income_categories()["income_categories"]: 
+            status = "category already exists"
+
+        elif not len(self.empty_income_categs_places): 
+            status = "no places left for new income categories"
+        else: 
+            try: 
+                # to make sure to add new categs exactly below the existing ones
+                self.empty_income_categs_places.sort(key=lambda place: place["name_cell"], reverse=True)
+                #we should remove it from empty places list
+                place = self.empty_income_categs_places.pop()
+
+                categ_name_cell = place["name_cell"]
+                planned_income_cell = place["planned_income_cell"]
+
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #create categ name
+                self.worksheet.update_acell(categ_name_cell, value=categ_name)
+                #add the new categ to renameable categs list
+                self.renameable_income_categs.append(categ_name.lower().strip())
+                #add planned income: 
+                self.worksheet.update_acell(planned_income_cell, value=planned_income)
+                status = "done"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "new_categ_name": categ_name, 
+                "new_categ_planned_income": planned_income, 
+                "empty_places_left": len(self.empty_income_categs_places)} if status == "done" else {"status": status}
 
 
 
@@ -438,7 +481,7 @@ class ToolKit:
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except Exception as e: 
-            status = str(e) 
+            status = f"internal error: {e}" 
         return {
         "worksheet": title,
         "status": status,
@@ -456,7 +499,7 @@ class ToolKit:
             status = "spreadsheet not found"
         
         except Exception as e: 
-                    status = str(e)
+                    status = f"internal error: {e}"
 
         return {"spreadsheet": title, 
                 "status": status}
@@ -469,7 +512,7 @@ class ToolKit:
             spreadsheets_names = [ s["name"] for s in spreadsheets]
             status = "done"
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
 
         return {
             "status": status, 
@@ -507,7 +550,7 @@ class ToolKit:
             status = "spreadsheet not found"
 
         except Exception as e: 
-            status = str(e)
+            status = f"internal error: {e}"
 
         return {
             "status": status, 
@@ -561,7 +604,7 @@ class ToolKit:
             status = "spreadsheet not found"
             headers = None
         except Exception as e: 
-            status = str(e) 
+            status = f"internal error: {e}" 
             headers = None
         
         return {"worksheet": title, 
@@ -601,7 +644,7 @@ class ToolKit:
             status = "spreadsheet not found"
 
         except Exception as e: 
-            status = str(e) 
+            status = f"internal error: {e}" 
         
         return {"worksheet": title, 
                 "spreadsheet": spreadsheet, 
@@ -632,7 +675,7 @@ class ToolKit:
             data = None
 
         except Exception as e: 
-            status = str(e) 
+            status = f"internal error: {e}" 
             data = None
 
         
