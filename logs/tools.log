@@ -1,2 +1,43 @@
-2026-02-07 10:17:32,952 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
-2026-02-07 10:17:37,095 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done
+2026-02-08 18:27:16,706 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
+2026-02-08 18:27:19,799 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_starting_balance | call args: None
+2026-02-08 18:27:29,792 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_starting_balance, call args: {'balance': 3500.0}
+2026-02-08 18:27:29,792 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
+2026-02-08 18:27:33,065 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_starting_balance | call args: None
+2026-02-08 18:27:36,238 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: set_starting_balance | call args: {'balance': 3500.0}
+2026-02-08 18:28:19,763 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_expenses_categories, call args: None
+2026-02-08 18:28:19,767 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_income_categories, call args: None
+2026-02-08 18:28:22,951 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_expenses_categories | call args: None
+2026-02-08 18:28:23,020 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_income_categories | call args: None
+2026-02-08 18:29:56,885 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_planned_incomes, call args: None
+2026-02-08 18:29:56,888 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_planned_expenses, call args: None
+2026-02-08 18:29:59,437 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_planned_incomes | call args: None
+2026-02-08 18:29:59,513 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_planned_expenses | call args: None
+2026-02-08 18:31:55,715 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_planned_expense, call args: {'expense_categ': 'health/medical', 'planned_expense': 500.0}
+2026-02-08 18:31:55,716 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_planned_expenses, call args: None
+2026-02-08 18:31:55,718 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: create_expenses_categ, call args: {'categ_name': 'school', 'planned_expense': 350.0}
+2026-02-08 18:31:55,718 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_expenses_categories, call args: None
+2026-02-08 18:31:55,719 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_planned_income, call args: {'income_categ': 'savings', 'planned_income': 100.0}
+2026-02-08 18:31:55,721 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_planned_incomes, call args: None
+2026-02-08 18:31:55,723 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_planned_expense, call args: {'expense_categ': 'food', 'planned_expense': 500.0}
+2026-02-08 18:31:55,723 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_planned_expenses, call args: None
+2026-02-08 18:31:55,725 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: create_income_categ, call args: {'categ_name': 'gouv', 'planned_income': 0.0}
+2026-02-08 18:31:55,725 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_income_categories, call args: None
+2026-02-08 18:31:57,927 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_planned_expenses | call args: None
+2026-02-08 18:31:58,276 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_expenses_categories | call args: None
+2026-02-08 18:31:58,281 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_planned_expenses | call args: None
+2026-02-08 18:31:58,901 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_income_categories | call args: None
+2026-02-08 18:31:58,906 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_planned_incomes | call args: None
+2026-02-08 18:32:00,963 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: set_planned_expense | call args: {'expense_categ': 'food', 'planned_expense': 500.0}
+2026-02-08 18:32:01,576 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: set_planned_expense | call args: {'expense_categ': 'health/medical', 'planned_expense': 500.0}
+2026-02-08 18:32:01,818 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: set_planned_income | call args: {'income_categ': 'savings', 'planned_income': 100.0}
+2026-02-08 18:32:02,473 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: create_income_categ | call args: {'categ_name': 'gouv', 'planned_income': 0.0}
+2026-02-08 18:32:02,701 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: create_expenses_categ | call args: {'categ_name': 'school', 'planned_expense': 350.0}
+2026-02-08 18:33:07,661 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: count_empty_categs_places, call args: None
+2026-02-08 18:36:17,280 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: create_income_categ, call args: {'categ_name': 'hanota', 'planned_income': 210.0}
+2026-02-08 18:36:17,280 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_income_categories, call args: None
+2026-02-08 18:36:17,282 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: create_expenses_categ, call args: {'categ_name': 'car', 'planned_expense': 0.0}
+2026-02-08 18:36:17,282 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_expenses_categories, call args: None
+2026-02-08 18:36:20,030 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_expenses_categories | call args: None
+2026-02-08 18:36:20,037 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: get_income_categories | call args: None
+2026-02-08 18:36:20,037 [WARNING] tools: logging_config.py:wrapper:20 | tool completed with status=no places left for new income categories | name: create_income_categ | call args: {'categ_name': 'hanota', 'planned_income': 210.0}
+2026-02-08 18:36:23,515 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: create_expenses_categ | call args: {'categ_name': 'car', 'planned_expense': 0.0}
