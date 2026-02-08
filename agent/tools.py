@@ -45,12 +45,12 @@ class ToolKit:
                 "other": "D38",
                 #initial empty places to add new categs
                 "empty": [
-                {"cell": "B39", "planned_expense": "D39"},
-                {"cell": "B40", "planned_expense": "D40"},
-                {"cell": "B41", "planned_expense": "D41"}
+                {"name_cell": "B39", "planned_expense_cell": "D39"},
+                {"name_cell": "B40", "planned_expense_cell": "D40"},
+                {"name_cell": "B41", "planned_expense_cell": "D41"}
                 ],
 
-                #when we add a new categ, it becomes renameable. add only the name
+                #when we add a new categ in an empty place, it becomes renameable. add only the name
                 "renameable": []
                 },
                 
@@ -61,9 +61,9 @@ class ToolKit:
                     "interest": "J31",
                     "other": "J32",
 
-                    #only one place initial place to add new income categ
+                    #only one initial place to add new income categ
                     "empty": [
-                        {"cell": "H33", "planned_income": "J33"}
+                        {"name_cell": "H33", "planned_income_cell": "J33"}
                         ],
 
                     #add only the name
@@ -72,11 +72,11 @@ class ToolKit:
         }
 
 
-        self.renameable_expense_categs = self.categs_map["expenses"]["renameable"]
-        self.empty_expense_categs_places = self.categs_map["expenses"]["empty"]
+        self.renameable_expense_categs:list = self.categs_map["expenses"]["renameable"]
+        self.empty_expense_categs_places:list = self.categs_map["expenses"]["empty"]
 
-        self.renameable_income_categs = self.categs_map["income"]["renameable"]
-        self.empty_income_categs_places = self.categs_map["income"]["empty"]
+        self.renameable_income_categs:list = self.categs_map["income"]["renameable"]
+        self.empty_income_categs_places:list = self.categs_map["income"]["empty"]
         
         logger.info("ToolKit initialized.")
 
@@ -94,7 +94,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0] #this way the model would explain the error
+            status = str(e) #this way the model would explain the error
                             #because gspread don't separate technical errors
                             #from practical ones.
         return {
@@ -116,7 +116,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0] 
+            status = str(e) 
         return {
             "status": status, 
             "balance": balance if status == "done" else None
@@ -136,7 +136,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
         
         return {
             "status": status, 
@@ -158,7 +158,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
         
         return {
             "status": status, 
@@ -178,7 +178,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
         
         return {
             "status": status, 
@@ -198,7 +198,7 @@ class ToolKit:
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
         
         return {
             "status": status, 
@@ -234,7 +234,7 @@ class ToolKit:
                 except gspread.WorksheetNotFound: 
                     status = "worksheet not found"
                 except Exception as e: 
-                    status = e.args[0] 
+                    status = str(e) 
                                    
         return {
                 "expense_category": expense_categ,
@@ -271,7 +271,7 @@ class ToolKit:
                 except gspread.WorksheetNotFound: 
                     status = "worksheet not found"
                 except Exception as e: 
-                    status = e.args[0] 
+                    status = str(e) 
                                    
         return {
                 "income_category": income_categ,
@@ -295,27 +295,33 @@ class ToolKit:
 
     @log_tool(logger)
     def add_new_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
-        empty_places = self.get_renameable_expenses_categs()["empty_places_to_add_new_categs"]
-        if empty_places == 0: 
-            status = "no empty places left"
+        if not len(self.empty_expense_categs_places): 
+            status = "no places left for new expenses categories"
         else: 
             try: 
-                categ_name_cell = self.categs_map["expenses"][self.empty_expense_categs_places.pop()]["cell"]
-                planned_expense_cell = self.categs_map["expenses"][self.empty_expense_categs_places]["planned_expense"]
+                # to make sure to add new categs exactly below the existing ones
+                self.empty_expense_categs_places.sort(key=lambda place: place["name_cell"], reverse=True)
+                #we should remove it from empty places list
+                place = self.empty_expense_categs_places.pop()
+
+                categ_name_cell = place["name_cell"]
+                planned_expense_cell = place["planned_expense_cell"]
 
                 self.spreadsheet = self.google_client.open(title=self.spread_title)
                 self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
                 #create categ name
-                self.worksheet.update_acell(label=categ_name_cell, value=categ_name)
+                self.worksheet.update_acell(categ_name_cell, value=categ_name)
+                #add the new categ to renameable categs list
+                self.renameable_expense_categs.append(categ_name.lower().strip())
                 #add planned expense: 
-                self.worksheet.update_acell(label=planned_expense_cell, value=planned_expense)
+                self.worksheet.update_acell(planned_expense_cell, value=planned_expense)
                 status = "done"
             except gspread.SpreadsheetNotFound: 
                 status = "spreadsheet not found"
             except gspread.WorksheetNotFound: 
                 status = "worksheet not found"
             except Exception as e: 
-                status = e.args[0] 
+                status = str(e) 
             
             return {"status": status, 
                     "new_categ_name": categ_name, 
@@ -432,7 +438,7 @@ class ToolKit:
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except Exception as e: 
-            status = e.args[0] 
+            status = str(e) 
         return {
         "worksheet": title,
         "status": status,
@@ -450,7 +456,7 @@ class ToolKit:
             status = "spreadsheet not found"
         
         except Exception as e: 
-                    status = e.args[0]
+                    status = str(e)
 
         return {"spreadsheet": title, 
                 "status": status}
@@ -463,7 +469,7 @@ class ToolKit:
             spreadsheets_names = [ s["name"] for s in spreadsheets]
             status = "done"
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
 
         return {
             "status": status, 
@@ -501,7 +507,7 @@ class ToolKit:
             status = "spreadsheet not found"
 
         except Exception as e: 
-            status = e.args[0]
+            status = str(e)
 
         return {
             "status": status, 
@@ -555,7 +561,7 @@ class ToolKit:
             status = "spreadsheet not found"
             headers = None
         except Exception as e: 
-            status = e.args[0] 
+            status = str(e) 
             headers = None
         
         return {"worksheet": title, 
@@ -595,7 +601,7 @@ class ToolKit:
             status = "spreadsheet not found"
 
         except Exception as e: 
-            status = e.args[0] 
+            status = str(e) 
         
         return {"worksheet": title, 
                 "spreadsheet": spreadsheet, 
@@ -626,7 +632,7 @@ class ToolKit:
             data = None
 
         except Exception as e: 
-            status = e.args[0] 
+            status = str(e) 
             data = None
 
         
