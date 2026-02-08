@@ -133,7 +133,7 @@ class ToolKit:
 
             categories = [categ[0].lower().strip() 
                           for categ in self.worksheet.get(range_name=self.expenses_categ_range)
-                          if 'empty' not in categ[0].lower().strip()]
+                          if not categ[0].lower().strip().startswith("empty")]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -158,7 +158,7 @@ class ToolKit:
 
             categories = [categ[0].lower().strip() 
                           for categ in self.worksheet.get(range_name=self.income_categ_range) 
-                          if 'empty' not in categ[0].lower().strip()]
+                          if not categ[0].lower().strip().startswith("empty")]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -181,7 +181,7 @@ class ToolKit:
             expenses_range = self.worksheet.get(range_name=self.planned_expenses_range)
 
             expenses = [expense for expense in expenses_range
-                        if 'empty' not in expense[0].lower().strip()]
+                        if not expense[0].lower().strip().startswith("empty")]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -204,7 +204,7 @@ class ToolKit:
             income_range = self.worksheet.get(range_name=self.planned_income_range)
 
             incomes = [income for income in income_range
-                        if 'empty' not in income[0].lower().strip()]
+                        if not income[0].lower().strip().startswith("empty")]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -457,8 +457,19 @@ class ToolKit:
                 "new_categ_name": new_name, 
                 "old_categ_name": old_name, 
                 } 
+    
 
 
+    @log_tool(logger)
+    def delete_user_expense_categ(self): 
+        #this is just renaming the categ to empty
+        pass
+
+
+    @log_tool(logger)
+    def delete_user_income_categ(self): 
+        #this is just renaming the categ to empty
+        pass
 
 
 
