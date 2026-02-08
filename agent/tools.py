@@ -52,8 +52,8 @@ class ToolKit:
                 {"name_cell": "B41", "planned_expense_cell": "D41"}
                 ],
 
-                #when we create a new categ, it becomes renameable, add only "name_cell":"the label A1 notation", so it can be renamed
-                "renameable": []
+                #when we create a new categ, it becomes renameable, add only "name":"the A1 notation of the categ cell" (e.g "zeco": "B41") so it can be renamed
+                "renameable": {}
                 },
                 
             "income": {
@@ -68,16 +68,16 @@ class ToolKit:
                         {"name_cell": "H33", "planned_income_cell": "J33"}
                         ],
 
-                    "renameable": []
+                    "renameable": {}
                     },
         }
 
 
-        self.renameable_expense_categs:list = self.categs_map["expenses"]["renameable"]
-        self.empty_expense_categs_places:list = self.categs_map["expenses"]["empty"]
+        self.renameable_expense_categs:dict = self.categs_map["expenses"]["renameable"]
+        self.empty_expense_categs_places:list[dict] = self.categs_map["expenses"]["empty"]
 
-        self.renameable_income_categs:list = self.categs_map["income"]["renameable"]
-        self.empty_income_categs_places:list = self.categs_map["income"]["empty"]
+        self.renameable_income_categs:dict = self.categs_map["income"]["renameable"]
+        self.empty_income_categs_places:list[dict] = self.categs_map["income"]["empty"]
         
         logger.info("ToolKit initialized.")
 
@@ -202,7 +202,7 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
             income_range = self.worksheet.get(range_name=self.planned_income_range)
-            
+
             incomes = [income for income in income_range
                         if 'empty' not in income[0].lower().strip()]
             status = "done"
@@ -296,11 +296,11 @@ class ToolKit:
 
     @log_tool(logger)
     def get_renameable_categs(self):
-        return {"renameable_expenses_categories": self.renameable_expense_categs, 
-                "renameable_income_categories": self.renameable_income_categs}
+        return {"renameable_expenses_categories": self.renameable_expense_categs.keys(), 
+                "renameable_income_categories": self.renameable_income_categs.keys()}
     
     @log_tool(logger)
-    def get_number_empty_categs_places(self):
+    def count_empty_categs_places(self):
         return {"empty_places_for_expenses_categories": len(self.empty_expense_categs_places), 
                 "empty_places_for_income_categories": len(self.empty_income_categs_places)}
 
@@ -327,8 +327,10 @@ class ToolKit:
                 self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
                 #create categ name
                 self.worksheet.update_acell(categ_name_cell, value=categ_name)
-                #add the new categ to renameable categs list
-                self.renameable_expense_categs.append(categ_name.lower().strip())
+                #add the new categ to renameable categs dict: {"categ": "A1 notation for its pos"}
+                self.renameable_expense_categs[categ_name] = categ_name_cell
+                #add categ to categ:expense_pos map to be able to change planned expense
+                self.categs_map["expenses"][categ_name] = planned_expense_cell
                 #add planned expense: 
                 self.worksheet.update_acell(planned_expense_cell, value=planned_expense)
                 status = "done"
@@ -338,7 +340,7 @@ class ToolKit:
                 status = "worksheet not found"
             except Exception as e: 
                 status = f"internal error: {e}" 
-            
+                
         return {"status": status, 
                 "new_categ_name": categ_name, 
                 "new_categ_planned_expense": planned_expense, 
@@ -367,8 +369,10 @@ class ToolKit:
                 self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
                 #create categ name
                 self.worksheet.update_acell(categ_name_cell, value=categ_name)
-                #add the new categ to renameable categs list
-                self.renameable_income_categs.append(categ_name.lower().strip())
+                #add the new categ and its position to renameable categs dict
+                self.renameable_income_categs[categ_name] = categ_name_cell
+                #add to categs map
+                self.categs_map["income"][categ_name] = planned_income_cell
                 #add planned income: 
                 self.worksheet.update_acell(planned_income_cell, value=planned_income)
                 status = "done"
@@ -383,6 +387,85 @@ class ToolKit:
                 "new_categ_name": categ_name, 
                 "new_categ_planned_income": planned_income, 
                 "empty_places_left": len(self.empty_income_categs_places)} if status == "done" else {"status": status}
+
+
+
+
+    @log_tool(logger)
+    def rename_user_expense_categ(self,old_name:str, new_name: str): 
+        old_name = old_name.lower().strip()
+        new_name == new_name.lower().strip()
+        if old_name not in self.categs_map["expenses"].keys(): 
+            status = "category not found"
+        elif old_name not in self.renameable_expense_categs.keys():
+            status = "system-defined category cannot be renamed"
+        else:
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #remove old name and add new one to renameables dict  
+                name_position = self.renameable_expense_categs.pop(old_name)
+                self.renameable_expense_categs[new_name] = name_position
+                self.worksheet.update_acell(name_position, value=new_name)
+                #remove old and add new to categs-expense map
+                corresp_expense_pos = self.categs_map["expenses"].pop(old_name)
+                self.categs_map["expenses"][new_name] = corresp_expense_pos
+
+                status = "done"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "new_categ_name": new_name, 
+                "old_categ_name": old_name, 
+                } 
+    
+
+    @log_tool(logger)
+    def rename_user_income_categ(self,old_name:str, new_name: str): 
+        old_name = old_name.lower().strip()
+        new_name == new_name.lower().strip()
+        if old_name not in self.categs_map["income"].keys(): 
+            status = "category not found"
+        elif old_name not in self.renameable_income_categs.keys():
+            status = "system-defined category cannot be renamed"
+        else:
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #remove old name and add new one to renameables dict  
+                name_position = self.renameable_income_categs.pop(old_name)
+                self.renameable_income_categs[new_name] = name_position
+                self.worksheet.update_acell(name_position, value=new_name)
+                #remove old and add new to categs-income map
+                corresp_income_pos = self.categs_map["income"].pop(old_name)
+                self.categs_map["income"][new_name] = corresp_income_pos
+
+                status = "done"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "new_categ_name": new_name, 
+                "old_categ_name": old_name, 
+                } 
+
+
+
+
+
+
+
+                
+
 
 
 
