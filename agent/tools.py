@@ -122,6 +122,9 @@ class ToolKit:
             "status": status, 
             "balance": balance if status == "done" else None
         }
+
+        
+
         
 
 
@@ -237,9 +240,10 @@ class ToolKit:
 
             else:  
                 try: 
-                    expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
                     self.spreadsheet = self.google_client.open(title=self.spread_title)
                     self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+
+                    expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
                     self.worksheet.update_acell(label=expense_cell, value=planned_expense)
                     status = "done"
                 except gspread.SpreadsheetNotFound: 
@@ -354,7 +358,7 @@ class ToolKit:
     def create_income_categ(self, categ_name: str, planned_income:float = 0): 
         if categ_name.lower().strip().startswith("empty"): 
             status = "category name cannot start with prefix 'empty'"
-            
+
         elif categ_name.lower().strip() in self.get_income_categories()["income_categories"]: 
             status = "category already exists"
 
@@ -466,16 +470,89 @@ class ToolKit:
 
 
     @log_tool(logger)
-    def delete_user_expense_categ(self): 
-        #this is just renaming the categ to empty
-        pass
-
+    def delete_user_expense_categ(self, category:str): 
+        #this is just renaming the categ to empty, with extra
+        import uuid
+        category = category.lower().strip()
+        if category not in self.categs_map["expenses"].keys(): 
+            status = "category not found"
+        elif category not in self.renameable_expense_categs.keys():
+            status = "system-defined category cannot be deleted"
+        else:
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #first check the calculated expense from the transactions, we cannot delete if its not zero
+                calculated_expense_cell = "E" + self.categs_map["expenses"][category][1:]
+                calculated_expense = self.worksheet.acell(calculated_expense_cell).value
+                value_calculated = float(calculated_expense.replace("$", "").replace(",", "").replace(".", ""))
+                if value_calculated != 0.0: 
+                    status = f"category associated with existing transactions cannot be deleted. expense calculated from associated transactions: {value_calculated}"
+                else: 
+                    #first set its planned expenses to 0
+                    self.set_planned_expense(category, planned_expense=0.0)
+                    #remove from user defined categs 
+                    name_position = self.renameable_expense_categs.pop(category)
+                    #set name to 'empty + uuid' for differenciation
+                    self.worksheet.update_acell(name_position, value=f"empty{uuid.uuid1()}")
+                    #remove from categs map
+                    expense_pos = self.categs_map["expenses"].pop(category)
+                    #add to empty slots 
+                    self.empty_expense_categs_places.append({"name_cell": name_position, "planned_expense_cell": expense_pos})
+                    status = "deleted"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "category_name": category,
+                "empty_categ_slots": len(self.empty_expense_categs_places)} 
+    
 
     @log_tool(logger)
-    def delete_user_income_categ(self): 
-        #this is just renaming the categ to empty
-        pass
-
+    def delete_user_income_categ(self, category:str): 
+        #this is just renaming the categ to empty, with extra
+        import uuid
+        category = category.lower().strip()
+        if category not in self.categs_map["income"].keys(): 
+            status = "category not found"
+        elif category not in self.rename_user_income_categ.keys():
+            status = "system-defined category cannot be deleted"
+        else:
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #first check the calculated income from the transactions, we cannot delete if its not zero
+                calculated_income_cell = "K" + self.categs_map["income"][category][1:]
+                calculated_income = self.worksheet.acell(calculated_income_cell).value
+                value_calculated = float(calculated_income.replace("$", "").replace(",", "").replace(".", ""))
+                if value_calculated != 0.0: 
+                    status = f"category associated with existing transactions cannot be deleted. income calculated from associated transactions: {value_calculated}"
+                else: 
+                    #first set its planned income to 0
+                    self.set_planned_income(category, planned_income=0.0)
+                    #remove from user defined categs 
+                    name_position = self.renameable_income_categs.pop(category)
+                    #set name to 'empty + uuid' for differenciation
+                    self.worksheet.update_acell(name_position, value=f"empty{uuid.uuid1()}")
+                    #remove from categs map
+                    income_pos = self.categs_map["income"].pop(category)
+                    #add to empty slots 
+                    self.empty_income_categs_places.append({"name_cell": name_position, "planned_income_cell": income_pos})
+                    status = "deleted"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "category_name": category,
+                "empty_categ_slots": len(self.empty_income_categs_places)} 
 
 
 
