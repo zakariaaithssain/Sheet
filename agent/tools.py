@@ -6,6 +6,8 @@ import logging
 
 from config.logging_config import log_tool
 
+# NOTE: I chose not to allow modifying the default categs names to avoid problems of wanting to delete one, which will cause problems in the sheet. 
+# so we only allow modifying the user-created categories (3 for expenses and 1 for income) added at the end of the sheet. 
 
 logger = logging.getLogger("tools")
 """ NOTE: Whenever we add a method to this class, to make it a tool that is accessible for the 
@@ -50,7 +52,7 @@ class ToolKit:
                 {"name_cell": "B41", "planned_expense_cell": "D41"}
                 ],
 
-                #when we add a new categ in an empty place, it becomes renameable. add only the name
+                #when we create a new categ, it becomes renameable, add only "name_cell":"the label A1 notation", so it can be renamed
                 "renameable": []
                 },
                 
@@ -66,7 +68,6 @@ class ToolKit:
                         {"name_cell": "H33", "planned_income_cell": "J33"}
                         ],
 
-                    #add only the name
                     "renameable": []
                     },
         }
@@ -129,7 +130,10 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = [categ[0].lower().strip() for categ in self.worksheet.get(range_name=self.expenses_categ_range)]
+
+            categories = [categ[0].lower().strip() 
+                          for categ in self.worksheet.get(range_name=self.expenses_categ_range)
+                          if 'empty' not in categ[0].lower().strip()]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -151,7 +155,10 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            categories = [categ[0].lower().strip() for categ in self.worksheet.get(range_name=self.income_categ_range)]
+
+            categories = [categ[0].lower().strip() 
+                          for categ in self.worksheet.get(range_name=self.income_categ_range) 
+                          if 'empty' not in categ[0].lower().strip()]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -171,7 +178,10 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            expenses = self.worksheet.get(range_name=self.planned_expenses_range)
+            expenses_range = self.worksheet.get(range_name=self.planned_expenses_range)
+
+            expenses = [expense for expense in expenses_range
+                        if 'empty' not in expense[0].lower().strip()]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -191,7 +201,10 @@ class ToolKit:
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            incomes = self.worksheet.get(range_name=self.planned_income_range)
+            income_range = self.worksheet.get(range_name=self.planned_income_range)
+            
+            incomes = [income for income in income_range
+                        if 'empty' not in income[0].lower().strip()]
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
