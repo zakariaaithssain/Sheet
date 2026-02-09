@@ -5,6 +5,9 @@ import datetime
 import logging
 
 from config.logging_config import log_tool
+#TODO: right now, tools are stateless and lose track of the sheet state at each run, attach them to memory. 
+
+
 
 # NOTE: I chose not to allow modifying the default categs names to avoid problems of wanting to delete one, which will cause problems in the sheet. 
 # so we only allow modifying the user-created categories (3 for expenses and 1 for income) added at the end of the sheet. 
@@ -26,10 +29,10 @@ class ToolKit:
 
         self.balance_cell: str = "L8"
 
-        self.expenses_categ_range = "B28:B41"
+        self.expenses_categ_range = "B28:B44"
         self.planned_expenses_range = "B28:D41"
 
-        self.income_categ_range = "H28:H33"
+        self.income_categ_range = "H28:H44"
         self.planned_income_range = "H28:J33"
 
         self.categs_map = {
@@ -53,7 +56,7 @@ class ToolKit:
                 ],
 
                 #when we create a new categ, it becomes renameable, add only "name":"the A1 notation of the categ cell" (e.g "zeco": "B41") so it can be renamed
-                "renameable": {}
+                "renameable": {"gifts": "B29"}
                 },
                 
             "income": {
@@ -71,8 +74,11 @@ class ToolKit:
                     "renameable": {}
                     },
         }
-
-
+        
+        self.map = {}
+        #this sets 'self.map' variable to the map of categories indexes 
+        #self._build_categs_map()
+        
         self.renameable_expense_categs:dict = self.categs_map["expenses"]["renameable"]
         self.empty_expense_categs_places:list[dict] = self.categs_map["expenses"]["empty"]
 
@@ -82,6 +88,34 @@ class ToolKit:
         logger.info("ToolKit initialized.")
 
     
+    #internal tool
+    def _build_categs_map(self): 
+        """
+        should always be called before any change.   
+        create a json schema of expense and income categories with corresponding indexes and save it to self.map
+         """
+        
+        self.spreadsheet = self.google_client.open(self.spread_title)
+        self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+
+        exp_categs = self.worksheet.get_values(range_name= self.expenses_categ_range)
+        exp_map = {}
+        for idx, categ in enumerate(exp_categs, start=28): 
+            if categ[0]:
+                exp_map[categ[0].lower()] = idx
+        self.map["expense"] = exp_map
+        
+        income_categs = self.worksheet.get_values(range_name= self.income_categ_range)
+        income_map = {}
+        for idx, categ in enumerate(income_categs, start=28): 
+            if categ[0]:
+                income_map[categ[0].lower()] = idx
+        self.map["income"] = income_map
+
+
+
+
+
     @log_tool(logger)
     def set_starting_balance(self, balance:float): 
         old_balance = self.get_starting_balance()["balance"]
@@ -130,24 +164,12 @@ class ToolKit:
 
     @log_tool(logger)
     def get_expenses_categories(self): 
-        try: 
-            self.spreadsheet = self.google_client.open(title=self.spread_title)
-            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-
-            categories = [categ[0].lower().strip() 
-                          for categ in self.worksheet.get(range_name=self.expenses_categ_range)
-                          if not categ[0].lower().strip().startswith("empty")]
-            status = "done"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-        except Exception as e: 
-            status = f"internal error: {e}"
+        self._build_categs_map()
+        categories = list(self.map['expense'].keys())
         
         return {
-            "status": status, 
-            "expenses_categories": categories if status == "done" else None
+            "status": "done", 
+            "expenses_categories": categories
         }
 
     
@@ -155,36 +177,31 @@ class ToolKit:
 
     @log_tool(logger)
     def get_income_categories(self): 
-        try: 
-            self.spreadsheet = self.google_client.open(title=self.spread_title)
-            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-
-            categories = [categ[0].lower().strip() 
-                          for categ in self.worksheet.get(range_name=self.income_categ_range) 
-                          if not categ[0].lower().strip().startswith("empty")]
-            status = "done"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-        except Exception as e: 
-            status = f"internal error: {e}"
+        self._build_categs_map()
+        categories = list(self.map['income'].keys())
         
         return {
-            "status": status, 
-            "income_categories": categories if status == "done" else None
+            "status": "done", 
+            "income_categories": categories
         }
+
+
 
 
     @log_tool(logger)
     def get_planned_expenses(self): 
         try: 
+            
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            expenses_range = self.worksheet.get(range_name=self.planned_expenses_range)
 
-            expenses = [expense for expense in expenses_range
-                        if not expense[0].lower().strip().startswith("empty")]
+            self._build_categs_map()
+            categ_rows = self.map['expense']
+            #the row index of the very last category to define the A1 notation range
+            max_row_idx = max(categ_rows.values())
+            range_name = f"B28:D{max_row_idx}"
+            expenses_range = self.worksheet.get(range_name)
+            expenses = {expense[0]:expense[2] for expense in expenses_range}
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -199,15 +216,21 @@ class ToolKit:
         }
 
 
+
+
     @log_tool(logger)
     def get_planned_incomes(self): 
         try: 
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-            income_range = self.worksheet.get(range_name=self.planned_income_range)
 
-            incomes = [income for income in income_range
-                        if not income[0].lower().strip().startswith("empty")]
+            self._build_categs_map()
+            categ_rows = self.map['income']
+            #the row index of the very last category to define the A1 notation range
+            max_row_idx = max(categ_rows.values())
+            range_name = f"H28:J{max_row_idx}"
+            income_range = self.worksheet.get(range_name)
+            incomes = {income[0]:income[2] for income in income_range}
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -511,6 +534,53 @@ class ToolKit:
                 "category_name": category,
                 "empty_categ_slots": len(self.empty_expense_categs_places)} 
     
+
+
+
+    @log_tool(logger)
+    def delete_expense_categ(self, category:str): 
+        category = category.lower().strip()
+        if category not in self.categs_map["expenses"].keys(): 
+            status = "category not found"
+        
+        else:
+            try: 
+                self.spreadsheet = self.google_client.open(title=self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
+                #first check the calculated expense from the transactions, we cannot delete if its not zero
+                calculated_expense_cell = "E" + self.categs_map["expenses"][category][1:]
+                calculated_expense = self.worksheet.acell(calculated_expense_cell).value
+                value_calculated = float(calculated_expense.replace("$", "").replace(",", "").replace(".", ""))
+                if value_calculated != 0.0: 
+                    status = f"category associated with existing transactions cannot be deleted. expense calculated from associated transactions: {value_calculated}"
+                else: 
+                    #first set its planned expenses to 0
+                    self.set_planned_expense(category, planned_expense=0.0)
+                    #remove from user defined categs 
+                    name_position = self.renameable_expense_categs.pop(category)
+                    #empty cell
+                    self.worksheet.update_acell(name_position, value="")
+                    #remove from categs map
+                    expense_pos = self.categs_map["expenses"].pop(category)
+                    #add to empty slots 
+                    self.empty_expense_categs_places.append({"name_cell": name_position, "planned_expense_cell": expense_pos})
+                    self.worksheet.sort((2, 'asc'), range="B28:C40")
+                    status = "deleted"
+            except gspread.SpreadsheetNotFound: 
+                status = "spreadsheet not found"
+            except gspread.WorksheetNotFound: 
+                status = "worksheet not found"
+            except Exception as e: 
+                status = f"internal error: {e}" 
+            
+        return {"status": status, 
+                "category_name": category,
+                "empty_categ_slots": len(self.empty_expense_categs_places)} 
+    
+
+        
+
+
 
     @log_tool(logger)
     def delete_user_income_categ(self, category:str): 
