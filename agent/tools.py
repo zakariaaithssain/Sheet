@@ -248,77 +248,62 @@ class ToolKit:
     
     @log_tool(logger)
     def set_planned_expense(self, expense_categ:str, planned_expense: float): 
-        old_planned_expenses = self.get_planned_expenses()["planned_expenses"]
-        if not old_planned_expenses:
-            status = "no categories found"
-        else: 
-            #we look for the categ, and get the old expense
-            old_categ_expense = ''
-            for categ in old_planned_expenses: 
-                if categ[0].lower().strip() == expense_categ.lower().strip(): 
-                    old_categ_expense = categ[-1]
-                    break
-            if old_categ_expense == '':
-                status = "category not found"
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            else:  
-                try: 
-                    self.spreadsheet = self.google_client.open(title=self.spread_title)
-                    self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-
-                    expense_cell = self.categs_map["expenses"][expense_categ.lower().strip()]
-                    self.worksheet.update_acell(label=expense_cell, value=planned_expense)
-                    status = "done"
-                except gspread.SpreadsheetNotFound: 
-                    status = "spreadsheet not found"
-                except gspread.WorksheetNotFound: 
-                    status = "worksheet not found"
-                except Exception as e: 
-                    status = f"internal error: {e}" 
-                                   
+            self._build_categs_map()
+            categ_row_idx = self.map["expense"][expense_categ.lower().strip()]
+            expense_cell = f"D{categ_row_idx}"
+            old_expense = self.worksheet.acell(expense_cell).value
+            self.worksheet.update_acell(expense_cell, planned_expense)
+            status = "done"
+        except KeyError: 
+            status = "category not found"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
+                                    
         return {
                 "expense_category": expense_categ,
                 "new_planned_expense": planned_expense, 
-                "old_planned_expense": old_categ_expense, 
+                "old_planned_expense": old_expense, 
                 "status": status
             } if status == "done" else {"status": status}
 
 
     @log_tool(logger)
     def set_planned_income(self, income_categ:str, planned_income: float): 
-        old_planned_incomes = self.get_planned_incomes()["planned_incomes"]
-        if not old_planned_incomes:
-            status = "no categories found"
-        else: 
-            #we look for the categ, and get the old expense
-            old_categ_income = ''
-            for categ in old_planned_incomes: 
-                if categ[0].lower().strip() == income_categ.lower().strip(): 
-                    old_categ_income = categ[-1]
-                    break
-            if old_categ_income == '':
-                status = "category not found"
+        try: 
+            self.spreadsheet = self.google_client.open(title=self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            else:  
-                try: 
-                    income_cell = self.categs_map["income"][income_categ.lower().strip()]
-                    self.spreadsheet = self.google_client.open(title=self.spread_title)
-                    self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                    self.worksheet.update_acell(label=income_cell, value=planned_income)
-                    status = "done"
-                except gspread.SpreadsheetNotFound: 
-                    status = "spreadsheet not found"
-                except gspread.WorksheetNotFound: 
-                    status = "worksheet not found"
-                except Exception as e: 
-                    status = f"internal error: {e}" 
-                                   
+            self._build_categs_map()
+            categ_row_idx = self.map["income"][income_categ.lower().strip()]
+            income_cell = f"J{categ_row_idx}"
+            old_income = self.worksheet.acell(income_cell).value
+            self.worksheet.update_acell(income_cell, planned_income)
+            status = "done"
+        except KeyError: 
+            status = "category not found"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
+                                    
         return {
-                "income_category": income_categ,
-                "new_planned_income": planned_income, 
-                "old_planned_income": old_categ_income, 
+                "expense_category": income_categ,
+                "new_planned_expense": planned_income, 
+                "old_planned_expense": old_income, 
                 "status": status
-            } if status == "done" else {"status": status}      
+            } if status == "done" else {"status": status}
+
+
 
 
     @log_tool(logger)

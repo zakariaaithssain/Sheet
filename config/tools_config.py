@@ -18,52 +18,52 @@ so we need to instanciate the class first
 toolkit = ToolKit(GOOGLE_CLIENT)
 methods = [
     {"tool": toolkit.get_starting_balance, 
-     "desc": "get the starting balance defined in the monthly budget spreadsheet"},
+     "desc": "get the starting balance"},
 
      {"tool": toolkit.set_starting_balance, 
-      "desc": "set the starting balance of monthly budget spreadsheet to the given value"}, 
+      "desc": "set the starting balance to given value"}, 
 
      {"tool": toolkit.get_expenses_categories, 
-      "desc": "get expenses categories defined in the monthly budget spreadsheet"}, 
+      "desc": "get expenses categories names"}, 
 
      {"tool": toolkit.get_income_categories, 
-      "desc": "get income categories defined in the monthly budget spreadsheet"}, 
+      "desc": "get income categories names"}, 
 
      {"tool": toolkit.get_planned_expenses, 
-      "desc": "get planned expense per expense category defined in the monthly budget spreadsheet"}, 
+      "desc": "get planned expense per expense category"}, 
 
      {"tool": toolkit.get_planned_incomes, 
-      "desc": "get planned income per income category defined in the monthly budget spreadsheet"}, 
+      "desc": "get planned income per income category"}, 
 
      {"tool": toolkit.set_planned_expense, 
-      "desc": "set planned expense for given expense category if defined in the monthly budget spreadsheet"}, 
+      "desc": "set planned expense for given expense category"}, 
 
      {"tool": toolkit.set_planned_income, 
-      "desc": "set planned income for given income category if defined in the monthly budget spreadsheet"}, 
+      "desc": "set planned income for given income category"}, 
 
-     {"tool": toolkit.get_renameable_categs, 
-      "desc": "get income and expenses categories that can be renamed. this is equivalent to categories created by the user, as the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
+    #  {"tool": toolkit.get_renameable_categs, 
+    #   "desc": "get income and expenses categories that can be renamed. this is equivalent to categories created by the user, as the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
 
      {"tool": toolkit.count_empty_categs_places, 
       "desc": "get the number of places left to add new expenses and income categories"}, 
 
      {"tool": toolkit.create_expenses_categ, 
-      "desc": "add new custom expenses category if possible. the maximum is 3"}, 
+      "desc": "add new expenses category"}, 
 
      {"tool": toolkit.create_income_categ, 
-      "desc": "add new custom income category if possible. the maximum is 1"}, 
+      "desc": "add new income category"}, 
 
      {"tool": toolkit.rename_user_expense_categ, 
-      "desc": "rename given expense category if possible"}, 
+      "desc": "rename given expense category"}, 
 
      {"tool": toolkit.rename_user_income_categ, 
-      "desc": "rename given income category if possible"}, 
+      "desc": "rename given income category"}, 
 
     #  {"tool": toolkit.delete_user_expense_categ, 
     #   "desc": "delete given expense category if possible"}, 
 
       {"tool": toolkit.delete_user_income_categ, 
-      "desc": "delete given income category if possible"}, 
+      "desc": "delete given income category"}, 
 
      {"tool": toolkit.delete_expense_categ, 
       "desc": "delete given expense category"}, 
