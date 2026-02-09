@@ -59,11 +59,15 @@ methods = [
      {"tool": toolkit.rename_user_income_categ, 
       "desc": "rename given income category if possible"}, 
 
-     {"tool": toolkit.delete_user_expense_categ, 
-      "desc": "delete given expense category if possible"}, 
+    #  {"tool": toolkit.delete_user_expense_categ, 
+    #   "desc": "delete given expense category if possible"}, 
 
-     {"tool": toolkit.delete_user_income_categ, 
+      {"tool": toolkit.delete_user_income_categ, 
       "desc": "delete given income category if possible"}, 
+
+     {"tool": toolkit.delete_expense_categ, 
+      "desc": "delete given expense category"}, 
+
 
 
 
