@@ -44,8 +44,8 @@ methods = [
     #  {"tool": toolkit.get_renameable_categs, 
     #   "desc": "get income and expenses categories that can be renamed. this is equivalent to categories created by the user, as the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
 
-     {"tool": toolkit.count_empty_categs_places, 
-      "desc": "get the number of places left to add new expenses and income categories"}, 
+    #  {"tool": toolkit.count_empty_categs_places, 
+    #   "desc": "get the number of places left to add new expenses and income categories"}, 
 
      {"tool": toolkit.create_expenses_categ, 
       "desc": "add new expenses category"}, 

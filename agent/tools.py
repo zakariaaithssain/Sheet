@@ -306,106 +306,64 @@ class ToolKit:
 
 
 
-    @log_tool(logger)
-    def get_renameable_categs(self):
-        return {"renameable_expenses_categories": self.renameable_expense_categs.keys(), 
-                "renameable_income_categories": self.renameable_income_categs.keys()}
-    
-    @log_tool(logger)
-    def count_empty_categs_places(self):
-        return {"empty_places_for_expenses_categories": len(self.empty_expense_categs_places), 
-                "empty_places_for_income_categories": len(self.empty_income_categs_places)}
+
 
 
 
     @log_tool(logger)
     def create_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
-        if categ_name.lower().strip().startswith("empty"): 
-            status = "category name cannot start with prefix 'empty'"
-        elif categ_name.lower().strip() in self.get_expenses_categories()["expenses_categories"]: 
-            status = "category already exists"
+        try:
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+
+            self._build_categs_map()
+            last_categ_idx = max(self.map["expense"].values())
+
+            name_cell = f"B{last_categ_idx + 1}"
+            self.worksheet.update_acell(name_cell, categ_name)
+
+            expense_cell = f"D{last_categ_idx + 1}"
+            self.worksheet.update_acell(expense_cell, planned_expense)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
             
-        elif not len(self.empty_expense_categs_places): 
-            status = "no places left for new expenses categories"
-        else: 
-            try: 
-                # to make sure to add new categs exactly below the existing ones
-                self.empty_expense_categs_places.sort(key=lambda place: place["name_cell"], reverse=True)
-                #we should remove it from empty places list
-                place = self.empty_expense_categs_places.pop()
-
-                categ_name_cell = place["name_cell"]
-                planned_expense_cell = place["planned_expense_cell"]
-
-                self.spreadsheet = self.google_client.open(title=self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                #create categ name
-                self.worksheet.update_acell(categ_name_cell, value=categ_name)
-                #add the new categ to renameable categs dict: {"categ": "A1 notation for its pos"}
-                self.renameable_expense_categs[categ_name] = categ_name_cell
-                #add categ to categ:expense_pos map to be able to change planned expense
-                self.categs_map["expenses"][categ_name] = planned_expense_cell
-                #add planned expense: 
-                self.worksheet.update_acell(planned_expense_cell, value=planned_expense)
-                status = "done"
-            except gspread.SpreadsheetNotFound: 
-                status = "spreadsheet not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
-                
         return {"status": status, 
-                "new_categ_name": categ_name, 
-                "new_categ_planned_expense": planned_expense, 
-                "empty_places_left": len(self.empty_expense_categs_places)} if status == "done" else {"status": status}
-
+                "categ_name": categ_name, 
+                "planned_expense": planned_expense, 
+                } 
 
 
     @log_tool(logger)
     def create_income_categ(self, categ_name: str, planned_income:float = 0): 
-        if categ_name.lower().strip().startswith("empty"): 
-            status = "category name cannot start with prefix 'empty'"
+        try:
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-        elif categ_name.lower().strip() in self.get_income_categories()["income_categories"]: 
-            status = "category already exists"
+            self._build_categs_map()
+            last_categ_idx = max(self.map["income"].values())
 
-        elif not len(self.empty_income_categs_places): 
-            status = "no places left for new income categories"
-        else: 
-            try: 
-                # to make sure to add new categs exactly below the existing ones
-                self.empty_income_categs_places.sort(key=lambda place: place["name_cell"], reverse=True)
-                #we should remove it from empty places list
-                place = self.empty_income_categs_places.pop()
+            name_cell = f"H{last_categ_idx + 1}"
+            self.worksheet.update_acell(name_cell, categ_name)
 
-                categ_name_cell = place["name_cell"]
-                planned_income_cell = place["planned_income_cell"]
-
-                self.spreadsheet = self.google_client.open(title=self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                #create categ name
-                self.worksheet.update_acell(categ_name_cell, value=categ_name)
-                #add the new categ and its position to renameable categs dict
-                self.renameable_income_categs[categ_name] = categ_name_cell
-                #add to categs map
-                self.categs_map["income"][categ_name] = planned_income_cell
-                #add planned income: 
-                self.worksheet.update_acell(planned_income_cell, value=planned_income)
-                status = "done"
-            except gspread.SpreadsheetNotFound: 
-                status = "spreadsheet not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
+            income_cell = f"J{last_categ_idx + 1}"
+            self.worksheet.update_acell(income_cell, planned_income)
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
             
         return {"status": status, 
-                "new_categ_name": categ_name, 
-                "new_categ_planned_income": planned_income, 
-                "empty_places_left": len(self.empty_income_categs_places)} if status == "done" else {"status": status}
-
-
+                "categ_name": categ_name, 
+                "planned_income": planned_income, 
+                } 
 
 
     @log_tool(logger)
