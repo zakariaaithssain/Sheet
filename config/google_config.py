@@ -4,10 +4,7 @@ import gspread
 import json
 import os
 
-env = load_dotenv(".env")
-if not env: raise RuntimeError("env variables not found, create and configure .env file, see .env.example")
-
-#why not just use the json file? because with docker that will be a pain in the ass. 
+#why not just use the json file? because with docker that will be a pain in the ^^. 
 CREDENTIALS = {
     "installed":
         {

@@ -24,14 +24,19 @@ after that run again, google authentication API popup will open, grant access to
 
 
 
-Right now, the model can only:
-- Create spreadsheets
-- Delete spreadsheets
-- Create worksheets
-- Delete worksheets
-- List spreadsheets and their metadata
-- List worksheets within a spreadsheet and their metadata
-- Know worksheets headers
-- Insert data into a worksheet
+## Current Capabilities
 
-and understands all things associated with these actions
+The AI agent can perform the following operations:
+- Get and set starting balance
+- Get expense and income categories
+- Get planned and actual expenses and incomes
+- Set planned expenses and incomes per category
+- Create, rename, and delete expense and income categories
+- Create and delete spreadsheets
+- Create, delete, and list worksheets
+- Get spreadsheet and worksheet metadata
+- List spreadsheets and worksheets
+- Get and set active sheets
+- Get worksheet headers
+- Insert and retrieve worksheet data
+- Get current date
