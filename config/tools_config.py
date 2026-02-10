@@ -6,8 +6,81 @@ from langchain.tools import tool
 
 
 
+"""
+transform the ToolKit class methods to Langchain tools,
+I can't decorate them directly in class definition, 
+because the decoration will consider the self arg as a tool arg,
+so we need to instanciate the class first
+
+"""
+
+
 toolkit = ToolKit(GOOGLE_CLIENT)
 methods = [
+    {"tool": toolkit.get_starting_balance, 
+     "desc": "get the starting balance"},
+
+     {"tool": toolkit.set_starting_balance, 
+      "desc": "set the starting balance to given value"}, 
+
+     {"tool": toolkit.get_expenses_categories, 
+      "desc": "get expenses categories names"}, 
+
+     {"tool": toolkit.get_income_categories, 
+      "desc": "get income categories names"}, 
+
+     {"tool": toolkit.get_planned_expenses, 
+      "desc": "get planned expense per category"}, 
+
+     {"tool": toolkit.get_planned_incomes, 
+      "desc": "get planned income per category"}, 
+
+     {"tool": toolkit.get_actual_expenses, 
+      "desc": "get actual expenses per category calculated from transactions sheet"}, 
+
+     {"tool": toolkit.get_actual_incomes, 
+      "desc": "get actual incomes per category calculated from transactions sheet"}, 
+
+     {"tool": toolkit.set_planned_expense, 
+      "desc": "set planned expense for given expense category"}, 
+
+     {"tool": toolkit.set_planned_income, 
+      "desc": "set planned income for given income category"}, 
+
+    #  {"tool": toolkit.get_renameable_categs, 
+    #   "desc": "get income and expenses categories that can be renamed. this is equivalent to categories created by the user, as the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
+
+    #  {"tool": toolkit.count_empty_categs_places, 
+    #   "desc": "get the number of places left to add new expenses and income categories"}, 
+
+     {"tool": toolkit.create_expenses_categ, 
+      "desc": "add new expenses category"}, 
+
+     {"tool": toolkit.create_income_categ, 
+      "desc": "add new income category"}, 
+
+     {"tool": toolkit.rename_expense_categ, 
+      "desc": "rename given expense category"}, 
+
+     {"tool": toolkit.rename_income_categ, 
+      "desc": "rename given income category"}, 
+
+    #  {"tool": toolkit.delete_user_expense_categ, 
+    #   "desc": "delete given expense category if possible"}, 
+
+      {"tool": toolkit.delete_income_categ, 
+      "desc": "delete given income category"}, 
+
+     {"tool": toolkit.delete_expense_categ, 
+      "desc": "delete given expense category"}, 
+
+
+
+
+
+
+  #============================================
+
     {"tool":toolkit.create_worksheet, 
      "desc": "create worksheet with given title and headers inside given spreadsheet"},
 
@@ -21,10 +94,19 @@ methods = [
       "desc": "delete worksheet with given title if found in given spreadsheet"},
 
     {"tool":toolkit.list_spreadsheets,
-      "desc": "list spreadsheets metadata",}, 
+      "desc": "list available spreadsheets names"}, 
+
+    {"tool": toolkit.get_spreadsheet_metadata, 
+     "desc": "get given spreadsheet name, id, creation time, and last modification time"},
 
     {"tool":toolkit.list_worksheets,
-      "desc": "list worksheets metadata belonging to given spreadsheet"},
+      "desc": "list available worksheets names belonging to given spreadsheet"},
+
+    {"tool":toolkit.list_worksheets,
+      "desc": "list available worksheets names belonging to given spreadsheet"},
+    
+    {"tool": toolkit.get_worksheet_metadata, 
+     "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
 
     {"tool":toolkit.get_worksheet_headers,
       "desc": "get headers of given worksheet"},
@@ -36,23 +118,20 @@ methods = [
       "desc": "get data from given worksheet"},
 
     {"tool":toolkit.get_active_sheets_metadata,
-      "desc": "get metadata, including title, URL, last updated time, for context spreadsheet and worksheet"}, 
+      "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
 
-    {"tool":toolkit.set_active_sheet,
-      "desc": "set context sheets to given sheets"},
+    #{"tool":toolkit.set_active_sheet,
+     # "desc": "set context sheets to given sheets"},
 
     {"tool":toolkit.get_today_date,
       "desc": "get current day's date"},
     ]
 
 TOOLS = []
-#transform the methods to Langchain methods
-#I can't decorate them directly in class definition, 
-#because the decoration will consider the self as an arg
-#so we need to instanciate the tools class first
+
 for method in methods: 
     TOOLS.append(
-        tool(method["tool"], description=method["desc"])
+                  tool(method["tool"], description=method["desc"])
         )
 
 
@@ -69,10 +148,6 @@ for method in methods:
 
 
 #DEPRECATED (I USED IT BEFORE SWITCHING TO LANGCHAIN THAT WILL HANDLE ALL THIS FOR ME)
-
-
-
-
 
 #tools that will be defined in sheets/tools.py
 #gspread API docs: 
@@ -234,6 +309,9 @@ for method in methods:
 #     "get_worksheet_headers": toolkit.get_worksheet_headers,
 #     "insert_row": toolkit.insert_row,
 #     "get_worksheet_data": toolkit.get_worksheet_data,
+#     "get_active_sheets_metadata": toolkit.get_active_sheets_metadata, 
+#     "set_active_sheet": toolkit.set_active_sheet,
+#     "get_today_date": toolkit.get_today_date,
 #     "get_active_sheets_metadata": toolkit.get_active_sheets_metadata, 
 #     "set_active_sheet": toolkit.set_active_sheet,
 #     "get_today_date": toolkit.get_today_date,

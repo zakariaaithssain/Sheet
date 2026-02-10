@@ -9,20 +9,15 @@ def log_tool(logger: logging.Logger):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             logger.debug(
-                "Tool called",
-                extra={"tool": func.__name__,
-                    "tool_args": kwargs if kwargs else None}
-            )
+                f"Tool called. name: {func.__name__}, call args: {kwargs if kwargs else None}")
             try:
                 result = func(*args, **kwargs)
                 status = result.get("status") if isinstance(result, dict) else None
 
                 if status in ("done", "created", "inserted", "deleted", "exists", "found"):
-                    logger.info("tool succeeded | status=%s", status)
+                    logger.info(f"tool succeeded | status={status} | name: {func.__name__} | call args: {kwargs if kwargs else None}")
                 elif status:
-                    logger.warning("tool completed with status=%s", status)
-                else:
-                    logger.info("tool completed")
+                    logger.warning(f"tool completed with status={status} | name: {func.__name__} | call args: {kwargs if kwargs else None}")
 
                 return result
 

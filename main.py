@@ -1,3 +1,12 @@
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message="Core Pydantic V1 functionality isn't compatible with Python 3.14 or greater",
+    category=UserWarning,
+)
+
+
 from dotenv import load_dotenv
 from config.settings import Settings
 from config.logging_config import setup_logging
@@ -15,7 +24,8 @@ import google.auth.exceptions
 
 def main():
     logger.info("loading env...")
-    load_dotenv()
+    if not load_dotenv(): raise RuntimeError("env variables not found, create and configure .env file, see .env.example")
+
     os.makedirs("logs", exist_ok = True)
 
     settings = Settings()
