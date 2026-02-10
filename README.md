@@ -27,28 +27,16 @@ after that run again, google authentication API popup will open, grant access to
 ## Current Capabilities
 
 The AI agent can perform the following operations:
-
-**'MONTHLY BUDGET' SHEET SPECIFIC OPERATIONS:**
 - Get and set starting balance
-- Manage expense and income categories (get, create, rename, delete)
+- Get expense and income categories
+- Get planned and actual expenses and incomes
 - Set planned expenses and incomes per category
-- Track available slots for new categories
-
-**Spreadsheet Management:**
-- Create, delete, and list spreadsheets
-- Retrieve spreadsheet metadata (name, ID, creation time, last modification)
-
-**Worksheet Management:**
-- Create, delete, and list worksheets within a spreadsheet
-- Retrieve worksheet metadata (ID, title, index, column/row count)
-- Access worksheet headers and data
-
-**Data Operations:**
-- Insert rows into worksheets
-- Retrieve worksheet data
-- Get current date context
-
-**Context Awareness:**
-- Track active spreadsheet and worksheet
-- Retrieve active sheets metadata (title, URL, last modification time)
-
+- Create, rename, and delete expense and income categories
+- Create and delete spreadsheets
+- Create, delete, and list worksheets
+- Get spreadsheet and worksheet metadata
+- List spreadsheets and worksheets
+- Get and set active sheets
+- Get worksheet headers
+- Insert and retrieve worksheet data
+- Get current date
