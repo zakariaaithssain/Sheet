@@ -68,7 +68,7 @@ methods = [
     #  {"tool": toolkit.delete_user_expense_categ, 
     #   "desc": "delete given expense category if possible"}, 
 
-      {"tool": toolkit.delete_user_income_categ, 
+      {"tool": toolkit.delete_income_categ, 
       "desc": "delete given income category"}, 
 
      {"tool": toolkit.delete_expense_categ, 
