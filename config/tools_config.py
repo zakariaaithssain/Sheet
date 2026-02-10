@@ -30,10 +30,16 @@ methods = [
       "desc": "get income categories names"}, 
 
      {"tool": toolkit.get_planned_expenses, 
-      "desc": "get planned expense per expense category"}, 
+      "desc": "get planned expense per category"}, 
 
      {"tool": toolkit.get_planned_incomes, 
-      "desc": "get planned income per income category"}, 
+      "desc": "get planned income per category"}, 
+
+     {"tool": toolkit.get_actual_expenses, 
+      "desc": "get actual expenses per category calculated from transactions sheet"}, 
+
+     {"tool": toolkit.get_actual_incomes, 
+      "desc": "get actual incomes per category calculated from transactions sheet"}, 
 
      {"tool": toolkit.set_planned_expense, 
       "desc": "set planned expense for given expense category"}, 
@@ -53,10 +59,10 @@ methods = [
      {"tool": toolkit.create_income_categ, 
       "desc": "add new income category"}, 
 
-     {"tool": toolkit.rename_user_expense_categ, 
+     {"tool": toolkit.rename_expense_categ, 
       "desc": "rename given expense category"}, 
 
-     {"tool": toolkit.rename_user_income_categ, 
+     {"tool": toolkit.rename_income_categ, 
       "desc": "rename given income category"}, 
 
     #  {"tool": toolkit.delete_user_expense_categ, 
