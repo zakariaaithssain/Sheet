@@ -275,6 +275,9 @@ class ToolKit:
             } if status == "done" else {"status": status}
 
 
+
+
+
     @log_tool(logger)
     def set_planned_income(self, income_categ:str, planned_income: float): 
         try: 
@@ -366,72 +369,66 @@ class ToolKit:
                 } 
 
 
+#============ADAPT TO NEW MODIFICATIONSS =====================================
+
+
     @log_tool(logger)
     def rename_user_expense_categ(self,old_name:str, new_name: str): 
-        old_name = old_name.lower().strip()
-        new_name == new_name.lower().strip()
-        if old_name not in self.categs_map["expenses"].keys(): 
-            status = "category not found"
-        elif old_name not in self.renameable_expense_categs.keys():
-            status = "system-defined category cannot be renamed"
-        else:
-            try: 
-                self.spreadsheet = self.google_client.open(title=self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                #remove old name and add new one to renameables dict  
-                name_position = self.renameable_expense_categs.pop(old_name)
-                self.renameable_expense_categs[new_name] = name_position
-                self.worksheet.update_acell(name_position, value=new_name)
-                #remove old and add new to categs-expense map
-                corresp_expense_pos = self.categs_map["expenses"].pop(old_name)
-                self.categs_map["expenses"][new_name] = corresp_expense_pos
+        try:
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-                status = "done"
-            except gspread.SpreadsheetNotFound: 
-                status = "spreadsheet not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
+            self._build_categs_map()
+            old_name = old_name.lower().strip()
+            #this raises a key error if the old_name is not in the categories
+            categ_index = self.map["expense"][old_name]
+            name_cell = f"B{categ_index}"
+            self.worksheet.update_acell(name_cell, new_name)
+            status = "done"
+        except KeyError: 
+            status = "category not found"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
             
         return {"status": status, 
-                "new_categ_name": new_name, 
-                "old_categ_name": old_name, 
+                "old_name": old_name, 
+                "new_name": new_name, 
                 } 
+    
+
     
 
     @log_tool(logger)
     def rename_user_income_categ(self,old_name:str, new_name: str): 
-        old_name = old_name.lower().strip()
-        new_name == new_name.lower().strip()
-        if old_name not in self.categs_map["income"].keys(): 
-            status = "category not found"
-        elif old_name not in self.renameable_income_categs.keys():
-            status = "system-defined category cannot be renamed"
-        else:
-            try: 
-                self.spreadsheet = self.google_client.open(title=self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
-                #remove old name and add new one to renameables dict  
-                name_position = self.renameable_income_categs.pop(old_name)
-                self.renameable_income_categs[new_name] = name_position
-                self.worksheet.update_acell(name_position, value=new_name)
-                #remove old and add new to categs-income map
-                corresp_income_pos = self.categs_map["income"].pop(old_name)
-                self.categs_map["income"][new_name] = corresp_income_pos
+        try:
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-                status = "done"
-            except gspread.SpreadsheetNotFound: 
-                status = "spreadsheet not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
+            self._build_categs_map()
+            old_name = old_name.lower().strip()
+            #this raises a key error if the old_name is not in the categories
+            categ_index = self.map["income"][old_name]
+            name_cell = f"H{categ_index}"
+            self.worksheet.update_acell(name_cell, new_name)
+            status = "done"
+        except KeyError: 
+            status = "category not found"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
             
         return {"status": status, 
-                "new_categ_name": new_name, 
-                "old_categ_name": old_name, 
+                "old_name": old_name, 
+                "new_name": new_name, 
                 } 
+
     
 
 
