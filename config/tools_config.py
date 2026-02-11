@@ -75,7 +75,10 @@ methods = [
       ## transactions sheet tools
 
      {"tool": toolkit.add_expense_transaction, 
-      "desc": "add transaction to expenses"}
+      "desc": "add transaction to expenses"},
+
+    {"tool":toolkit.get_today_date,
+      "desc": "get current day's date"},
 
 
 
@@ -127,9 +130,6 @@ methods = [
 
     # #{"tool":toolkit.set_active_sheet,
     #  # "desc": "set context sheets to given sheets"},
-
-    # {"tool":toolkit.get_today_date,
-    #   "desc": "get current day's date"},
     ]
 
 TOOLS = []
