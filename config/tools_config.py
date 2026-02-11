@@ -64,15 +64,20 @@ methods = [
 
      {"tool": toolkit.rename_income_categ, 
       "desc": "rename given income category"}, 
-
-    #  {"tool": toolkit.delete_user_expense_categ, 
-    #   "desc": "delete given expense category if possible"}, 
-
+      
       {"tool": toolkit.delete_income_categ, 
       "desc": "delete given income category"}, 
 
      {"tool": toolkit.delete_expense_categ, 
-      "desc": "delete given expense category"}, 
+      "desc": "delete given expense category"},
+
+
+      ## transactions sheet tools
+
+     {"tool": toolkit.add_expense_transaction, 
+      "desc": "add transaction to expenses"}
+
+
 
 
 
@@ -81,50 +86,50 @@ methods = [
 
   #============================================
 
-    {"tool":toolkit.create_worksheet, 
-     "desc": "create worksheet with given title and headers inside given spreadsheet"},
+    # {"tool":toolkit.create_worksheet, 
+    #  "desc": "create worksheet with given title and headers inside given spreadsheet"},
 
-    {"tool":toolkit.create_spreadsheet,
-      "desc": "create spreadsheet with given title"},
+    # {"tool":toolkit.create_spreadsheet,
+    #   "desc": "create spreadsheet with given title"},
 
-    {"tool":toolkit.delete_spreadsheet,
-      "desc": "delete spreadsheet with given title"}, 
+    # {"tool":toolkit.delete_spreadsheet,
+    #   "desc": "delete spreadsheet with given title"}, 
 
-    {"tool":toolkit.delete_worksheet,
-      "desc": "delete worksheet with given title if found in given spreadsheet"},
+    # {"tool":toolkit.delete_worksheet,
+    #   "desc": "delete worksheet with given title if found in given spreadsheet"},
 
-    {"tool":toolkit.list_spreadsheets,
-      "desc": "list available spreadsheets names"}, 
+    # {"tool":toolkit.list_spreadsheets,
+    #   "desc": "list available spreadsheets names"}, 
 
-    {"tool": toolkit.get_spreadsheet_metadata, 
-     "desc": "get given spreadsheet name, id, creation time, and last modification time"},
+    # {"tool": toolkit.get_spreadsheet_metadata, 
+    #  "desc": "get given spreadsheet name, id, creation time, and last modification time"},
 
-    {"tool":toolkit.list_worksheets,
-      "desc": "list available worksheets names belonging to given spreadsheet"},
+    # {"tool":toolkit.list_worksheets,
+    #   "desc": "list available worksheets names belonging to given spreadsheet"},
 
-    {"tool":toolkit.list_worksheets,
-      "desc": "list available worksheets names belonging to given spreadsheet"},
+    # {"tool":toolkit.list_worksheets,
+    #   "desc": "list available worksheets names belonging to given spreadsheet"},
     
-    {"tool": toolkit.get_worksheet_metadata, 
-     "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
+    # {"tool": toolkit.get_worksheet_metadata, 
+    #  "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
 
-    {"tool":toolkit.get_worksheet_headers,
-      "desc": "get headers of given worksheet"},
+    # {"tool":toolkit.get_worksheet_headers,
+    #   "desc": "get headers of given worksheet"},
 
-    {"tool":toolkit.insert_row,
-      "desc": "insert given data to new row in given worksheet"},
+    # {"tool":toolkit.insert_row,
+    #   "desc": "insert given data to new row in given worksheet"},
 
-    {"tool":toolkit.get_worksheet_data,
-      "desc": "get data from given worksheet"},
+    # {"tool":toolkit.get_worksheet_data,
+    #   "desc": "get data from given worksheet"},
 
-    {"tool":toolkit.get_active_sheets_metadata,
-      "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
+    # {"tool":toolkit.get_active_sheets_metadata,
+    #   "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
 
-    #{"tool":toolkit.set_active_sheet,
-     # "desc": "set context sheets to given sheets"},
+    # #{"tool":toolkit.set_active_sheet,
+    #  # "desc": "set context sheets to given sheets"},
 
-    {"tool":toolkit.get_today_date,
-      "desc": "get current day's date"},
+    # {"tool":toolkit.get_today_date,
+    #   "desc": "get current day's date"},
     ]
 
 TOOLS = []

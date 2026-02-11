@@ -25,6 +25,8 @@ class ToolKit:
         self.summary_title: str = "Summary"
         #transactions worksheet title
         self.transactions_title: str = "Transactions"
+        #cannot be changed
+        self.transactions_headers: {"date", "amount", "description", "category"}
 
         self.balance_cell: str = "L8"
         self.expenses_categ_range = "B28:B44"
@@ -330,14 +332,17 @@ class ToolKit:
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
             self._build_categs_map()
-            last_categ_idx = max(self.map["expense"].values())
+            if categ_name.lower().strip() in self.map["expense"]: 
+                status = "category already exists"
+            else: 
+                last_categ_idx = max(self.map["expense"].values())
 
-            name_cell = f"B{last_categ_idx + 1}"
-            self.worksheet.update_acell(name_cell, categ_name)
+                name_cell = f"B{last_categ_idx + 1}"
+                self.worksheet.update_acell(name_cell, categ_name)
 
-            expense_cell = f"D{last_categ_idx + 1}"
-            self.worksheet.update_acell(expense_cell, planned_expense)
-            status = "done"
+                expense_cell = f"D{last_categ_idx + 1}"
+                self.worksheet.update_acell(expense_cell, planned_expense)
+                status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
@@ -359,14 +364,17 @@ class ToolKit:
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
             self._build_categs_map()
-            last_categ_idx = max(self.map["income"].values())
+            if categ_name.lower().strip() in self.map["income"]: 
+                status = "category already exists"
+            else: 
+                last_categ_idx = max(self.map["income"].values())
 
-            name_cell = f"H{last_categ_idx + 1}"
-            self.worksheet.update_acell(name_cell, categ_name)
+                name_cell = f"H{last_categ_idx + 1}"
+                self.worksheet.update_acell(name_cell, categ_name)
 
-            income_cell = f"J{last_categ_idx + 1}"
-            self.worksheet.update_acell(income_cell, planned_income)
-            status = "done"
+                income_cell = f"J{last_categ_idx + 1}"
+                self.worksheet.update_acell(income_cell, planned_income)
+                status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
@@ -534,6 +542,51 @@ class ToolKit:
 
    #======================== TRANSACTIONS SHEET TOOLS ========================================
     
+    @log_tool(logger)
+    def add_expense_transaction(self, date:datetime.date, amount: float, description: str, category: str): 
+        data = [str(date), amount, description, category]
+        try:
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
+
+            #to be up to date with categs 
+            self._build_categs_map()
+            if category.lower().strip() not in self.map["expense"]: 
+                status = "category not found"
+            else: 
+                self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
+                status = "done"
+        
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
+            
+        return {"status": status,
+                "data": data} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -543,7 +596,7 @@ class ToolKit:
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
     @log_tool(logger)
-    def get_active_sheets_metadata(self):
+    def get_current_sheet_metadata(self):
         return {
             "spreadsheet": (
                 {
@@ -564,6 +617,8 @@ class ToolKit:
             ),
         }
     
+
+
     @log_tool(logger)
     def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
         try:
@@ -579,6 +634,7 @@ class ToolKit:
         "status": status,
         "spreadsheet_url": self.spreadsheet.url if self.spreadsheet else None
     }
+
 
 
     @log_tool(logger)
@@ -772,7 +828,7 @@ class ToolKit:
 
 
     @log_tool(logger)
-    def insert_row(self, title: str, spreadsheet: str, data: dict): 
+    def add_row(self, title: str, spreadsheet: str, data: dict): 
         try: 
             self.spreadsheet = self.google_client.open(title=spreadsheet)
             try:
