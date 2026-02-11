@@ -541,10 +541,17 @@ class ToolKit:
                     
 
    #======================== TRANSACTIONS SHEET TOOLS ========================================
-    
+
     @log_tool(logger)
-    def add_expense_transaction(self, date:datetime.date, amount: float, description: str, category: str): 
-        data = [str(date), amount, description, category]
+    def get_today_date(self): 
+        return {"status":"done", 
+                "date": datetime.date.today().strftime("%d/%m/%Y")
+                }
+    
+
+    @log_tool(logger)
+    def add_expense_transaction(self, date:str, amount: float, description: str, category: str): 
+        data = [date, amount, description, category]
         try:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
@@ -899,12 +906,6 @@ class ToolKit:
         
 
 
-    @log_tool(logger)
-    def get_today_date(self): 
-        return {"status":"done", 
-                "date": datetime.date.today().strftime("%d/%m/%Y")
-                }
-    
 
         
     
