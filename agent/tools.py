@@ -5,12 +5,8 @@ import datetime
 import logging
 
 from config.logging_config import log_tool
-#TODO: right now, tools are stateless and lose track of the sheet state at each run, attach them to memory. 
 
 
-
-# NOTE: I chose not to allow modifying the default categs names to avoid problems of wanting to delete one, which will cause problems in the sheet. 
-# so we only allow modifying the user-created categories (3 for expenses and 1 for income) added at the end of the sheet. 
 
 logger = logging.getLogger("tools")
 """ NOTE: Whenever we add a method to this class, to make it a tool that is accessible for the 
@@ -23,75 +19,30 @@ class ToolKit:
         self.spreadsheet = None
         self.worksheet = None
 
+        #spreadsheet title
         self.spread_title: str = "Monthly budget"
+        #summary worksheet title
         self.summary_title: str = "Summary"
+        #transactions worksheet title
         self.transactions_title: str = "Transactions"
 
         self.balance_cell: str = "L8"
-
         self.expenses_categ_range = "B28:B44"
-        self.planned_expenses_range = "B28:D41"
-
         self.income_categ_range = "H28:H44"
-        self.planned_income_range = "H28:J33"
 
-        self.categs_map = {
-            "expenses": {
-                "food": "D28",
-                "gifts": "D29",
-                "health/medical": "D30",
-                "home": "D31",
-                "transportation": "D32",
-                "personal": "D33",
-                "pets": "D34",
-                "utilities": "D35",
-                "travel": "D36",
-                "debt": "D37",
-                "other": "D38",
-                #initial empty places to add new categs
-                "empty": [
-                {"name_cell": "B39", "planned_expense_cell": "D39"},
-                {"name_cell": "B40", "planned_expense_cell": "D40"},
-                {"name_cell": "B41", "planned_expense_cell": "D41"}
-                ],
-
-                #when we create a new categ, it becomes renameable, add only "name":"the A1 notation of the categ cell" (e.g "zeco": "B41") so it can be renamed
-                "renameable": {"gifts": "B29"}
-                },
-                
-            "income": {
-                    "savings": "J28",
-                    "paycheck": "J29",
-                    "bonus": "J30",
-                    "interest": "J31",
-                    "other": "J32",
-
-                    #only one initial place to add new income categ
-                    "empty": [
-                        {"name_cell": "H33", "planned_income_cell": "J33"}
-                        ],
-
-                    "renameable": {}
-                    },
-        }
-        
+        #variable li dayr 3liha lfilm 
         self.map = {}
-        #this sets 'self.map' variable to the map of categories indexes 
-        #self._build_categs_map()
-        
-        self.renameable_expense_categs:dict = self.categs_map["expenses"]["renameable"]
-        self.empty_expense_categs_places:list[dict] = self.categs_map["expenses"]["empty"]
-
-        self.renameable_income_categs:dict = self.categs_map["income"]["renameable"]
-        self.empty_income_categs_places:list[dict] = self.categs_map["income"]["empty"]
         
         logger.info("ToolKit initialized.")
 
     
+#======================== SUMMARY SHEET TOOLS ========================================
+
+
     #internal tool
     def _build_categs_map(self): 
         """
-        should always be called before any change.   
+        should always be called before any change related to categories.   
         create a json schema of expense and income categories with corresponding indexes and save it to self.map
          """
         
@@ -429,7 +380,6 @@ class ToolKit:
                 } 
 
 
-#============ADAPT TO NEW MODIFICATIONSS =====================================
 
 
     @log_tool(logger)
@@ -582,11 +532,14 @@ class ToolKit:
 
                     
 
-   
+   #======================== TRANSACTIONS SHEET TOOLS ========================================
     
 
 
-#=================================================
+
+
+
+#===============================GHAALIBAN MOHALSH NHTAJ HADSHY BAQI========================================================
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
     @log_tool(logger)
