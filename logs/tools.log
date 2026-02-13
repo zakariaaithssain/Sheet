@@ -1,0 +1,3 @@
+2026-02-13 15:52:44,455 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: list_spreadsheets, call args: None
+2026-02-13 15:52:45,526 [INFO] tools: logging_config.py:wrapper:18 | tool succeeded | status=done | name: list_spreadsheets | call args: None
+2026-02-13 15:52:52,732 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_sheets_metadata, call args: {'spreadsheet': 'Monthly budget', 'worksheet': None}
