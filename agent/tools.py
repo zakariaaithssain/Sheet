@@ -335,9 +335,9 @@ class ToolKit:
         try:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
-
+            categ_name =  categ_name.lower().strip() 
             self._build_categs_map()
-            if categ_name.lower().strip() in self.map["expense"]: 
+            if categ_name in self.map["expense"]: 
                 status = "category already exists"
             else: 
                 last_categ_idx = max(self.map["expense"].values(), default=27)
@@ -368,8 +368,9 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
+            categ_name = categ_name.lower().strip()
             self._build_categs_map()
-            if categ_name.lower().strip() in self.map["income"]: 
+            if categ_name in self.map["income"]: 
                 status = "category already exists"
             else: 
                 last_categ_idx = max(self.map["income"].values(), default=27)
