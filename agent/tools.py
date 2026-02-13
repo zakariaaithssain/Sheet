@@ -55,14 +55,14 @@ class ToolKit:
         exp_categs = self.worksheet.get_values(range_name= self.expenses_categ_range)
         exp_map = {}
         for idx, categ in enumerate(exp_categs, start=28): 
-            if categ[0]:
+            if categ and categ[0]:
                 exp_map[categ[0].lower().strip()] = idx
         self.map["expense"] = exp_map
         
         income_categs = self.worksheet.get_values(range_name= self.income_categ_range)
         income_map = {}
         for idx, categ in enumerate(income_categs, start=28): 
-            if categ[0]:
+            if categ and categ[0]:
                 income_map[categ[0].lower().strip()] = idx
         self.map["income"] = income_map
 
@@ -152,7 +152,7 @@ class ToolKit:
             self._build_categs_map()
             categ_rows = self.map['expense']
             #the row index of the very last category to define the A1 notation range
-            max_row_idx = max(categ_rows.values())
+            max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"B28:D{max_row_idx}"
             expenses_range = self.worksheet.get(range_name)
             expenses = {expense[0].lower().strip():expense[2] for expense in expenses_range}
@@ -181,7 +181,7 @@ class ToolKit:
             self._build_categs_map()
             categ_rows = self.map['expense']
             #the row index of the very last category to define the A1 notation range
-            max_row_idx = max(categ_rows.values())
+            max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"B28:E{max_row_idx}"
             expenses_range = self.worksheet.get(range_name)
             expenses = {expense[0].lower().strip():expense[3] for expense in expenses_range}
@@ -210,7 +210,7 @@ class ToolKit:
             self._build_categs_map()
             categ_rows = self.map['income']
             #the row index of the very last category to define the A1 notation range
-            max_row_idx = max(categ_rows.values())
+            max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"H28:J{max_row_idx}"
             income_range = self.worksheet.get(range_name)
             incomes = {income[0].lower().strip():income[2] for income in income_range}
@@ -240,7 +240,7 @@ class ToolKit:
             self._build_categs_map()
             categ_rows = self.map['income']
             #the row index of the very last category to define the A1 notation range
-            max_row_idx = max(categ_rows.values())
+            max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"H28:K{max_row_idx}"
             income_range = self.worksheet.get(range_name)
             incomes = {income[0].lower().strip():income[3] for income in income_range}
@@ -340,7 +340,7 @@ class ToolKit:
             if categ_name.lower().strip() in self.map["expense"]: 
                 status = "category already exists"
             else: 
-                last_categ_idx = max(self.map["expense"].values())
+                last_categ_idx = max(self.map["expense"].values(), default=27)
 
                 name_cell = f"B{last_categ_idx + 1}"
                 self.worksheet.update_acell(name_cell, categ_name)
@@ -372,7 +372,7 @@ class ToolKit:
             if categ_name.lower().strip() in self.map["income"]: 
                 status = "category already exists"
             else: 
-                last_categ_idx = max(self.map["income"].values())
+                last_categ_idx = max(self.map["income"].values(), default=27)
 
                 name_cell = f"H{last_categ_idx + 1}"
                 self.worksheet.update_acell(name_cell, categ_name)
@@ -480,7 +480,7 @@ class ToolKit:
                 if actual_expense != 0: 
                     status = f"cannot delete category associated with transactions, associated expense: {actual_expense}"
                 else: 
-                    max_row = max(self.map["expense"].values()) 
+                    max_row = max(self.map["expense"].values(), default=28) 
                     #normally planned expense is a float, but setting it to an empty str erases the row
                     self.set_planned_expense(category, planned_expense="")
                     self.rename_expense_categ(category, new_name="")
@@ -526,7 +526,7 @@ class ToolKit:
                 if actual_income != 0: 
                     status = f"cannot delete category associated with transactions, associated income: {actual_income}"
                 else: 
-                    max_row = max(self.map["income"].values())
+                    max_row = max(self.map["income"].values(), default=28)
                     #normally planned income is a float, but setting it to an empty str erases the row
                     self.set_planned_income(category, planned_income="")
                     self.rename_income_categ(category, new_name="")
