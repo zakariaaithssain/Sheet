@@ -1,11 +1,10 @@
 from gspread import Client
 
+from config.logging_config import log_tool
+
 import gspread
 import datetime
 import logging
-import google.auth.exceptions
-
-from config.logging_config import log_tool
 
 
 
@@ -35,6 +34,8 @@ class ToolKit:
 
         #variable li dayr 3liha lfilm 
         self.map = {}
+        #init state of categs 
+        self._build_categs_map()
         
         logger.info("ToolKit initialized.")
 
@@ -45,8 +46,9 @@ class ToolKit:
     #internal tool
     def _build_categs_map(self): 
         """
-        should always be called before any change related to categories.   
-        create a json schema of expense and income categories with corresponding indexes and save it to self.map
+        should always be called **after** any change related to categories (to avoid stale state issues)  
+
+        create a json schema of `expense` and `income` categories with `corresponding indexes` and save it to `self.map`
          """
         
         self.spreadsheet = self.google_client.open(self.spread_title)
@@ -118,7 +120,6 @@ class ToolKit:
 
     @log_tool(logger)
     def get_expenses_categories(self): 
-        self._build_categs_map()
         categories = list(self.map['expense'].keys())
         
         return {
@@ -131,7 +132,6 @@ class ToolKit:
 
     @log_tool(logger)
     def get_income_categories(self): 
-        self._build_categs_map()
         categories = list(self.map['income'].keys())
         
         return {
@@ -149,7 +149,6 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_rows = self.map['expense']
             #the row index of the very last category to define the A1 notation range
             max_row_idx = max(categ_rows.values(), default=28)
@@ -178,7 +177,6 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_rows = self.map['expense']
             #the row index of the very last category to define the A1 notation range
             max_row_idx = max(categ_rows.values(), default=28)
@@ -207,7 +205,6 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_rows = self.map['income']
             #the row index of the very last category to define the A1 notation range
             max_row_idx = max(categ_rows.values(), default=28)
@@ -237,7 +234,6 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_rows = self.map['income']
             #the row index of the very last category to define the A1 notation range
             max_row_idx = max(categ_rows.values(), default=28)
@@ -267,11 +263,12 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_row_idx = self.map["expense"][expense_categ.lower().strip()]
             expense_cell = f"D{categ_row_idx}"
             old_expense = self.worksheet.acell(expense_cell).value
             self.worksheet.update_acell(expense_cell, planned_expense)
+            #update state
+            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -300,11 +297,11 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(title=self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(title=self.summary_title)
 
-            self._build_categs_map()
             categ_row_idx = self.map["income"][income_categ.lower().strip()]
             income_cell = f"J{categ_row_idx}"
             old_income = self.worksheet.acell(income_cell).value
             self.worksheet.update_acell(income_cell, planned_income)
+            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -336,7 +333,6 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
             categ_name =  categ_name.lower().strip() 
-            self._build_categs_map()
             if categ_name in self.map["expense"]: 
                 status = "category already exists"
             else: 
@@ -347,6 +343,7 @@ class ToolKit:
 
                 expense_cell = f"D{last_categ_idx + 1}"
                 self.worksheet.update_acell(expense_cell, planned_expense)
+                self._build_categs_map()
                 status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -358,6 +355,7 @@ class ToolKit:
         return {"status": status, 
                 "categ_name": categ_name, 
                 "planned_expense": planned_expense, 
+                "map": self.map
                 } 
     
 
@@ -369,7 +367,6 @@ class ToolKit:
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
             categ_name = categ_name.lower().strip()
-            self._build_categs_map()
             if categ_name in self.map["income"]: 
                 status = "category already exists"
             else: 
@@ -380,6 +377,7 @@ class ToolKit:
 
                 income_cell = f"J{last_categ_idx + 1}"
                 self.worksheet.update_acell(income_cell, planned_income)
+                self._build_categs_map()
                 status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -403,12 +401,12 @@ class ToolKit:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-            self._build_categs_map()
             old_name = old_name.lower().strip()
             #this raises a key error if the old_name is not in the categories
             categ_index = self.map["expense"][old_name]
             name_cell = f"B{categ_index}"
             self.worksheet.update_acell(name_cell, new_name)
+            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -432,13 +430,12 @@ class ToolKit:
         try:
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
-
-            self._build_categs_map()
             old_name = old_name.lower().strip()
             #this raises a key error if the old_name is not in the categories
             categ_index = self.map["income"][old_name]
             name_cell = f"H{categ_index}"
             self.worksheet.update_acell(name_cell, new_name)
+            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -464,7 +461,6 @@ class ToolKit:
         - sort to take resulted empty row to bottom. """
         status = "unknown internal error"
         category = category.lower().strip()
-        #inside this, build_map is called, no need to call it again
         response = self.get_actual_expenses()
         #will be None if there was some prblm
         if isinstance(response["actual_expenses"], dict): 
@@ -487,6 +483,7 @@ class ToolKit:
                     self.rename_expense_categ(category, new_name="")
                     
                     self.worksheet.sort((2, 'asc'), range=f"B28:F{max_row}")
+                    self._build_categs_map()
                     status = "done"
 
             except KeyError: 
@@ -510,7 +507,6 @@ class ToolKit:
         - sort to take resulted empty row to bottom. """
         status = "unknown internal error"
         category = category.lower().strip()
-        #inside this, build_map is called, no need to call it again
         response = self.get_actual_incomes()
         #will be None if there was some prblm
         if isinstance(response["actual_incomes"], dict): 
@@ -533,6 +529,7 @@ class ToolKit:
                     self.rename_income_categ(category, new_name="")
                     
                     self.worksheet.sort((8, 'asc'), range=f"H28:L{max_row}")
+                    self._build_categs_map()
                     status = "done"
 
             except KeyError: 
