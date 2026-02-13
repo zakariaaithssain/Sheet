@@ -1,5 +1,11 @@
 # GestAI 
 
+# setup:  
+- create a google drive folder
+- share it with the service account email and give it editor access   
+
+this setup will give the agent full access to only the files inside that shared folder.   
+
 ## how to run: 
 - clone the repo
 - then let uv do the rest: 
@@ -23,7 +29,6 @@ then you need to run this to delete old oauth config:
 after that run again, google authentication API popup will open, grant access to the app, and you're done. 
 
 
-
 ## Current Capabilities
 
 The AI agent can perform the following operations:
@@ -32,11 +37,9 @@ The AI agent can perform the following operations:
 - Get planned and actual expenses and incomes
 - Set planned expenses and incomes per category
 - Create, rename, and delete expense and income categories
-- Create and delete spreadsheets
-- Create, delete, and list worksheets
+- Add expense transactions
+- List available spreadsheets
+- List worksheets in a given spreadsheet
 - Get spreadsheet and worksheet metadata
-- List spreadsheets and worksheets
-- Get and set active sheets
-- Get worksheet headers
-- Insert and retrieve worksheet data
 - Get current date
+
