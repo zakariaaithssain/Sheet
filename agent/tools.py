@@ -561,16 +561,15 @@ class ToolKit:
     def add_expense_transaction(self, date:str, amount: float, description: str, category: str): 
         data = [date, amount, description, category]
         try:
-            self.spreadsheet = self.google_client.open(self.spread_title)
-            self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
-
             #to be up to date with categs 
             self._build_categs_map()
             if category.lower().strip() not in self.map["expense"]: 
                 status = "category not found"
             else: 
-                response = self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
-                print(response)
+                #this must be setted after calling build_categs_map, because this latter sets self.worksheet to "summary" instead of "transactions"
+                self.spreadsheet = self.google_client.open(self.spread_title)
+                self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
+                self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
                 status = "done"
         
         except gspread.SpreadsheetNotFound: 
@@ -583,6 +582,33 @@ class ToolKit:
         return {"status": status,
                 "data": data} 
 
+
+
+    @log_tool(logger)
+    def add_income_transaction(self, date:str, amount: float, description: str, category: str): 
+        data = [date, amount, description, category]
+        try:
+            #to be up to date with categs 
+            self._build_categs_map()
+            if category.lower().strip() not in self.map["income"]: 
+                status = "category not found"
+            else: 
+                self.spreadsheet = self.google_client.open(self.spread_title)
+                #this must be setted after calling build_categs_map, 
+                # because this latter sets self.worksheet to "summary" instead of "transactions"
+                self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
+                self.worksheet.append_row(data, table_range="G4", value_input_option="USER_ENTERED")
+                status = "done"
+        
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            status = "worksheet not found"
+        except Exception as e: 
+            status = f"internal error: {e}" 
+            
+        return {"status": status,
+                "data": data} 
 
 
 

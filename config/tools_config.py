@@ -77,6 +77,9 @@ methods = [
      {"tool": toolkit.add_expense_transaction, 
       "desc": "add transaction to expenses"},
 
+      {"tool": toolkit.add_income_transaction, 
+      "desc": "add transaction to incomes"},
+
     {"tool":toolkit.get_today_date,
       "desc": "get current day's date"},
 
