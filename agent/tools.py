@@ -82,8 +82,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" #this way the model would explain the error
                             #because gspread don't separate technical errors
@@ -106,8 +104,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" 
         return {
@@ -165,8 +161,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError: 
-            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -196,8 +190,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError: 
-            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -227,8 +219,7 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError: 
-            raise
+       
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -258,8 +249,7 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError: 
-            raise
+    
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -289,8 +279,7 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
+       
         except Exception as e: 
             status = f"internal error: {e}" 
                                     
@@ -323,8 +312,7 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
+       
         except Exception as e: 
             status = f"internal error: {e}" 
                                     
@@ -364,8 +352,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -398,8 +384,7 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
+        
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -430,8 +415,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -462,8 +445,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -509,8 +490,6 @@ class ToolKit:
 
             except KeyError: 
                 status = "category not found"
-            except google.auth.exceptions.RefreshError:
-                raise
             except Exception as e: 
                 status = f"internal error: {e}" 
         else: 
@@ -557,8 +536,6 @@ class ToolKit:
 
             except KeyError: 
                 status = "category not found"
-            except google.auth.exceptions.RefreshError:
-                raise
             except Exception as e: 
                 status = f"internal error: {e}" 
         else: 
@@ -600,8 +577,6 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-        except google.auth.exceptions.RefreshError:
-            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
