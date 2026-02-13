@@ -1,7 +1,6 @@
 
 from dotenv import load_dotenv
 from pathlib import Path
-import google.auth.exceptions
 
 import logging
 import warnings
@@ -68,9 +67,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt: 
         logger.error("interrupted manually.")
         exit(0)
-    except google.auth.exceptions.RefreshError:
-        logger.error("Oauth token expired. see README on how to fix it.")
-        raise
     except Exception as e: 
         logger.critical(f"unexpected exception: {e}")
         raise
