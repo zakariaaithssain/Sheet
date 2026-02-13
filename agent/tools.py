@@ -587,6 +587,48 @@ class ToolKit:
 
 
 
+
+
+#=============GENERAL PURPOSE ================
+
+    @log_tool(logger)
+    def list_spreadsheets(self):
+        try:
+            spreadsheets = self.google_client.list_spreadsheet_files()
+            spreadsheets_names = [ s["name"] for s in spreadsheets]
+            status = "done"
+        except Exception as e: 
+            status = f"internal error: {e}"
+
+        return {
+            "status": status, 
+            "available_spreadsheets" : spreadsheets_names if status == "done" else None
+        }
+
+
+
+
+    @log_tool(logger)
+    def list_worksheets(self, spreadsheet: str):
+        try:
+            worksheets = self.google_client.open(title=spreadsheet).worksheets()
+            worksheets_names = [ws.title for ws in worksheets]
+            status = "done"
+        except gspread.SpreadsheetNotFound: 
+            status = "spreadsheet not found"
+
+        except Exception as e: 
+            status = f"internal error: {e}"
+
+        return {
+            "status": status, 
+            "spreadsheet": spreadsheet,
+            "available_worksheets" : worksheets_names if status == "done" else None
+        }
+    
+
+
+
     @log_tool(logger)
     def get_sheets_metadata(self, spreadsheet:str, worksheet:str = None):
         try: 
@@ -610,9 +652,13 @@ class ToolKit:
         }
 
         except gspread.SpreadsheetNotFound: 
-            return {"spreadsheet": spreadsheet, "status": "spreadsheet not found"}
+            return {"spreadsheet": spreadsheet,
+                     "status": "spreadsheet not found"}
+        
         except gspread.WorksheetNotFound: 
-            return {"spreadsheet": spreadsheet, "worksheet": worksheet, "status": "worksheet not found"}
+            return {"spreadsheet": spreadsheet,
+                     "worksheet": worksheet,
+                       "status": "worksheet not found"}
 
 
 
@@ -738,20 +784,7 @@ class ToolKit:
                 "status": status}
 
 
-    @log_tool(logger)
-    def list_spreadsheets(self):
-        try:
-            spreadsheets = self.google_client.list_spreadsheet_files()
-            spreadsheets_names = [ s["name"] for s in spreadsheets]
-            status = "done"
-        except Exception as e: 
-            status = f"internal error: {e}"
-
-        return {
-            "status": status, 
-            "available_spreadsheets" : spreadsheets_names if status == "done" else None
-        }
-
+   
     @log_tool(logger)
     def get_spreadsheet_metadata(self, spreadsheet:str): 
         try: 
@@ -773,23 +806,6 @@ class ToolKit:
     
 
 
-    @log_tool(logger)
-    def list_worksheets(self, spreadsheet: str):
-        try:
-            worksheets = self.google_client.open(title=spreadsheet).worksheets()
-            worksheets_names = [ws.title for ws in worksheets]
-            status = "done"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-
-        except Exception as e: 
-            status = f"internal error: {e}"
-
-        return {
-            "status": status, 
-            "spreadsheet": spreadsheet,
-            "available_worksheets" : worksheets_names if status == "done" else None
-        }
     
 
 
