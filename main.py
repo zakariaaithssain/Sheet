@@ -8,6 +8,7 @@ warnings.filterwarnings(
 
 
 from dotenv import load_dotenv
+from pathlib import Path
 from config.settings import Settings
 from config.logging_config import setup_logging
 from agent.runtime import AgentRuntime
@@ -24,10 +25,12 @@ import google.auth.exceptions
 
 def main():
     logger.info("loading env...")
-    if not load_dotenv(): raise RuntimeError("env variables not found, create and configure .env file, see .env.example")
+    env_path = Path(".env")
+    if not env_path.exists():
+        raise FileNotFoundError(f".env file not found at {env_path}")
+    load_dotenv(dotenv_path=env_path, override=True)
 
     os.makedirs("logs", exist_ok = True)
-
     settings = Settings()
     setup_logging(settings)
     

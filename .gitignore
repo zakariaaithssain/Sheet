@@ -1,5 +1,7 @@
 .venv
 *.env
+.dev.env
+.prod.env
 __pycache__
 *.json
 
