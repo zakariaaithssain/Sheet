@@ -82,12 +82,20 @@ methods = [
 
 
 
+  #========================GENERAL PURPOSE ====================
 
+   {"tool":toolkit.list_spreadsheets,
+      "desc": "list available spreadsheets names"}, 
 
+    # {"tool": toolkit.get_spreadsheet_metadata, 
+    #  "desc": "get given spreadsheet name, id, creation time, and last modification time"},
 
+    {"tool":toolkit.list_worksheets,
+      "desc": "list available worksheets names belonging to given spreadsheet"},
+    
+    {"tool":toolkit.get_sheets_metadata,
+      "desc": "get URL, title and last modification time if available for given sheets"}, 
 
-
-  #============================================
 
     # {"tool":toolkit.create_worksheet, 
     #  "desc": "create worksheet with given title and headers inside given spreadsheet"},
@@ -101,17 +109,6 @@ methods = [
     # {"tool":toolkit.delete_worksheet,
     #   "desc": "delete worksheet with given title if found in given spreadsheet"},
 
-    # {"tool":toolkit.list_spreadsheets,
-    #   "desc": "list available spreadsheets names"}, 
-
-    # {"tool": toolkit.get_spreadsheet_metadata, 
-    #  "desc": "get given spreadsheet name, id, creation time, and last modification time"},
-
-    # {"tool":toolkit.list_worksheets,
-    #   "desc": "list available worksheets names belonging to given spreadsheet"},
-
-    # {"tool":toolkit.list_worksheets,
-    #   "desc": "list available worksheets names belonging to given spreadsheet"},
     
     # {"tool": toolkit.get_worksheet_metadata, 
     #  "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
@@ -124,9 +121,6 @@ methods = [
 
     # {"tool":toolkit.get_worksheet_data,
     #   "desc": "get data from given worksheet"},
-
-    # {"tool":toolkit.get_active_sheets_metadata,
-    #   "desc": "for context spreadsheet and worksheet, get title, URL, and last modification time if available"}, 
 
     # #{"tool":toolkit.set_active_sheet,
     #  # "desc": "set context sheets to given sheets"},

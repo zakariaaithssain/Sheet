@@ -612,6 +612,32 @@ class ToolKit:
 
 
 
+    @log_tool(logger)
+    def get_sheets_metadata(self, spreadsheet:str, worksheet:str = None):
+        try: 
+            self.spreadsheet = self.google_client.open(spreadsheet)
+            if worksheet: 
+                self.worksheet = self.spreadsheet.worksheet(worksheet)
+            return {
+            "spreadsheet": 
+                {
+                    "title": self.spreadsheet.title,
+                    "url": self.spreadsheet.url,
+                    "last_update_time": self.spreadsheet.lastUpdateTime,
+                }
+            ,
+            "worksheet": 
+                {
+                    "title": self.worksheet.title,
+                    "url": self.worksheet.url,
+                }
+                if worksheet else None,
+        }
+
+        except gspread.SpreadsheetNotFound: 
+            return {"spreadsheet": spreadsheet, "status": "spreadsheet not found"}
+        except gspread.WorksheetNotFound: 
+            return {"spreadsheet": spreadsheet, "worksheet": worksheet, "status": "worksheet not found"}
 
 
 
@@ -636,28 +662,6 @@ class ToolKit:
 #===============================GHAALIBAN MOHALSH NHTAJ HADSHY BAQI========================================================
 
     #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
-    @log_tool(logger)
-    def get_current_sheet_metadata(self):
-        return {
-            "spreadsheet": (
-                {
-                    "title": self.spreadsheet.title,
-                    "url": self.spreadsheet.url,
-                    "last_update_time": self.spreadsheet.lastUpdateTime,
-                }
-                if self.spreadsheet
-                else None
-            ),
-            "worksheet": (
-                {
-                    "title": self.worksheet.title,
-                    "url": self.worksheet.url,
-                }
-                if self.worksheet
-                else None
-            ),
-        }
-    
 
 
     @log_tool(logger)
@@ -814,30 +818,7 @@ class ToolKit:
     
 
 
-    @log_tool(logger)
-    def get_worksheet_metadata(self, title: str, spreadsheet:str): 
-        try: 
-            self.spreadsheet = self.google_client.open(spreadsheet)
-            self.worksheet = self.spreadsheet.worksheet(title=title)
-            worksheet_metadata = {
-                "id": self.worksheet.id,
-                "title": self.worksheet.title,
-                "index": self.worksheet.index,
-                "rows": self.worksheet.row_count,
-                "cols": self.worksheet.col_count
-            }
-            status = "done"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-        
-        
-        return {
-            "status": status,
-            "worksheet_metadata": worksheet_metadata if status == "done" else None
-        }
-
+ 
 
 
     @log_tool(logger)
