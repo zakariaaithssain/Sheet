@@ -3,6 +3,7 @@ from gspread import Client
 import gspread
 import datetime
 import logging
+import google.auth.exceptions
 
 from config.logging_config import log_tool
 
@@ -81,6 +82,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" #this way the model would explain the error
                             #because gspread don't separate technical errors
@@ -103,6 +106,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
         return {
@@ -160,6 +165,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError: 
+            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -189,6 +196,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError: 
+            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -218,6 +227,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError: 
+            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -247,6 +258,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError: 
+            raise
         except Exception as e: 
             status = f"internal error: {e}"
         
@@ -276,6 +289,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
                                     
@@ -308,6 +323,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
                                     
@@ -347,6 +364,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -379,6 +398,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -409,6 +430,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -439,6 +462,8 @@ class ToolKit:
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
@@ -484,6 +509,8 @@ class ToolKit:
 
             except KeyError: 
                 status = "category not found"
+            except google.auth.exceptions.RefreshError:
+                raise
             except Exception as e: 
                 status = f"internal error: {e}" 
         else: 
@@ -530,6 +557,8 @@ class ToolKit:
 
             except KeyError: 
                 status = "category not found"
+            except google.auth.exceptions.RefreshError:
+                raise
             except Exception as e: 
                 status = f"internal error: {e}" 
         else: 
@@ -549,6 +578,8 @@ class ToolKit:
                 }
     
 
+
+
     @log_tool(logger)
     def add_expense_transaction(self, date:str, amount: float, description: str, category: str): 
         data = [date, amount, description, category]
@@ -561,13 +592,16 @@ class ToolKit:
             if category.lower().strip() not in self.map["expense"]: 
                 status = "category not found"
             else: 
-                self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
+                response = self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
+                print(response)
                 status = "done"
         
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
+        except google.auth.exceptions.RefreshError:
+            raise
         except Exception as e: 
             status = f"internal error: {e}" 
             
