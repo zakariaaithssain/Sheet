@@ -1,8 +1,9 @@
 import logging
 
 from langchain.agents import create_agent
-from langchain.messages import SystemMessage
+from langchain.messages import SystemMessage, AIMessage, HumanMessage
 
+from agent.middlewares import sequence_tool_calls
 
 logger = logging.getLogger("agent")
 
@@ -13,7 +14,8 @@ class Agent:
         self.system = system_prompt     
         self.agent = create_agent(self.model_provider,
                       system_prompt=self.system,
-                      tools=tools
+                      tools=tools,
+                      middleware=[sequence_tool_calls]
                         )
         logger.info("agent initialized.")
 
@@ -22,22 +24,18 @@ class Agent:
         reasoning = ""
         full_response = ""
 
-        for token, meta in self.agent.stream(input={'messages': messages}, 
-                                    stream_mode="messages"): 
-            blocks = token.content_blocks
-            if not blocks:
-                continue
-            for block in blocks:
-                if block.get("type") == "text":
-                    print(block["text"], flush=True, end="")
-                    full_response += block["text"]
+        for chunk in self.agent.stream({"messages":messages}, stream_mode="values"):         
+            #each chunk contains the full state at that point
+            latest_message = chunk["messages"][-1]
+            if latest_message.content:
+                if isinstance(latest_message, AIMessage):
+                    print(f"Agent: {latest_message.content}", flush=True)
+                    full_response += latest_message.content
 
-                elif block["type"] == "reasoning":
-                    reasoning += block["reasoning"]
-        
-        logger.debug(f"user prompt : {messages[-1].content}")
-        logger.debug(f"model reasoning : {reasoning}")
-        logger.debug(f"model response : {full_response}")
+                #elif isinstance(latest_message, HumanMessage):
+                #     print(f"User: {latest_message.content}")
+            # elif latest_message.tool_calls:
+            #     print(f"Calling tools: {[tc['name'] for tc in latest_message.tool_calls]}")
 
         return full_response
 
