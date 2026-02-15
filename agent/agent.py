@@ -15,7 +15,7 @@ class Agent:
         self.agent = create_agent(self.model_provider,
                       system_prompt=self.system,
                       tools=tools,
-                      middleware=[sequence_tool_calls]
+                      #middleware=[sequence_tool_calls]
                         )
         logger.info("agent initialized.")
 
@@ -29,13 +29,13 @@ class Agent:
             latest_message = chunk["messages"][-1]
             if latest_message.content:
                 if isinstance(latest_message, AIMessage):
-                    print(f"Agent: {latest_message.content}", flush=True)
+                    print(f"GestAI: {latest_message.content}", flush=True)
                     full_response += latest_message.content
 
                 #elif isinstance(latest_message, HumanMessage):
                 #     print(f"User: {latest_message.content}")
-            # elif latest_message.tool_calls:
-            #     print(f"Calling tools: {[tc['name'] for tc in latest_message.tool_calls]}")
+            elif latest_message.tool_calls:
+                print("calling tools...")
 
         return full_response
 
