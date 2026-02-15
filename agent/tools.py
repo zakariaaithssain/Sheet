@@ -36,8 +36,6 @@ class ToolKit:
         self.map : dict = {}
         #init state of categs 
         self._build_categs_map()
-        self.empty_exp_idx : int = max(self.map["expense"].values(), default=27) + 1
-        self.empty_income_idx : int = max(self.map["income"].values(), default=27) +1 
         
         logger.info("ToolKit initialized.")
 
@@ -333,76 +331,63 @@ class ToolKit:
     @log_tool(logger)
     def create_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
         try:
-            empty_idx = self.empty_exp_idx
-            #immediate incrementing 
-            self.empty_exp_idx += 1
-
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+
             categ_name =  categ_name.lower().strip() 
             if categ_name in self.map["expense"]: 
                 status = "category already exists"
-                #decrement in case of error
-                self.empty_exp_idx -= 1
             else: 
-                name_cell = f"B{empty_idx}"
-                self.worksheet.update_acell(name_cell, categ_name)
-                print(empty_idx)
-                expense_cell = f"D{empty_idx}"
-                self.worksheet.update_acell(expense_cell, planned_expense)
+                #B: name, C: merged with B, D: planned exp
+                data = [categ_name, "", planned_expense]
+                self.worksheet.append_row(data, table_range="B28", value_input_option="USER_ENTERED")
                 self._build_categs_map()
                 status = "done"
+
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
-            self.empty_exp_idx -= 1
+            
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-            self.empty_exp_idx -= 1
+
         except Exception as e: 
             status = f"internal error: {e}" 
-            self.empty_exp_idx -=1
             
         return {"status": status, 
                 "categ_name": categ_name, 
-                "planned_expense": planned_expense, 
-                "map": self.map
-                } 
+                "planned_expense": planned_expense
+                }
     
 
 
     @log_tool(logger)
     def create_income_categ(self, categ_name: str, planned_income:float = 0): 
         try:
-            empty_idx = self.empty_income_idx
-            self.empty_income_idx+=1
-
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
             categ_name = categ_name.lower().strip()
             if categ_name in self.map["income"]: 
                 status = "category already exists"
-                self.empty_income_idx -=1
-            else: 
-                name_cell = f"H{empty_idx}"
-                self.worksheet.update_acell(name_cell, categ_name)
-
-                income_cell = f"J{empty_idx}"
-                self.worksheet.update_acell(income_cell, planned_income)
+            else:
+                #H: name, I: merged with H, J: planned income
+                data = [categ_name, "", planned_income]
+                self.worksheet.append_row(data, table_range="H28", value_input_option="USER_ENTERED")
                 self._build_categs_map()
                 status = "done"
+
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
-            self.empty_income_idxj -= 1
+
         except gspread.WorksheetNotFound: 
             status = "worksheet not found"
-            self.empty_income_idx -= 1
+
         except Exception as e: 
             status = f"internal error: {e}" 
-            self.empty_income_idx -= 1
+
         return {"status": status, 
                 "categ_name": categ_name, 
-                "planned_income": planned_income, 
+                "planned_income": planned_income
                 } 
 
 

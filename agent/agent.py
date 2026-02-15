@@ -1,9 +1,9 @@
 import logging
 
 from langchain.agents import create_agent
+from langchain.agents.middleware import SummarizationMiddleware
 from langchain.messages import SystemMessage, AIMessage, HumanMessage
-
-from agent.middlewares import sequence_tool_calls
+from agent.middleware import sequence_tool_calls
 
 logger = logging.getLogger("agent")
 
@@ -15,7 +15,11 @@ class Agent:
         self.agent = create_agent(self.model_provider,
                       system_prompt=self.system,
                       tools=tools,
-                      #middleware=[sequence_tool_calls]
+                      middleware=[
+                          SummarizationMiddleware(model=self.model_provider, 
+                                                  trigger = ("fraction", 0.5)
+                                                  )
+                                ]
                         )
         logger.info("agent initialized.")
 
