@@ -467,7 +467,7 @@ class ToolKit:
                 actual_expense = response["actual_expenses"][category]
                 actual_expense_str = str(actual_expense).strip()
                 # Handle empty strings, None, and other falsy values
-                if actual_expense_str and actual_expense_str != "":
+                if actual_expense_str:
                     actual_expense = float(actual_expense_str.replace("$", "").replace(",", ""))
                 else:
                     actual_expense = 0
@@ -513,7 +513,7 @@ class ToolKit:
                 actual_income = response["actual_incomes"][category]
                 actual_income_str = str(actual_income).strip()
                 # Handle empty strings, None, and other falsy values
-                if actual_income_str and actual_income_str != "":
+                if actual_income_str:
                     actual_income = float(actual_income_str.replace("$", "").replace(",", ""))
                 else:
                     actual_income = 0
