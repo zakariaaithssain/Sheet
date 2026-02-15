@@ -23,7 +23,10 @@ if missing:
 
 #sheets and drive scope
 SCOPES = gspread.auth.DEFAULT_SCOPES
-GOOGLE_CLIENT = gspread.service_account_from_dict(info=CREDENTIALS, scopes=SCOPES)
+GOOGLE_CLIENT = gspread.service_account_from_dict(info=CREDENTIALS,
+                                                  scopes=SCOPES, 
+                                                  #this handles retries 
+                                                  http_client=gspread.BackOffHTTPClient)
 
 
 
