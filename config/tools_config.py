@@ -74,11 +74,11 @@ methods = [
 
       ## transactions sheet tools
 
-     {"tool": toolkit.add_expense_transaction, 
-      "desc": "add transaction to expenses"},
+     {"tool": toolkit.add_expense_transactions, 
+      "desc": "add given expenses to transactions sheet"},
 
-      {"tool": toolkit.add_income_transaction, 
-      "desc": "add transaction to incomes"},
+      {"tool": toolkit.add_income_transactions, 
+      "desc": "add given incomes to transactions sheet"},
 
     {"tool":toolkit.get_today_date,
       "desc": "get current day's date"},
