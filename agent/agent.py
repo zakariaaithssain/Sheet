@@ -5,6 +5,17 @@ from langchain.agents.middleware import SummarizationMiddleware
 from langchain.messages import SystemMessage, AIMessage, HumanMessage
 from agent.middleware import sequence_tool_calls
 
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.theme import Theme 
+
+custom_theme = Theme({
+    "markdown.paragraph": "italic bold cyan",
+    "markdown.h1": "bold magenta",
+    "markdown.code": "yellow",
+})
+console = Console(theme = custom_theme)
+
 logger = logging.getLogger("agent")
 
 
@@ -25,7 +36,6 @@ class Agent:
 
     def run(self, messages: list): 
         logger.debug("called Agent.run")
-        reasoning = ""
         full_response = ""
 
         for chunk in self.agent.stream({"messages":messages}, stream_mode="values"):         
@@ -33,16 +43,13 @@ class Agent:
             latest_message = chunk["messages"][-1]
             if latest_message.content:
                 if isinstance(latest_message, AIMessage):
-                    print(f"GestAI: {latest_message.content}", flush=True, end='')
+                    console.print(Markdown(f"**GestAI**: {latest_message.content}", hyperlinks=False), end='')
                     full_response += latest_message.content
 
-                #elif isinstance(latest_message, HumanMessage):
-                #     print(f"User: {latest_message.content}")
             elif latest_message.tool_calls:
-                print("calling tools...")
+                console.print(Markdown("*calling tools...*"))
 
         return full_response
-
 
 
 
