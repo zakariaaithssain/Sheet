@@ -53,11 +53,11 @@ methods = [
     #  {"tool": toolkit.count_empty_categs_places, 
     #   "desc": "get the number of places left to add new expenses and income categories"}, 
 
-     {"tool": toolkit.create_expenses_categ, 
-      "desc": "add new expenses category"}, 
+     {"tool": toolkit.create_expense_categs, 
+      "desc": "add given expenses categories"}, 
 
-     {"tool": toolkit.create_income_categ, 
-      "desc": "add new income category"}, 
+     {"tool": toolkit.create_income_categs, 
+      "desc": "add given income categories"}, 
 
      {"tool": toolkit.rename_expense_categ, 
       "desc": "rename given expense category"}, 
