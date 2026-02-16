@@ -56,12 +56,6 @@ methods = [
      {"tool": toolkit.set_planned_income, 
       "desc": "set planned income for given income category"}, 
 
-    #  {"tool": toolkit.get_renameable_categs, 
-    #   "desc": "get income and expenses categories that can be renamed. this is equivalent to categories created by the user, as the only categories that can be renamed are the ones created by the user, the rest are system defined and cannot be renamed"}, 
-
-    #  {"tool": toolkit.count_empty_categs_places, 
-    #   "desc": "get the number of places left to add new expenses and income categories"}, 
-
      {"tool": toolkit.create_expense_categs, 
       "desc": "add given expenses categories"}, 
 
@@ -99,14 +93,17 @@ methods = [
    {"tool":toolkit.list_spreadsheets,
       "desc": "list available spreadsheets names"}, 
 
-    # {"tool": toolkit.get_spreadsheet_metadata, 
-    #  "desc": "get given spreadsheet name, id, creation time, and last modification time"},
-
     {"tool":toolkit.list_worksheets,
       "desc": "list available worksheets names belonging to given spreadsheet"},
     
     {"tool":toolkit.get_sheets_metadata,
       "desc": "get URL, title and last modification time if available for given sheets"}, 
+
+
+
+
+
+
 
 
     # {"tool":toolkit.create_worksheet, 
