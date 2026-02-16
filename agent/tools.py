@@ -537,8 +537,8 @@ class ToolKit:
     @log_tool(logger)
     def get_today_date(self): 
         return {"status":"done", 
-                "date": datetime.date.today().strftime("%d/%m/%Y")
-                }
+            "date": datetime.date.today().strftime("%m/%d/%Y")
+            }
     
 
 
