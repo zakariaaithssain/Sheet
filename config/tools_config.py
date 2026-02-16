@@ -65,11 +65,11 @@ methods = [
      {"tool": toolkit.rename_income_categ, 
       "desc": "rename given income category"}, 
       
-      {"tool": toolkit.delete_income_categ, 
-      "desc": "delete given income category"}, 
+      {"tool": toolkit.delete_income_categs, 
+      "desc": "delete given income categories"}, 
 
-     {"tool": toolkit.delete_expense_categ, 
-      "desc": "delete given expense category"},
+     {"tool": toolkit.delete_expense_categs, 
+      "desc": "delete given expense categories"},
 
 
       ## transactions sheet tools

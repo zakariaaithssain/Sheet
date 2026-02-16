@@ -154,7 +154,13 @@ class ToolKit:
             max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"B28:D{max_row_idx}"
             expenses_range = self.worksheet.get(range_name)
-            expenses = {expense[0].lower().strip():expense[2] for expense in expenses_range}
+            expenses = {}
+            for expense in expenses_range: 
+                if len(expense) == 3: 
+                    expenses[expense[0]] = expense[2]
+                else: 
+                    expenses[expense[0]] = "not set"
+
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -210,7 +216,13 @@ class ToolKit:
             max_row_idx = max(categ_rows.values(), default=28)
             range_name = f"H28:J{max_row_idx}"
             income_range = self.worksheet.get(range_name)
-            incomes = {income[0].lower().strip():income[2] for income in income_range}
+            incomes = {}
+            for income in income_range: 
+                if len(income) == 3 : 
+                    incomes[income[0]] = income[2]
+                else: 
+                    incomes[income[0]] = "not set"
+                    
             status = "done"
         except gspread.SpreadsheetNotFound: 
             status = "spreadsheet not found"
@@ -449,98 +461,73 @@ class ToolKit:
                 "new_name": new_name, 
                 } 
 
-    
+
 
     @log_tool(logger)
-    def delete_expense_categ(self,category:str): 
-        """steps: if no transactions are associated:  
-        - set planned expense to empty str   
-        - rename to empty str  
-        - sort to take resulted empty row to bottom. """
-        status = "unknown internal error"
-        category = category.lower().strip()
-        response = self.get_actual_expenses()
-        #will be None if there was some prblm
-        if isinstance(response["actual_expenses"], dict): 
-            try:
-                #raises keyerror if categ not found
-                actual_expense = response["actual_expenses"][category]
-                actual_expense_str = str(actual_expense).strip()
-                # Handle empty strings, None, and other falsy values
-                if actual_expense_str:
-                    actual_expense = float(actual_expense_str.replace("$", "").replace(",", ""))
-                else:
-                    actual_expense = 0
-                
-                if actual_expense != 0: 
-                    status = f"cannot delete category associated with transactions, associated expense: {actual_expense}"
-                else: 
-                    max_row = max(self.map["expense"].values(), default=28) 
-                    #normally planned expense is a float, but setting it to an empty str erases the row
-                    self.set_planned_expense(category, planned_expense="")
-                    self.rename_expense_categ(category, new_name="")
-                    
-                    self.worksheet.sort((2, 'asc'), range=f"B28:F{max_row}")
-                    self._build_categs_map()
-                    status = "done"
-
-            except KeyError: 
-                status = "category not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
-        else: 
-            status = response["status"]
+    def delete_expense_categs(self, categories: list[str]): 
+        actual_categs_resp = self.get_actual_expenses()
+        if actual_categs_resp["status"] != "done": 
+            return {"status": actual_categs_resp["status"]}
         
-        return {"status" : status, 
-                "category" : category}
+        actual_categs = actual_categs_resp["actual_expenses"]
+        categories = [categ.lower().strip() for categ in categories]
+        response = {}
 
-                
+        batch = []
+        for categ in categories: 
+            if categ not in actual_categs: 
+                response[categ] = "not found"
+            else: 
+                if str(actual_categs[categ]).replace("$", "") != "0": 
+                    response[categ] = f"cannot delete category associated with transactions, associated expense: {actual_categs[categ]}"
+                else: 
+                    row = self.map["expense"][categ]
+                    batch.append(f'B{row}:D{row}')
+                    response[categ] = "done"
+        
+        if "done" in response.values(): 
+            self.worksheet.batch_clear(batch)
+            max_row = max(self.map["expense"].values(), default=28) 
+            self.worksheet.sort((2, 'des'), range=f"B28:D{max_row}")
+            self._build_categs_map()
 
+        return response
     
+
+
+
     @log_tool(logger)
-    def delete_income_categ(self,category:str): 
-        """steps: if no transactions are associated:  
-        - set planned income to empty str   
-        - rename to empty str  
-        - sort to take resulted empty row to bottom. """
-        status = "unknown internal error"
-        category = category.lower().strip()
-        response = self.get_actual_incomes()
-        #will be None if there was some prblm
-        if isinstance(response["actual_incomes"], dict): 
-            try:
-                #raises keyerror if categ not found
-                actual_income = response["actual_incomes"][category]
-                actual_income_str = str(actual_income).strip()
-                # Handle empty strings, None, and other falsy values
-                if actual_income_str:
-                    actual_income = float(actual_income_str.replace("$", "").replace(",", ""))
-                else:
-                    actual_income = 0
-                
-                if actual_income != 0: 
-                    status = f"cannot delete category associated with transactions, associated income: {actual_income}"
-                else: 
-                    max_row = max(self.map["income"].values(), default=28)
-                    #normally planned income is a float, but setting it to an empty str erases the row
-                    self.set_planned_income(category, planned_income="")
-                    self.rename_income_categ(category, new_name="")
-                    
-                    self.worksheet.sort((8, 'asc'), range=f"H28:L{max_row}")
-                    self._build_categs_map()
-                    status = "done"
-
-            except KeyError: 
-                status = "category not found"
-            except Exception as e: 
-                status = f"internal error: {e}" 
-        else: 
-            status = response["status"]
+    def delete_income_categs(self, categories: list[str]): 
+        actual_categs_resp = self.get_actual_incomes()
+        if actual_categs_resp["status"] != "done": 
+            return {"status": actual_categs_resp["status"]}
         
-        return {"status" : status, 
-                "category" : category}
+        actual_categs = actual_categs_resp["actual_incomes"]
+        categories = [categ.lower().strip() for categ in categories]
+        response = {}
 
-                    
+        batch = []
+        for categ in categories: 
+            if categ not in actual_categs: 
+                response[categ] = "not found"
+            else: 
+                if str(actual_categs[categ]).replace("$", "") != "0": 
+                    response[categ] = f"cannot delete category associated with transactions, associated income: {actual_categs[categ]}"
+                else: 
+                    row = self.map["income"][categ]
+                    batch.append(f'H{row}:J{row}')
+                    response[categ] = "done"
+        
+        if "done" in response.values(): 
+            self.worksheet.batch_clear(batch)
+            max_row = max(self.map["income"].values(), default=28) 
+            self.worksheet.sort((8, 'asc'), range=f"H28:J{max_row}")
+            self._build_categs_map()
+
+        return response
+
+
+                
 
    #======================== TRANSACTIONS SHEET TOOLS ========================================
 
