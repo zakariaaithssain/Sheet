@@ -47,7 +47,6 @@ class ToolKit:
     def _build_categs_map(self): 
         """
         should always be called **after** any change related to categories (to avoid stale state issues)  
-
         create a json schema of `expense` and `income` categories with `corresponding indexes` and save it to `self.map`
          """
         
@@ -404,10 +403,10 @@ class ToolKit:
 
             old_name = old_name.lower().strip()
             #this raises a key error if the old_name is not in the categories
-            categ_index = self.map["expense"][old_name]
+            categ_index = self.map["expense"].pop(old_name)
+            self.map["expense"][new_name.strip().lower()] = categ_index
             name_cell = f"B{categ_index}"
             self.worksheet.update_acell(name_cell, new_name)
-            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -433,10 +432,10 @@ class ToolKit:
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
             old_name = old_name.lower().strip()
             #this raises a key error if the old_name is not in the categories
-            categ_index = self.map["income"][old_name]
+            categ_index = self.map["income"].pop(old_name)
+            self.map["income"][new_name.strip().lower()] = categ_index
             name_cell = f"H{categ_index}"
             self.worksheet.update_acell(name_cell, new_name)
-            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
