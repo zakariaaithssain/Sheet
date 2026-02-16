@@ -33,7 +33,7 @@ class Agent:
             latest_message = chunk["messages"][-1]
             if latest_message.content:
                 if isinstance(latest_message, AIMessage):
-                    print(f"GestAI: {latest_message.content}", flush=True)
+                    print(f"GestAI: {latest_message.content}", flush=True, end='')
                     full_response += latest_message.content
 
                 #elif isinstance(latest_message, HumanMessage):
