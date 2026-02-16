@@ -1,9 +1,12 @@
 
 from config.google_config import GOOGLE_CLIENT
+
 from agent.tools import ToolKit
 
 from langchain.tools import tool
-
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.theme import Theme
 
 
 """
@@ -13,7 +16,13 @@ because the decoration will consider the self arg as a tool arg,
 so we need to instanciate the class first
 
 """
-
+#I cannot use the one defined in settings because of circular importing
+console = Console(theme = Theme({
+    "markdown.paragraph": "italic cyan",
+    "markdown.h1": "bold magenta",
+    "markdown.code": "yellow",
+}))
+console.print(Markdown("*fetching sheet state...*"))
 
 toolkit = ToolKit(GOOGLE_CLIENT)
 methods = [
