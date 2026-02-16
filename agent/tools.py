@@ -528,7 +528,7 @@ class ToolKit:
         return response
 
 
-
+#TODO
     @log_tool(logger)
     def get_summary(self): 
         ... 
@@ -705,233 +705,227 @@ class ToolKit:
 
 #===============================GHAALIBAN MOHALSH NHTAJ HADSHY BAQI========================================================
 
-    #whenever some method is called, self.spreadsheet and worksheet are set to the ones over which the method was called, so we keep track of last edited ones. 
+    # @log_tool(logger)
+    # def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
+    #     try:
+    #         self.spreadsheet = self.google_client.open(spreadsheet)
+    #         if worksheet: self.worksheet = self.spreadsheet.worksheet(worksheet)
+    #         status = "done"
+    #     except gspread.SpreadsheetNotFound:
+    #         status= "spreadsheet not found"
+    #     except gspread.WorksheetNotFound: 
+    #         status = "worksheet not found"
 
-
-    @log_tool(logger)
-    def set_active_sheet(self, spreadsheet:str, worksheet:str = None): 
-        try:
-            self.spreadsheet = self.google_client.open(spreadsheet)
-            if worksheet: self.worksheet = self.spreadsheet.worksheet(worksheet)
-            status = "done"
-        except gspread.SpreadsheetNotFound:
-            status= "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-
-        return {
-        "status": status,
-        "spreadsheet_url": self.spreadsheet.url if self.spreadsheet else None
-    }
+    #     return {
+    #     "status": status,
+    #     "spreadsheet_url": self.spreadsheet.url if self.spreadsheet else None
+    # }
 
 
 
-    @log_tool(logger)
-    def create_spreadsheet(self, title: str):
-        try:
-            self.spreadsheet = self.google_client.open(title=title)
-            status = "exists"
-        except gspread.SpreadsheetNotFound:
-            self.spreadsheet = self.google_client.create(title=title)
-            status = "created"
+    # @log_tool(logger)
+    # def create_spreadsheet(self, title: str):
+    #     try:
+    #         self.spreadsheet = self.google_client.open(title=title)
+    #         status = "exists"
+    #     except gspread.SpreadsheetNotFound:
+    #         self.spreadsheet = self.google_client.create(title=title)
+    #         status = "created"
 
-        return {
-        "spreadsheet": self.spreadsheet.title,
-        "status": status,
-        "spreadsheet_url": self.spreadsheet.url 
-    }
+    #     return {
+    #     "spreadsheet": self.spreadsheet.title,
+    #     "status": status,
+    #     "spreadsheet_url": self.spreadsheet.url 
+    # }
 
         
         
 
-    @log_tool(logger)
-    def create_worksheet(self, title: str, headers: list[str], spreadsheet: str) -> dict:
-        try: 
-            self.spreadsheet = self.google_client.open(title=spreadsheet)
-            try:
-                self.worksheet = self.spreadsheet.worksheet(title=title)
-                status = "exists"
-            except gspread.WorksheetNotFound: 
-                self.worksheet = self.spreadsheet.add_worksheet(title=title,
-                                                cols=len(headers), rows=31)
-                #add header
-                self.worksheet.update(values=[headers],
-                                    range_name="A1:" + chr(64+len(headers)) + "1")
-                self.worksheet.format("A1:" + chr(64+len(headers)) + "1", {'textFormat': {'bold': True}})
+    # @log_tool(logger)
+    # def create_worksheet(self, title: str, headers: list[str], spreadsheet: str) -> dict:
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(title=spreadsheet)
+    #         try:
+    #             self.worksheet = self.spreadsheet.worksheet(title=title)
+    #             status = "exists"
+    #         except gspread.WorksheetNotFound: 
+    #             self.worksheet = self.spreadsheet.add_worksheet(title=title,
+    #                                             cols=len(headers), rows=31)
+    #             #add header
+    #             self.worksheet.update(values=[headers],
+    #                                 range_name="A1:" + chr(64+len(headers)) + "1")
+    #             self.worksheet.format("A1:" + chr(64+len(headers)) + "1", {'textFormat': {'bold': True}})
                 
-                status = "created"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
+    #             status = "created"
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
         
-        return {
-        "worksheet": title,
-        "status": status,
-        "spreadsheet": spreadsheet
-        }
+    #     return {
+    #     "worksheet": title,
+    #     "status": status,
+    #     "spreadsheet": spreadsheet
+    #     }
 
 
-    @log_tool(logger)
-    def delete_worksheet(self, title: str, spreadsheet: str):
-        try: 
-            self.spreadsheet = self.google_client.open(title=spreadsheet)
-            try:
-                self.worksheet = self.spreadsheet.worksheet(title=title)
-                self.spreadsheet.del_worksheet(self.worksheet)
-                status = "deleted"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except Exception as e: 
-            status = f"internal error: {e}" 
-        return {
-        "worksheet": title,
-        "status": status,
-        "spreadsheet": spreadsheet
-        }
+    # @log_tool(logger)
+    # def delete_worksheet(self, title: str, spreadsheet: str):
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(title=spreadsheet)
+    #         try:
+    #             self.worksheet = self.spreadsheet.worksheet(title=title)
+    #             self.spreadsheet.del_worksheet(self.worksheet)
+    #             status = "deleted"
+    #         except gspread.WorksheetNotFound: 
+    #             status = "worksheet not found"
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
+    #     except Exception as e: 
+    #         status = f"internal error: {e}" 
+    #     return {
+    #     "worksheet": title,
+    #     "status": status,
+    #     "spreadsheet": spreadsheet
+    #     }
 
 
-    @log_tool(logger)
-    def delete_spreadsheet(self, title: str): 
-        try: 
-            spread = self.google_client.open(title=title)
-            self.google_client.del_spreadsheet(spread.id)
-            status = "deleted"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
+    # @log_tool(logger)
+    # def delete_spreadsheet(self, title: str): 
+    #     try: 
+    #         spread = self.google_client.open(title=title)
+    #         self.google_client.del_spreadsheet(spread.id)
+    #         status = "deleted"
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
         
-        except Exception as e: 
-                    status = f"internal error: {e}"
+    #     except Exception as e: 
+    #                 status = f"internal error: {e}"
 
-        return {"spreadsheet": title, 
-                "status": status}
+    #     return {"spreadsheet": title, 
+    #             "status": status}
 
 
    
-    @log_tool(logger)
-    def get_spreadsheet_metadata(self, spreadsheet:str): 
-        try: 
-            self.spreadsheet = self.google_client.open(spreadsheet)
-            spreadsheet_metadata = {
-                "id": self.spreadsheet.id,
-                "name": spreadsheet,
-                "creation_time": self.spreadsheet.creationTime,
-                "last_modif_time": self.spreadsheet.lastUpdateTime,
-            }
-            status = "done"
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
+    # @log_tool(logger)
+    # def get_spreadsheet_metadata(self, spreadsheet:str): 
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(spreadsheet)
+    #         spreadsheet_metadata = {
+    #             "id": self.spreadsheet.id,
+    #             "name": spreadsheet,
+    #             "creation_time": self.spreadsheet.creationTime,
+    #             "last_modif_time": self.spreadsheet.lastUpdateTime,
+    #         }
+    #         status = "done"
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
 
-        return {
-            "status": status,
-            "spreadsheet_metadata": spreadsheet_metadata if status == "done" else None
-        }
+    #     return {
+    #         "status": status,
+    #         "spreadsheet_metadata": spreadsheet_metadata if status == "done" else None
+    #     }
     
 
 
     
 
 
- 
+    # @log_tool(logger)
+    # def get_worksheet_headers(self, title:str, spreadsheet: str):
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(title=spreadsheet)
+    #         try:
+    #             self.worksheet = self.spreadsheet.worksheet(title=title)
+    #             headers = self.worksheet.row_values(1)
+    #             if headers: status = "done"
+    #             else: 
+    #                 status = "headers not found"
+    #         except gspread.WorksheetNotFound: 
+    #             status = "worksheet not found"
+    #             headers = None
 
-
-    @log_tool(logger)
-    def get_worksheet_headers(self, title:str, spreadsheet: str):
-        try: 
-            self.spreadsheet = self.google_client.open(title=spreadsheet)
-            try:
-                self.worksheet = self.spreadsheet.worksheet(title=title)
-                headers = self.worksheet.row_values(1)
-                if headers: status = "done"
-                else: 
-                    status = "headers not found"
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-                headers = None
-
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-            headers = None
-        except Exception as e: 
-            status = f"internal error: {e}" 
-            headers = None
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
+    #         headers = None
+    #     except Exception as e: 
+    #         status = f"internal error: {e}" 
+    #         headers = None
         
-        return {"worksheet": title, 
-                "spreadsheet": spreadsheet, 
-                "status": status, 
-                "headers": headers}
+    #     return {"worksheet": title, 
+    #             "spreadsheet": spreadsheet, 
+    #             "status": status, 
+    #             "headers": headers}
 
 
 
-    @log_tool(logger)
-    def add_row(self, title: str, spreadsheet: str, data: dict): 
-        try: 
-            self.spreadsheet = self.google_client.open(title=spreadsheet)
-            try:
-                self.worksheet = self.spreadsheet.worksheet(title=title)
-                #lower headers and data keys to compare
-                sheet_headers = [header.lower() for header in self.worksheet.row_values(1)]
-                lower_data = {k.lower(): v for k, v in data.items()}
+    # @log_tool(logger)
+    # def add_row(self, title: str, spreadsheet: str, data: dict): 
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(title=spreadsheet)
+    #         try:
+    #             self.worksheet = self.spreadsheet.worksheet(title=title)
+    #             #lower headers and data keys to compare
+    #             sheet_headers = [header.lower() for header in self.worksheet.row_values(1)]
+    #             lower_data = {k.lower(): v for k, v in data.items()}
 
-                #data should be compatible with headers
-                if all(header in sheet_headers for header in lower_data.keys()): 
-                    #data should be in the order of the columns (some gspread limitations)
-                    ordered_values = []
-                    for header in sheet_headers: 
-                        ordered_values.append(lower_data[header])
+    #             #data should be compatible with headers
+    #             if all(header in sheet_headers for header in lower_data.keys()): 
+    #                 #data should be in the order of the columns (some gspread limitations)
+    #                 ordered_values = []
+    #                 for header in sheet_headers: 
+    #                     ordered_values.append(lower_data[header])
 
-                    self.worksheet.append_row(ordered_values, table_range="A1")
-                    status = "inserted"
+    #                 self.worksheet.append_row(ordered_values, table_range="A1")
+    #                 status = "inserted"
         
-                else: 
-                    status = "mismatch between headers and data"
+    #             else: 
+    #                 status = "mismatch between headers and data"
 
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
+    #         except gspread.WorksheetNotFound: 
+    #             status = "worksheet not found"
 
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
 
-        except Exception as e: 
-            status = f"internal error: {e}" 
+    #     except Exception as e: 
+    #         status = f"internal error: {e}" 
         
-        return {"worksheet": title, 
-                "spreadsheet": spreadsheet, 
-                "status": status, 
-                "headers": sheet_headers}
+    #     return {"worksheet": title, 
+    #             "spreadsheet": spreadsheet, 
+    #             "status": status, 
+    #             "headers": sheet_headers}
     
     
 
-    @log_tool(logger)
-    def get_worksheet_data(self, title: str, spreadsheet: str): 
-        try: 
-            self.spreadsheet = self.google_client.open(title=spreadsheet)
-            try:
-                self.worksheet = self.spreadsheet.worksheet(title=title)
-                data = self.worksheet.get_all_records(head=1)
-                #add a row key to every dict representing a row
-                for index, row in enumerate(data):
-                    row["row"] = index +1
+    # @log_tool(logger)
+    # def get_worksheet_data(self, title: str, spreadsheet: str): 
+    #     try: 
+    #         self.spreadsheet = self.google_client.open(title=spreadsheet)
+    #         try:
+    #             self.worksheet = self.spreadsheet.worksheet(title=title)
+    #             data = self.worksheet.get_all_records(head=1)
+    #             #add a row key to every dict representing a row
+    #             for index, row in enumerate(data):
+    #                 row["row"] = index +1
 
-                status = "done"
+    #             status = "done"
 
-            except gspread.WorksheetNotFound: 
-                status = "worksheet not found"
-                data = None
+    #         except gspread.WorksheetNotFound: 
+    #             status = "worksheet not found"
+    #             data = None
 
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-            data = None
+    #     except gspread.SpreadsheetNotFound: 
+    #         status = "spreadsheet not found"
+    #         data = None
 
-        except Exception as e: 
-            status = f"internal error: {e}" 
-            data = None
+    #     except Exception as e: 
+    #         status = f"internal error: {e}" 
+    #         data = None
 
         
-        return {"worksheet": title, 
-                "spreadsheet": spreadsheet, 
-                "status": status,
-                "data": data}
+    #     return {"worksheet": title, 
+    #             "spreadsheet": spreadsheet, 
+    #             "status": status,
+    #             "data": data}
         
 
 

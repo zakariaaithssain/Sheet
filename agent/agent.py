@@ -2,10 +2,9 @@ import logging
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware
-from langchain.messages import SystemMessage, AIMessage, HumanMessage
+from langchain.messages import SystemMessage, AIMessage
 from rich.markdown import Markdown
 
-from agent.middleware import sequence_tool_calls
 from config.settings import Settings
 
 logger = logging.getLogger("agent")

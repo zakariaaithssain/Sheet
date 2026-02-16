@@ -1,0 +1,13 @@
+2026-02-16 22:06:22,898 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: list_spreadsheets, call args: None
+2026-02-16 22:06:23,500 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: list_spreadsheets | call args: None
+2026-02-16 22:06:35,592 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_sheets_metadata, call args: {'spreadsheet': 'Monthly budget', 'worksheet': None}
+2026-02-16 22:07:18,190 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: list_worksheets, call args: {'spreadsheet': 'Monthly budget'}
+2026-02-16 22:07:20,024 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: list_worksheets | call args: {'spreadsheet': 'Monthly budget'}
+2026-02-16 22:08:04,609 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_expenses_categories, call args: None
+2026-02-16 22:08:04,610 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: get_expenses_categories | call args: None
+2026-02-16 22:09:12,476 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: delete_expense_categs, call args: {'categories': ['Utilities', 'Travel', 'Transportation', 'Pets', 'Personal', 'Other', 'Home', 'Health/Medical', 'Gifts', 'Food', 'Debt']}
+2026-02-16 22:09:12,477 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_actual_expenses, call args: None
+2026-02-16 22:09:14,813 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: get_actual_expenses | call args: None
+2026-02-16 22:09:17,987 [INFO] tools: logging_config.py:wrapper:33 | tool partially succeeded | status=partial | name: delete_expense_categs | call args: {'categories': ['Utilities', 'Travel', 'Transportation', 'Pets', 'Personal', 'Other', 'Home', 'Health/Medical', 'Gifts', 'Food', 'Debt']}
+2026-02-16 22:10:02,851 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: create_expense_categs, call args: {'categories': ['Utilities', 'Travel', 'Transportation', 'Pets', 'Personal', 'Other', 'Home', 'Health/Medical', 'Gifts', 'Food', 'Debt']}
+2026-02-16 22:10:07,856 [INFO] tools: logging_config.py:wrapper:33 | tool partially succeeded | status=partial | name: create_expense_categs | call args: {'categories': ['Utilities', 'Travel', 'Transportation', 'Pets', 'Personal', 'Other', 'Home', 'Health/Medical', 'Gifts', 'Food', 'Debt']}
