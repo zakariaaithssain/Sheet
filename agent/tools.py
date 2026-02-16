@@ -47,7 +47,6 @@ class ToolKit:
         #variable li dayr 3liha lfilm 
         self.map : dict = {}
         #init state of categs 
-        print("fetching sheet state...")
         self._build_categs_map()
         logger.info("ToolKit initialized.")
 
@@ -529,6 +528,11 @@ class ToolKit:
         return response
 
 
+
+    @log_tool(logger)
+    def get_summary(self): 
+        ... 
+
                 
 
    #======================== TRANSACTIONS SHEET TOOLS ========================================
@@ -600,6 +604,9 @@ class ToolKit:
             response = f"internal error: {e}" 
 
         return response
+
+
+
 
 
 

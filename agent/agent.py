@@ -3,21 +3,13 @@ import logging
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware
 from langchain.messages import SystemMessage, AIMessage, HumanMessage
-from agent.middleware import sequence_tool_calls
-
-from rich.console import Console
 from rich.markdown import Markdown
-from rich.theme import Theme 
 
-custom_theme = Theme({
-    "markdown.paragraph": "italic bold cyan",
-    "markdown.h1": "bold magenta",
-    "markdown.code": "yellow",
-})
-console = Console(theme = custom_theme)
+from agent.middleware import sequence_tool_calls
+from config.settings import Settings
 
 logger = logging.getLogger("agent")
-
+console = Settings.console
 
 class Agent:
     def __init__(self, model_provider:str, tools:list, system_prompt: SystemMessage):

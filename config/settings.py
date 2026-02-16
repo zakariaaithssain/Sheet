@@ -1,6 +1,8 @@
 
 from dataclasses import dataclass
 from langchain.messages import SystemMessage
+from rich.theme import Theme 
+from rich.console import Console 
 
 from config.tools_config import TOOLS, GOOGLE_CLIENT
 
@@ -146,10 +148,17 @@ PRIORITY ORDER:
 3. Be concise and professional.
 """)
 
-
+    #cli console
+    console = Console(theme = Theme({
+    "markdown.paragraph": "italic cyan",
+    "markdown.h1": "bold magenta",
+    "markdown.code": "yellow",
+}))
+    #sheets
     google_client = GOOGLE_CLIENT
-
+    #agent tools
     tools = TOOLS
+
 
 
 

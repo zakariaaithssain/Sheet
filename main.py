@@ -38,7 +38,7 @@ def main():
     os.makedirs("logs", exist_ok = True)
     settings = Settings()
     setup_logging(settings)
-    
+
     logger.info("setting memory...")
     memory = InMemoryConversationStore(settings.max_context_messages)
 
