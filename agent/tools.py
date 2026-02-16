@@ -1,5 +1,6 @@
+from typing import TypedDict
 from gspread import Client
-
+from datetime import date
 from config.logging_config import log_tool
 
 import gspread
@@ -11,6 +12,17 @@ import logging
 logger = logging.getLogger("tools")
 """ NOTE: Whenever we add a method to this class, to make it a tool that is accessible for the 
 agent, we need to configure it in the config/tools_config file."""
+
+
+#will be used for 'Transactions' sheet
+class Transaction(TypedDict): 
+    date: str
+    amount: float
+    description: str 
+    category: str 
+
+
+
 
 class ToolKit:
     def __init__(self, google_client: Client):
@@ -35,8 +47,8 @@ class ToolKit:
         #variable li dayr 3liha lfilm 
         self.map : dict = {}
         #init state of categs 
+        print("fetching sheet state...")
         self._build_categs_map()
-        
         logger.info("ToolKit initialized.")
 
     
@@ -520,6 +532,7 @@ class ToolKit:
                 
 
    #======================== TRANSACTIONS SHEET TOOLS ========================================
+    
 
     @log_tool(logger)
     def get_today_date(self): 
@@ -531,70 +544,74 @@ class ToolKit:
 
 
     @log_tool(logger)
-    def add_expense_transaction(self, date:str, amount: float, description: str, category: str): 
-        data = [date, amount, description, category]
+    def add_expense_transactions(self, transactions: list[Transaction]): 
         try:
-            #to be up to date with categs 
-            self._build_categs_map()
-            if category.lower().strip() not in self.map["expense"]: 
-                status = "category not found"
-            else: 
-                #this must be setted after calling build_categs_map, because this latter sets self.worksheet to "summary" instead of "transactions"
-                self.spreadsheet = self.google_client.open(self.spread_title)
-                self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
-                self.worksheet.append_row(data, table_range="B4", value_input_option="USER_ENTERED")
-                status = "done"
-        
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-        except Exception as e: 
-            status = f"internal error: {e}" 
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
+            response = {}
+            new_data = []
+            for trans in transactions: 
+                category = trans["category"].lower().strip()
+                if category not in self.map["expense"]: 
+                    response[category] = "not found"
+                else:
+                    new_row = list(trans.values())
+                    new_data.append(new_row)
+                    response[category] = "done"
             
-        return {"status": status,
-                "data": data} 
+            if "done" in response.values(): 
+                self.worksheet.append_rows(new_data, table_range="B4", value_input_option="USER_ENTERED")
 
+        except gspread.SpreadsheetNotFound: 
+            response = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            response = "worksheet not found"
+        except Exception as e: 
+            response = f"internal error: {e}" 
+
+        return response
+    
 
 
     @log_tool(logger)
-    def add_income_transaction(self, date:str, amount: float, description: str, category: str): 
-        data = [date, amount, description, category]
+    def add_income_transactions(self, transactions: list[Transaction]): 
         try:
-            #to be up to date with categs 
-            self._build_categs_map()
-            if category.lower().strip() not in self.map["income"]: 
-                status = "category not found"
-            else: 
-                self.spreadsheet = self.google_client.open(self.spread_title)
-                #this must be setted after calling build_categs_map, 
-                # because this latter sets self.worksheet to "summary" instead of "transactions"
-                self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
-                self.worksheet.append_row(data, table_range="G4", value_input_option="USER_ENTERED")
-                status = "done"
-        
-        except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-        except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-        except Exception as e: 
-            status = f"internal error: {e}" 
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.transactions_title)
+            response = {}
+            new_data = []
+            for trans in transactions: 
+                category = trans["category"].lower().strip()
+                if category not in self.map["income"]: 
+                    response[category] = "not found"
+                else:
+                    new_row = list(trans.values())
+                    new_data.append(new_row)
+                    response[category] = "done"
             
-        return {"status": status,
-                "data": data} 
+            if "done" in response.values(): 
+                self.worksheet.append_rows(new_data, table_range="G4", value_input_option="USER_ENTERED")
+
+        except gspread.SpreadsheetNotFound: 
+            response = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            response = "worksheet not found"
+        except Exception as e: 
+            response = f"internal error: {e}" 
+
+        return response
 
 
 
 
 
-
-#=============GENERAL PURPOSE ================
+#=============GENERAL PURPOSE ===============================================
 
     @log_tool(logger)
     def list_spreadsheets(self):
         try:
             spreadsheets = self.google_client.list_spreadsheet_files()
-            spreadsheets_names = [ s["name"] for s in spreadsheets]
+            spreadsheets_names = [s["name"] for s in spreadsheets]
             status = "done"
         except Exception as e: 
             status = f"internal error: {e}"
