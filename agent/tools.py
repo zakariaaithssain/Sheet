@@ -279,8 +279,6 @@ class ToolKit:
             expense_cell = f"D{categ_row_idx}"
             old_expense = self.worksheet.acell(expense_cell).value
             self.worksheet.update_acell(expense_cell, planned_expense)
-            #update state
-            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -313,7 +311,6 @@ class ToolKit:
             income_cell = f"J{categ_row_idx}"
             old_income = self.worksheet.acell(income_cell).value
             self.worksheet.update_acell(income_cell, planned_income)
-            self._build_categs_map()
             status = "done"
         except KeyError: 
             status = "category not found"
@@ -335,72 +332,66 @@ class ToolKit:
 
 
 
-
-
-#NOTE: the self.empty_idx order of incrementing, decrementing and accessing is carefully chosen to 
-# avoid the problems caused by concurrency when calling the tool in a concurrent way by the create_agent
-
     @log_tool(logger)
-    def create_expenses_categ(self, categ_name: str, planned_expense:float = 0): 
-        try:
+    def create_expense_categs(self, categories: list[str]): 
+        try: 
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-            categ_name =  categ_name.lower().strip() 
-            if categ_name in self.map["expense"]: 
-                status = "category already exists"
-            else: 
-                #B: name, C: merged with B, D: planned exp
-                data = [categ_name, "", planned_expense]
-                self.worksheet.append_row(data, table_range="B28", value_input_option="USER_ENTERED")
+            response = {}
+            new_data = []
+            for categ in categories: 
+                if categ.lower().strip() in self.map["expense"]: 
+                    response[categ] = "already exists"
+                else:
+                    new_row = [categ, '', 0]
+                    new_data.append(new_row)
+                    response[categ] = "done"
+            
+            if "done" in response.values(): 
+                self.worksheet.append_rows(new_data, table_range="B28")
                 self._build_categs_map()
-                status = "done"
 
         except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-            
+            response = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-
+            response = "worksheet not found"
         except Exception as e: 
-            status = f"internal error: {e}" 
-            
-        return {"status": status, 
-                "categ_name": categ_name, 
-                "planned_expense": planned_expense
-                }
+            response = f"internal error: {e}" 
+
+        return response
     
 
 
     @log_tool(logger)
-    def create_income_categ(self, categ_name: str, planned_income:float = 0): 
-        try:
+    def create_income_categs(self, categories: list[str]): 
+        try: 
             self.spreadsheet = self.google_client.open(self.spread_title)
             self.worksheet = self.spreadsheet.worksheet(self.summary_title)
 
-            categ_name = categ_name.lower().strip()
-            if categ_name in self.map["income"]: 
-                status = "category already exists"
-            else:
-                #H: name, I: merged with H, J: planned income
-                data = [categ_name, "", planned_income]
-                self.worksheet.append_row(data, table_range="H28", value_input_option="USER_ENTERED")
+            response = {}
+            new_data = []
+            for categ in categories: 
+                if categ.lower().strip() in self.map["income"]: 
+                    response[categ] = "already exists"
+                else:
+                    new_row = [categ, '', 0]
+                    new_data.append(new_row)
+                    response[categ] = "done"
+            
+            if "done" in response.values(): 
+                self.worksheet.append_rows(new_data, table_range="H28")
                 self._build_categs_map()
-                status = "done"
 
         except gspread.SpreadsheetNotFound: 
-            status = "spreadsheet not found"
-
+            response = "spreadsheet not found"
         except gspread.WorksheetNotFound: 
-            status = "worksheet not found"
-
+            response = "worksheet not found"
         except Exception as e: 
-            status = f"internal error: {e}" 
+            response = f"internal error: {e}" 
 
-        return {"status": status, 
-                "categ_name": categ_name, 
-                "planned_income": planned_income
-                } 
+        return response
+    
 
 
 
