@@ -74,6 +74,9 @@ methods = [
      {"tool": toolkit.delete_expense_categs, 
       "desc": "delete given expense categories"},
 
+      {"tool": toolkit.get_summary, 
+       "desc": "get a summary of current state: remaining balance, current saving, decrease in total saving, and total planned (resp. actual) expenses and income"},
+
 
       ## transactions sheet tools
 

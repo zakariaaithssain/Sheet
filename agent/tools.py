@@ -44,6 +44,17 @@ class ToolKit:
         self.expenses_categ_range = "B28:B44"
         self.income_categ_range = "H28:H44"
 
+        #key cells for summary sheet
+        self.key_cells = {"remaining_balance": "E17", 
+                          "saved_this_month": "I15:K15", 
+                          "decrease_in_total_saving": "I13:K13", 
+                          
+                          "total_planned_exp": "C21", 
+                          "total_actual_exp": "C22", 
+
+                          "total_planned_inc": "I21", 
+                          "total_actual_inc": "I22"}
+
         #variable li dayr 3liha lfilm 
         self.map : dict = {}
         #init state of categs 
@@ -528,10 +539,35 @@ class ToolKit:
         return response
 
 
-#TODO
     @log_tool(logger)
     def get_summary(self): 
-        ... 
+        try: 
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+            
+            key_cells = list(self.key_cells.values())
+            summary = self.worksheet.batch_get(key_cells)
+            if len(summary) == 7:
+                response = {
+                        "remaining balance": summary[0], 
+                        "saved this month": summary[1], 
+                        "decrease in total saving": summary[2], 
+                        "total planned expenses": summary[3], 
+                        "total actual expenses": summary[4], 
+                        "total planned income": summary[5], 
+                        "total actual income": summary[6]
+                        }
+            else: 
+                response = "summary sheet might be damaged."
+
+        except gspread.SpreadsheetNotFound: 
+            response = "spreadsheet not found"
+        except gspread.WorksheetNotFound: 
+            response = "worksheet not found"
+        except Exception as e: 
+            response = f"internal error: {e}"
+        
+        return response
 
                 
 
