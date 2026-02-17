@@ -21,14 +21,30 @@ uv run main.py
 ## Current Capabilities
 
 The AI agent can perform the following operations:
+
+**Balance Management:**
 - Get and set starting balance
+
+**Categories Management:**
 - Get expense and income categories
+- Create expense and income categories
+- Rename expense and income categories
+- Delete expense and income categories (only if no transactions)
+
+**Budget Planning:**
 - Get planned and actual expenses and incomes
 - Set planned expenses and incomes per category
-- Create, rename, and delete expense and income categories
+
+**Transactions:**
 - Add expense transactions
+- Add income transactions
+
+**Summary & Reporting:**
+- Get comprehensive summary (remaining balance, savings, expenses, incomes)
+- Get current date
+
+**Spreadsheet Access:**
 - List available spreadsheets
 - List worksheets in a given spreadsheet
-- Get spreadsheet and worksheet metadata
-- Get current date
+- Get spreadsheet and worksheet metadata (URL, title, last modification time)
 
