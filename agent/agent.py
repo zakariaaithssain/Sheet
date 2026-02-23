@@ -3,6 +3,7 @@ import logging
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware
 from langchain.messages import SystemMessage, AIMessage
+from langgraph.checkpoint.memory import InMemorySaver
 from rich.markdown import Markdown
 
 from config.settings import Settings
@@ -21,7 +22,8 @@ class Agent:
                           SummarizationMiddleware(model=self.model_provider, 
                                                   trigger = ("fraction", 0.5)
                                                   )
-                                ]
+                                ], 
+                        checkpointer= InMemorySaver()
                         )
         logger.info("agent initialized.")
 
@@ -29,7 +31,9 @@ class Agent:
         logger.debug("called Agent.run")
         full_response = ""
 
-        for chunk in self.agent.stream({"messages":messages}, stream_mode="values"):         
+        for chunk in self.agent.stream({"messages":messages},
+                                        stream_mode="values", 
+                                        config={"configurable": {"thread_id": "ensiaste un jour ensiaste pour tjr hhh"}}):         
             #each chunk contains the full state at that point
             latest_message = chunk["messages"][-1]
             if latest_message.content:
