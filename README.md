@@ -1,7 +1,12 @@
 # GestAI 
 
 ## setup:  
-- create a `google drive folder`
+
+- create Google Cloud project  
+- enable: Google Sheets API and Google Drive API.  
+- Create Service Account  
+- Download the JSON file and  use it to fill in the `.env` file (see `.env.example`)  
+- create a `google drive folder` and put your sheets inside it  
 - share it with the `service account email` and give it editor access   
 
 this setup will give the agent full access to `only the files inside that shared folder`.   
