@@ -8,6 +8,8 @@ class SeqState(AgentState):
     queued_tool_calls: NotRequired[list[dict[str, Any]]]
 
 
+#this is no longer necessary, because I fixed the problem via new tools implementation.
+
 @after_model(state_schema=SeqState, name="SequenceToolCalls")
 def sequence_tool_calls(state: SeqState, runtime) -> dict[str, Any] | None:
     """

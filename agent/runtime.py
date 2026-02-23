@@ -2,9 +2,7 @@ from agent.agent import Agent
 from agent.memory import InMemoryConversationStore
 from langchain.messages import HumanMessage, AIMessage
 from agent.agent import Agent
-from agent.memory import InMemoryConversationStore
 from langchain.messages import HumanMessage, AIMessage
-
 import logging
 
 logger = logging.getLogger("runtime")
