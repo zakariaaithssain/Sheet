@@ -1,7 +1,7 @@
 from langchain.messages import HumanMessage, AIMessage
 
 from agent.agent import Agent
-from agent.memory import LongTermMemory
+from agent.history import History
 from agent.agent import Agent
 
 
@@ -10,32 +10,31 @@ import logging
 logger = logging.getLogger("runtime")
 
 class AgentRuntime:
-    def __init__(self,
-        agent: Agent,
-        memory: LongTermMemory,
-        session_id: str,
-    ):
+    def __init__(self, agent: Agent, history: History, thread_id: str):
         self.agent = agent
-        self.memory = memory
-        self.session_id = session_id
-        self.messages = None
+        self.history = history
+        self.thread_id = thread_id
+        self.title = ""
         logger.info("runtime initialized.")
 
 
 
     def __enter__(self):
         logger.debug("__enter__ was called.")
-        self.messages = self.memory.load(self.session_id)
+    #TODO: later we should load the  old conversation corresponding to the given thread id
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         logger.debug("__exit__ was called.")
-        self.memory.save(self.session_id, self.messages)
+        self.history.save_conversation(self.thread_id, self.title)
 
         #to propagate exceptions normally
         return False
 
-    def step(self, user_input: str):
+    def step(self, user_input: str, first_message = False):
         logger.debug("Runtime.step was called.")
         #no need for appending the messages, we now handle this using langgraph checkpointer
-        self.agent.run_step(user_input)
+        if first_message: 
+            self.title = self.agent.generate_convo_title(user_1st_prompt=user_input)
+        
+        self.agent.run_step(self.thread_id, user_input)

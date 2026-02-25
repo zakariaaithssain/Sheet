@@ -29,7 +29,7 @@ def main():
     from config.settings import Settings
     from config.logging_config import setup_logging
     from agent.runtime import AgentRuntime
-    from agent.memory import LongTermMemory
+    from agent.history import History
     from agent.agent import Agent
     from interface import start_api
 
@@ -41,7 +41,7 @@ def main():
     setup_logging(settings)
 
     logger.info("setting memory...")
-    memory = LongTermMemory(settings.max_context_messages)
+    history = History()
 
     logger.info("setting agent...")
     agent = Agent(
@@ -52,8 +52,8 @@ def main():
     logger.info("setting runtime...")
     runtime = AgentRuntime(
         agent=agent, 
-        memory=memory, 
-        session_id=str(uuid.uuid4())
+        history=history, 
+        thread_id=str(uuid.uuid4())
     )
     logger.info("starting interface...")
     start_api(runtime)

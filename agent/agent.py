@@ -1,12 +1,11 @@
 import logging
+import re
 import json
-import psycopg
-
-from psycopg.rows import dict_row
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware, HumanInTheLoopMiddleware
 from langchain.messages import SystemMessage, AIMessage
+from langchain.chat_models import init_chat_model
 
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.postgres import PostgresSaver
@@ -54,10 +53,10 @@ class Agent:
 
 
 
-    def run_step(self, messages: list):
+    def run_step(self,  thread_id: str, messages: list):
         logger.debug("called Agent.run")
         full_response = ""
-        config = {"configurable": {"thread_id": "123mshabaksbata"}}
+        config = {"configurable": {"thread_id": thread_id}}
 
         def stream_agent(input):
             for chunk in self.agent.stream(input, stream_mode="values", config=config):
@@ -105,6 +104,17 @@ class Agent:
         return full_response
 
 
+    def generate_convo_title(self, user_1st_prompt : str): 
+        model = init_chat_model(self.model_provider)
+        response = model.invoke([SystemMessage(f"""generate a short title (5 words max) for a conversation
+                                         that starts with: '{user_1st_prompt}'.
+                                           reply with only the title, no quotes.""")])
+
+        title = response.content.strip()
+        #remove reasoning 
+        title = re.sub(r"<think>.*?</think>", "", response.content, flags=re.DOTALL).strip()
+        return title
+            
 
 
 
