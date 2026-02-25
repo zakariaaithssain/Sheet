@@ -1,5 +1,5 @@
 [project]
-name = "gestai"
+name = "Sheet"
 version = "0.1.0"
 description = "AI Assistant for Google Sheets"
 readme = "README.md"

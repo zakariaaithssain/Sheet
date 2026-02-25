@@ -1,9 +1,9 @@
-from agent.agent import Agent
-from agent.memory import InMemoryConversationStore
 from langchain.messages import HumanMessage, AIMessage
+
 from agent.agent import Agent
-from agent.memory import InMemoryConversationStore
-from langchain.messages import HumanMessage, AIMessage
+from agent.memory import LongTermMemory
+from agent.agent import Agent
+
 
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger("runtime")
 class AgentRuntime:
     def __init__(self,
         agent: Agent,
-        memory: InMemoryConversationStore,
+        memory: LongTermMemory,
         session_id: str,
     ):
         self.agent = agent
@@ -38,7 +38,4 @@ class AgentRuntime:
     def step(self, user_input: str):
         logger.debug("Runtime.step was called.")
         #no need for appending the messages, we now handle this using langgraph checkpointer
-        #self.messages.append(HumanMessage(content=user_input))
-        self.messages = user_input
-        response = self.agent.run(self.messages)
-        #self.messages.append(AIMessage(content=response))
+        self.agent.run_step(user_input)

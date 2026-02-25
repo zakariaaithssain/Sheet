@@ -29,7 +29,7 @@ def main():
     from config.settings import Settings
     from config.logging_config import setup_logging
     from agent.runtime import AgentRuntime
-    from agent.memory import InMemoryConversationStore
+    from agent.memory import LongTermMemory
     from agent.agent import Agent
     from interface import start_api
 
@@ -40,7 +40,7 @@ def main():
     setup_logging(settings)
 
     logger.info("setting memory...")
-    memory = InMemoryConversationStore(settings.max_context_messages)
+    memory = LongTermMemory(settings.max_context_messages)
 
     logger.info("setting agent...")
     agent = Agent(

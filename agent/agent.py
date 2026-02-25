@@ -27,7 +27,7 @@ class Agent:
                         )
         logger.info("agent initialized.")
 
-    def run(self, messages: list): 
+    def run_step(self, messages: list): 
         logger.debug("called Agent.run")
         full_response = ""
 
@@ -38,7 +38,7 @@ class Agent:
             latest_message = chunk["messages"][-1]
             if latest_message.content:
                 if isinstance(latest_message, AIMessage):
-                    console.print(Markdown(f"**GestAI**: {latest_message.content}", hyperlinks=False), end='')
+                    console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
                     full_response += latest_message.content
 
             elif latest_message.tool_calls:

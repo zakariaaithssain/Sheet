@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger("interface")
 console = Settings.console
-console.set_window_title("GESTAI, THE SHEETS AGENT")
+console.set_window_title("Sheet, THE SHEETS AGENT")
 
 def start_api(agent_runtime:AgentRuntime):
         logger.debug("called Interface.start_api")
@@ -19,7 +19,7 @@ def start_api(agent_runtime:AgentRuntime):
                 user_input = str(console.input(Markdown("*(q to quit):* ")))
                 console.print()
                 if user_input.strip() in "qQ":
-                    console.print(Markdown("**GestAI:** See you!"))
+                    console.print(Markdown("**Sheet:** See you!"))
                     logger.info("user input was 'q', breaked from loop.")
                     break
                 else:
