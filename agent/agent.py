@@ -1,11 +1,15 @@
 import logging
 import json
+import psycopg
+
+from psycopg.rows import dict_row
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware, HumanInTheLoopMiddleware
 from langchain.messages import SystemMessage, AIMessage
 
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.types import Command
 
 from rich.markdown import Markdown
@@ -16,6 +20,9 @@ from config.settings import Settings
 
 logger = logging.getLogger("agent")
 console = Settings.console
+checkpointer = PostgresSaver(Settings.postgres_connection)
+checkpointer.setup()
+
 
 class Agent:
     def __init__(self, model_provider:str, tools:list[dict], system_prompt: SystemMessage):
@@ -23,6 +30,7 @@ class Agent:
         self.model_provider = model_provider
         self.sys_prompt = system_prompt   
         self.tools = [tool["tool"] for tool in tools]
+        self.checkpointer = checkpointer
         self.middlewares = [
             SummarizationMiddleware(model=self.model_provider, 
                                                      trigger = ("fraction", 0.5)), 
@@ -79,12 +87,14 @@ class Agent:
                 if decision in "Rr":
                     reason = console.input(Markdown("**Reason for rejection:** "))
                     resume_decision = {"type": "reject", "message": reason}
+
                 elif decision in "eE":
-                    new_args = console.input(Markdown("**Enter new args as JSON:** "))
+                    new_args = console.input(Markdown("**Enter new args as JSON (double quotes for property names):** "))
                     resume_decision = {
                         "type": "edit",
-                        "editedAction": {"name": action["name"], "args": json.loads(new_args)}
+                        "edited_action": {"name": action["name"], "args": json.loads(new_args)}
                     }
+                    
                 else: 
                     resume_decision = {"type": "approve"}
 
