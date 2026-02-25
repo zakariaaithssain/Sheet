@@ -3,10 +3,12 @@ from dataclasses import dataclass
 from langchain.messages import SystemMessage
 from rich.theme import Theme 
 from rich.console import Console 
+from psycopg.rows import dict_row
 
 from config.tools_config import TOOLS, GOOGLE_CLIENT
 
 import os
+import psycopg
 
 
 
@@ -158,6 +160,19 @@ PRIORITY ORDER:
     google_client = GOOGLE_CLIENT
     #agent tools
     tools = TOOLS
+    #postgres postgres checkpointer connection (we build the uri from env vars)
+    postgres_db_uri = (
+    f"postgresql://{os.getenv('POSTGRES_USER')}:"
+    f"{os.getenv('POSTGRES_PASSWORD')}@"
+    f"{os.getenv('POSTGRES_HOST', 'localhost')}:"
+    f"{os.getenv('POSTGRES_PORT', '5432')}/"
+    f"{os.getenv('POSTGRES_DB')}"
+)
+    postgres_connection = psycopg.connect(
+                                    postgres_db_uri,
+                                    autocommit=True,
+                                    row_factory=dict_row
+                                            )
 
 
 

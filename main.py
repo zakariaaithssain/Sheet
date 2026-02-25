@@ -13,7 +13,7 @@ warnings.filterwarnings(
 
 
 
-#we should load env before importing files (calling main)
+#we should load env before importing files (calling main())
 logger = logging.getLogger("main")
 logger.info("loading env...")
 env_path = Path(".env")
@@ -33,7 +33,8 @@ def main():
     from agent.agent import Agent
     from interface import start_api
 
-    import os 
+    import os
+    import uuid 
 
     os.makedirs("logs", exist_ok = True)
     settings = Settings()
@@ -52,7 +53,7 @@ def main():
     runtime = AgentRuntime(
         agent=agent, 
         memory=memory, 
-        session_id="zakaria123"
+        session_id=str(uuid.uuid4())
     )
     logger.info("starting interface...")
     start_api(runtime)
