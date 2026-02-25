@@ -1,55 +1,98 @@
 import logging
+import json
 
 from langchain.agents import create_agent
-from langchain.agents.middleware import SummarizationMiddleware
+from langchain.agents.middleware import SummarizationMiddleware, HumanInTheLoopMiddleware
 from langchain.messages import SystemMessage, AIMessage
+
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import Command
+
 from rich.markdown import Markdown
 
 from config.settings import Settings
+
+
 
 logger = logging.getLogger("agent")
 console = Settings.console
 
 class Agent:
-    def __init__(self, model_provider:str, tools:list, system_prompt: SystemMessage):
+    def __init__(self, model_provider:str, tools:list[dict], system_prompt: SystemMessage):
+
         self.model_provider = model_provider
-        self.system = system_prompt     
-        self.agent = create_agent(self.model_provider,
-                      system_prompt=self.system,
-                      tools=tools,
-                      middleware=[
-                          SummarizationMiddleware(model=self.model_provider, 
-                                                  trigger = ("fraction", 0.5)
-                                                  )
-                                ], 
-                        checkpointer= InMemorySaver()
+        self.sys_prompt = system_prompt   
+        self.tools = [tool["tool"] for tool in tools]
+        self.middlewares = [
+            SummarizationMiddleware(model=self.model_provider, 
+                                                     trigger = ("fraction", 0.5)), 
+            HumanInTheLoopMiddleware(
+                interrupt_on= {tool["tool"].name : tool["interrupt"] 
+                               for tool in tools}
+                               )
+                            ]
+
+        self.agent = create_agent(
+                    self.model_provider,
+                    system_prompt=self.sys_prompt,
+                    tools=self.tools,
+                    middleware=self.middlewares, 
+                    checkpointer= InMemorySaver()
                         )
+        
         logger.info("agent initialized.")
 
-    def run_step(self, messages: list): 
+
+
+
+
+    def run_step(self, messages: list):
         logger.debug("called Agent.run")
         full_response = ""
+        config = {"configurable": {"thread_id": "123mshabaksbata"}}
 
-        for chunk in self.agent.stream({"messages":messages},
-                                        stream_mode="values", 
-                                        config={"configurable": {"thread_id": "ensiaste un jour ensiaste pour tjr hhh"}}):         
-            #each chunk contains the full state at that point
-            latest_message = chunk["messages"][-1]
-            if latest_message.content:
-                if isinstance(latest_message, AIMessage):
-                    console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
-                    full_response += latest_message.content
+        def stream_agent(input):
+            for chunk in self.agent.stream(input, stream_mode="values", config=config):
+                latest_message = chunk["messages"][-1]
+                if latest_message.content:
+                    if isinstance(latest_message, AIMessage):
+                        console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
+                        nonlocal full_response
+                        full_response += latest_message.content
+                elif latest_message.tool_calls:
+                    console.print(Markdown("*calling tools...*"))
 
-            elif latest_message.tool_calls:
-                console.print(Markdown("*calling tools...*"))
+        #initial run
+        stream_agent({"messages": messages})
+
+        #check if we hit an interruption
+        state = self.agent.get_state(config)
+        while state.next:  # agent is paused
+            interrupt = state.tasks[0].interrupts[0]
+            action_requests = interrupt.value["action_requests"]
+
+            for action in action_requests:
+                console.print(Markdown(f"*APPROVAL NEEDED:* `{action['name']}` with args `{action['args']}`"))
+
+                decision = console.input(Markdown("**Press `R` to reject, `E` to edit, `Any` other key to approve:** ")).strip().lower()
+
+                if decision in "Rr":
+                    reason = console.input(Markdown("**Reason for rejection:** "))
+                    resume_decision = {"type": "reject", "message": reason}
+                elif decision in "eE":
+                    new_args = console.input(Markdown("**Enter new args as JSON:** "))
+                    resume_decision = {
+                        "type": "edit",
+                        "editedAction": {"name": action["name"], "args": json.loads(new_args)}
+                    }
+                else: 
+                    resume_decision = {"type": "approve"}
+
+            #resume
+            stream_agent(Command(resume={"decisions": [resume_decision]}))
+            state = self.agent.get_state(config)
 
         return full_response
-
-
-
-
-
 
 
 
