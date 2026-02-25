@@ -6,7 +6,7 @@ logger = logging.getLogger("memory")
 #later we can swap with redis, postgres or vector DB
 
 
-class InMemoryConversationStore:
+class LongTermMemory:
     def __init__(self, max_messages: int):
         self.max_messages = max_messages
         self.store : dict[deque] = {}
