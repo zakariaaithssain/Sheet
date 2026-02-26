@@ -12,6 +12,8 @@ from langgraph.types import Command
 
 from rich.markdown import Markdown
 from rich.live import Live
+from rich.panel import Panel
+from rich import box
 
 from config.settings import Settings
 from config.tools_config import INTERRUPT_DESC
@@ -92,12 +94,15 @@ class Agent:
         #I use this bool to avoid printing "calling tools..." multiple times in a row
         called_tool = False
         with Live(console=console, refresh_per_second=15) as live:
-            full_resp = "**Sheet:** "
+            full_resp = ""
             for msg_chunk, metadata in self.agent.stream(input, stream_mode="messages", config=config):
                 if isinstance(msg_chunk, AIMessageChunk):
                     if msg_chunk.content:
                         full_resp+= msg_chunk.content
-                        live.update(Markdown(full_resp), refresh=True)
+                        live.update(Panel(Markdown(full_resp),
+                                           title="Sheet",
+                                           subtitle="press Q to quit, H to show history",
+                                             box=box.ROUNDED))
                         called_tool = False
 
                 elif isinstance(msg_chunk, ToolMessage):
@@ -114,7 +119,7 @@ class Agent:
         """get human feedback regarding a risky tool"""
         desc = INTERRUPT_DESC.get(action['name'], "")
         console.print(Markdown(f"**APPROVAL NEEDED:** `{desc}` with args: `{action['args']}`"))
-        feedback = console.input(Markdown("**Press `R` to reject, `Any` other key to approve:** ")).strip().lower()
+        feedback = console.input(Markdown("**press `R` to reject, `Any` other key to approve:** ")).strip().lower()
         
         feedback = feedback.strip().lower()
         if feedback == "r":
