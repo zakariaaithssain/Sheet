@@ -13,17 +13,17 @@ console.set_window_title("Sheet, THE SHEETS AGENT")
 def start_api(agent_runtime:AgentRuntime):
         logger.debug("called Interface.start_api")
         with agent_runtime as runtime:
+            console.print(Markdown("*What did you spend today?* "))
             logger.debug("inside runtime context manager")
             history_gen = None
             steps = 0 
             while True:
                 user_input = ""
                 while user_input == "": 
-                    user_input = str(console.input(Markdown("*(`q` to quit, `h` to show history):* ")))
+                    user_input = str(console.input())
 
                 console.print()
                 if user_input.lower().strip() == "q":
-                    console.print(Markdown("**Sheet:** See you!"))
                     logger.info("user input was 'q', breaked from loop.")
                     break
                 elif user_input.lower().strip() == "h": 
