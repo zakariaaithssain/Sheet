@@ -25,6 +25,22 @@ console = Console(theme = Theme({
 console.print(Markdown("*fetching sheet state...*"))
 
 toolkit = ToolKit(GOOGLE_CLIENT)
+
+# description to show when interrupting
+INTERRUPT_DESC = {
+  "set_starting_balance": "modify balance:",
+  "set_planned_expense": "change budget:",
+  "set_planned_income": "change budget:",
+  "create_expense_categs": "add categories:",
+  "create_income_categs": "add categories:",
+  "rename_expense_categ": "rename category:",
+  "rename_income_categ": "rename category:",
+  "delete_income_categs": "delete categories:",
+  "delete_expense_categs": "delete categories:",
+  "add_expense_transactions": "add transactions:",
+  "add_income_transactions": "add transactions:",
+}
+
 methods = [
   {"tool": toolkit.get_starting_balance, 
    "desc": "get the starting balance",
