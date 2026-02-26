@@ -112,19 +112,19 @@ class Agent:
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
         console.print(Markdown(f"**APPROVAL NEEDED:** `{action['name']}` with args `{action['args']}`"))
-        feedback = console.input(Markdown("**Press `R` to reject, `E` to edit, `Any` other key to approve:** ")).strip().lower()
+        feedback = console.input(Markdown("**Press `R` to reject, `Any` other key to approve:** ")).strip().lower()
         
         feedback = feedback.strip().lower()
         if feedback == "r":
             reason = console.input(Markdown("*reason for rejection:* "))
             decision = {"type": "reject", "message": reason}
 
-        elif feedback == "e":
-            new_args = console.input(Markdown("*enter new args as JSON (double quotes for arg names):* "))
-            decision = {
-                "type": "edit",
-                "edited_action": {"name": action["name"], "args": json.loads(new_args)}
-            }
+        # elif feedback == "e":
+        #     new_args = console.input(Markdown("*enter new args as JSON (double quotes for arg names):* "))
+        #     decision = {
+        #         "type": "edit",
+        #         "edited_action": {"name": action["name"], "args": json.loads(new_args)}
+        #     }
             
         else: 
             decision = {"type": "approve"}
