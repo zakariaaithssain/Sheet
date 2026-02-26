@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 from config.settings import Settings
 
+#TODO: FIX HISTORY ITS NOT WORKING PROPERLY, check also interface.py
 #NOTE: DO NOT USE f-strings for queries, that causes SQL injection
 #TODO: 
 """I need a persistent checkpointer to save the graph state to a database for each thread, 
