@@ -4,14 +4,14 @@ import json
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware, HumanInTheLoopMiddleware
-from langchain.messages import SystemMessage, AIMessage
+from langchain.messages import SystemMessage, AIMessageChunk, ToolMessage
 from langchain.chat_models import init_chat_model
 
-from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.types import Command
 
 from rich.markdown import Markdown
+from rich.live import Live
 
 from config.settings import Settings
 
@@ -44,7 +44,7 @@ class Agent:
                     system_prompt=self.sys_prompt,
                     tools=self.tools,
                     middleware=self.middlewares, 
-                    checkpointer= InMemorySaver()
+                    checkpointer= self.checkpointer
                         )
         
         logger.info("agent initialized.")
@@ -59,30 +59,27 @@ class Agent:
         #initial run
         self._stream_agent({"messages": messages}, config)
 
-        state = self.agent.get_state(config)  # StateSnapshot
-        while state.next:  # While nodes ready to execute
-            if state.tasks:  # Pending tasks from @task or tool calls
-                task = state.tasks[0]  # First pending task
-                
-                if task.interrupts:  # Task-level interrupts!
+        state = self.agent.get_state(config) #current state
+        while state.next:  #there are nodes to execute
+            if state.tasks:  # tool calls
+                task = state.tasks[0]  #first pending task
+                if task.interrupts:  # if interrupted
                     interrupt = task.interrupts[0]  # Interrupt object
-                    action_requests = interrupt.value["action_requests"]  # e.g., tool calls needing approval
-                    print(len(action_requests))
+                    action_requests = interrupt.value["action_requests"]  #tool calls needing approval
                     decisions = []
                     for request in action_requests:
                         human_decision = self._get_approval(request)
                         decisions.append(human_decision)
-                    
                     #resume 
-                    self._stream_agent(input= Command(resume=decisions), config= config)
-                else:
-                    #no interrupts, 
-                    self._stream_agent(None, config)
-            else:
-                # Advance to next node
-                self._stream_agent(None, config)
+                    self._stream_agent(input= Command(resume={"decisions":decisions}), config= config)
+                
+                else: 
+                    self._stream_agent(None, config=config)
+            
+            else: 
+                self._stream_agent(None, config=config)
 
-            state = self.agent.get_state(config)  # Refresh state
+            state = self.agent.get_state(config)  #refresh state
 
 
 
@@ -93,17 +90,20 @@ class Agent:
     def _stream_agent(self, input, config):
         #I use this bool to avoid printing "calling tools..." multiple times in a row
         called_tool = False
-        for chunk in self.agent.stream(input, stream_mode="values", config=config):
-            latest_message = chunk["messages"][-1]
-            if latest_message.content:
-                if isinstance(latest_message, AIMessage):
-                    console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
-                    called_tool = False
+        with Live(console=console, refresh_per_second=15) as live:
+            full_resp = "**Sheet:** "
+            for msg_chunk, metadata in self.agent.stream(input, stream_mode="messages", config=config):
+                if isinstance(msg_chunk, AIMessageChunk):
+                    if msg_chunk.content:
+                        full_resp+= msg_chunk.content
+                        live.update(Markdown(full_resp))
+                        called_tool = False
 
-            elif latest_message.tool_calls:
-                if not called_tool: 
-                    console.print(Markdown("*calling tools...*"))
-                    called_tool = True
+                elif isinstance(msg_chunk, ToolMessage):
+                    if not called_tool: 
+                        #only print it if it's not the last thing printed
+                        live.update(Markdown("*calling tools...*"))
+                        called_tool = True
 
 
 
@@ -111,16 +111,16 @@ class Agent:
 
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
-        console.print(Markdown(f"*APPROVAL NEEDED:* `{action['name']}` with args `{action['args']}`"))
+        console.print(Markdown(f"**APPROVAL NEEDED:** `{action['name']}` with args `{action['args']}`"))
         feedback = console.input(Markdown("**Press `R` to reject, `E` to edit, `Any` other key to approve:** ")).strip().lower()
         
         feedback = feedback.strip().lower()
         if feedback == "r":
-            reason = console.input(Markdown("**Reason for rejection:** "))
+            reason = console.input(Markdown("*reason for rejection:* "))
             decision = {"type": "reject", "message": reason}
 
         elif feedback == "e":
-            new_args = console.input(Markdown("**Enter new args as JSON (double quotes for arg names):** "))
+            new_args = console.input(Markdown("*enter new args as JSON (double quotes for arg names):* "))
             decision = {
                 "type": "edit",
                 "edited_action": {"name": action["name"], "args": json.loads(new_args)}
@@ -146,7 +146,6 @@ class Agent:
         title = re.sub(r"<think>.*?</think>", "",
                         response.content, flags=re.DOTALL).strip()
         return title
-
 
 
 
