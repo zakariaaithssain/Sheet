@@ -55,53 +55,85 @@ class Agent:
 
     def run_step(self,  thread_id: str, messages: list):
         logger.debug("called Agent.run")
-        full_response = ""
         config = {"configurable": {"thread_id": thread_id}}
-
-        def stream_agent(input):
-            for chunk in self.agent.stream(input, stream_mode="values", config=config):
-                latest_message = chunk["messages"][-1]
-                if latest_message.content:
-                    if isinstance(latest_message, AIMessage):
-                        console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
-                        nonlocal full_response
-                        full_response += latest_message.content
-                elif latest_message.tool_calls:
-                    console.print(Markdown("*calling tools...*"))
-
         #initial run
-        stream_agent({"messages": messages})
+        self._stream_agent({"messages": messages}, config)
 
-        #check if we hit an interruption
-        state = self.agent.get_state(config)
-        while state.next:  # agent is paused
-            interrupt = state.tasks[0].interrupts[0]
-            action_requests = interrupt.value["action_requests"]
-
-            for action in action_requests:
-                console.print(Markdown(f"*APPROVAL NEEDED:* `{action['name']}` with args `{action['args']}`"))
-
-                decision = console.input(Markdown("**Press `R` to reject, `E` to edit, `Any` other key to approve:** ")).strip().lower()
-
-                if decision in "Rr":
-                    reason = console.input(Markdown("**Reason for rejection:** "))
-                    resume_decision = {"type": "reject", "message": reason}
-
-                elif decision in "eE":
-                    new_args = console.input(Markdown("**Enter new args as JSON (double quotes for property names):** "))
-                    resume_decision = {
-                        "type": "edit",
-                        "edited_action": {"name": action["name"], "args": json.loads(new_args)}
-                    }
+        state = self.agent.get_state(config)  # StateSnapshot
+        while state.next:  # While nodes ready to execute
+            if state.tasks:  # Pending tasks from @task or tool calls
+                task = state.tasks[0]  # First pending task
+                
+                if task.interrupts:  # Task-level interrupts!
+                    interrupt = task.interrupts[0]  # Interrupt object
+                    action_requests = interrupt.value["action_requests"]  # e.g., tool calls needing approval
+                    print(len(action_requests))
+                    decisions = []
+                    for request in action_requests:
+                        human_decision = self._get_approval(request)
+                        decisions.append(human_decision)
                     
-                else: 
-                    resume_decision = {"type": "approve"}
+                    #resume 
+                    self._stream_agent(input= Command(resume=decisions), config= config)
+                else:
+                    #no interrupts, 
+                    self._stream_agent(None, config)
+            else:
+                # Advance to next node
+                self._stream_agent(None, config)
 
-            #resume
-            stream_agent(Command(resume={"decisions": [resume_decision]}))
-            state = self.agent.get_state(config)
+            state = self.agent.get_state(config)  # Refresh state
 
-        return full_response
+
+
+            
+
+
+
+    def _stream_agent(self, input, config):
+        #I use this bool to avoid printing "calling tools..." multiple times in a row
+        called_tool = False
+        for chunk in self.agent.stream(input, stream_mode="values", config=config):
+            latest_message = chunk["messages"][-1]
+            if latest_message.content:
+                if isinstance(latest_message, AIMessage):
+                    console.print(Markdown(f"**Sheet**: {latest_message.content}", hyperlinks=False), end='')
+                    called_tool = False
+
+            elif latest_message.tool_calls:
+                if not called_tool: 
+                    console.print(Markdown("*calling tools...*"))
+                    called_tool = True
+
+
+
+
+
+    def _get_approval(self, action): 
+        """get human feedback regarding a risky tool"""
+        console.print(Markdown(f"*APPROVAL NEEDED:* `{action['name']}` with args `{action['args']}`"))
+        feedback = console.input(Markdown("**Press `R` to reject, `E` to edit, `Any` other key to approve:** ")).strip().lower()
+        
+        feedback = feedback.strip().lower()
+        if feedback == "r":
+            reason = console.input(Markdown("**Reason for rejection:** "))
+            decision = {"type": "reject", "message": reason}
+
+        elif feedback == "e":
+            new_args = console.input(Markdown("**Enter new args as JSON (double quotes for arg names):** "))
+            decision = {
+                "type": "edit",
+                "edited_action": {"name": action["name"], "args": json.loads(new_args)}
+            }
+            
+        else: 
+            decision = {"type": "approve"}
+        
+        return decision
+
+
+
+
 
 
     def generate_convo_title(self, user_1st_prompt : str): 
@@ -110,18 +142,10 @@ class Agent:
                                          that starts with: '{user_1st_prompt}'.
                                            reply with only the title, no quotes.""")])
 
-        title = response.content.strip()
         #remove reasoning 
-        title = re.sub(r"<think>.*?</think>", "", response.content, flags=re.DOTALL).strip()
+        title = re.sub(r"<think>.*?</think>", "",
+                        response.content, flags=re.DOTALL).strip()
         return title
-            
-
-
-
-
-
-
-
 
 
 
