@@ -14,6 +14,7 @@ from rich.markdown import Markdown
 from rich.live import Live
 
 from config.settings import Settings
+from config.tools_config import INTERRUPT_DESC
 
 
 
@@ -96,13 +97,13 @@ class Agent:
                 if isinstance(msg_chunk, AIMessageChunk):
                     if msg_chunk.content:
                         full_resp+= msg_chunk.content
-                        live.update(Markdown(full_resp))
+                        live.update(Markdown(full_resp), refresh=True)
                         called_tool = False
 
                 elif isinstance(msg_chunk, ToolMessage):
                     if not called_tool: 
                         #only print it if it's not the last thing printed
-                        live.update(Markdown("*calling tools...*"))
+                        live.update(Markdown("*calling tools...*"), refresh=True)
                         called_tool = True
 
 
@@ -111,7 +112,8 @@ class Agent:
 
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
-        console.print(Markdown(f"**APPROVAL NEEDED:** `{action['name']}` with args `{action['args']}`"))
+        desc = INTERRUPT_DESC.get(action['name'], "")
+        console.print(Markdown(f"**APPROVAL NEEDED:** `{desc}` with args: `{action['args']}`"))
         feedback = console.input(Markdown("**Press `R` to reject, `Any` other key to approve:** ")).strip().lower()
         
         feedback = feedback.strip().lower()
