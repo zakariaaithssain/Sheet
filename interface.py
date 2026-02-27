@@ -1,19 +1,27 @@
 from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.text import Text
+from rich import box
 
 from agent.runtime import AgentRuntime
 from config.settings import Settings
 
 import logging 
+import datetime
 
 
 logger = logging.getLogger("interface")
 console = Settings.console
-console.set_window_title("Sheet, THE SHEETS AGENT")
+console.set_window_title("Sheet, THE SHEET AGENT")
+
+
+
+
 
 def start_api(agent_runtime:AgentRuntime):
+        _render_banner()
         logger.debug("called Interface.start_api")
         with agent_runtime as runtime:
-            console.print(Markdown("*What did you spend today?* "))
             logger.debug("inside runtime context manager")
             history_gen = None
             steps = 0 
@@ -47,3 +55,64 @@ def start_api(agent_runtime:AgentRuntime):
                     steps+=1
                     logger.debug(f"step (1-indexed): {steps}")
                     console.print()
+
+
+
+
+
+def _render_banner():
+    logo_lines = [
+        " ███████╗██╗  ██╗███████╗███████╗████████╗",
+        " ██╔════╝██║  ██║██╔════╝██╔════╝╚══██╔══╝",
+        " ███████╗███████║█████╗  █████╗     ██║   ",
+        " ╚════██║██╔══██║██╔══╝  ██╔══╝     ██║   ",
+        " ███████║██║  ██║███████╗███████╗   ██║   ",
+        " ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ",
+    ]
+
+    logo = Text()
+    colors = ["#00E5FF", "#00D4F0", "#00C2E0", "#00B0D0", "#009EC0", "#008CB0"]
+    for line, color in zip(logo_lines, colors):
+        logo.append(line + "\n", style=f"bold {color}")
+
+    #info block
+    now = datetime.datetime.now()
+    info = Text()
+    info.append("\n")
+    info.append("  Agent   ", style="bold #888888")
+    info.append("Sheet v1.0.0\n", style="bold white")
+    info.append("  Target  ", style="bold #888888")
+    info.append("Monthly Budget\n", style="bold #00E5FF")
+    info.append("  Source  ", style="bold #888888")
+    info.append("Google Sheets\n", style="bold white")
+    info.append("  Session ", style="bold #888888")
+    info.append(f"{now.strftime('%Y-%m-%d  %H:%M:%S')}\n", style="dim white")
+
+    #tip line
+    tip = Text()
+    tip.append("  - ", style="bold #FFD700")
+    tip.append("Ask anything about your budget — Sheet will read, analyze, and update your spreadsheet.\n", style="dim white")
+    tip.append("  - ", style="bold #FF6B6B")
+    tip.append("Always review changes before confirming writes to your sheet.", style="dim white")
+
+    #combine everything
+    content = Text()
+    content.append_text(logo)
+    content.append("─" * 44 + "\n", style="dim #333333")
+    content.append_text(info)
+    content.append("─" * 44 + "\n", style="dim #333333")
+    content.append_text(tip)
+    content.append("\n")
+
+    panel = Panel(
+        content,
+        box=box.HEAVY,
+        border_style="#00E5FF",
+        padding=(0, 1),
+        subtitle="[dim]type [bold white]exit[/bold white] to quit  ·  [bold white]hist[/bold white] for history[/dim]",
+        subtitle_align="center",
+    )
+
+    console.print()
+    console.print(panel)
+    console.print()
