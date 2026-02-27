@@ -22,6 +22,8 @@ console = Console(theme = Theme({
     "markdown.h1": "bold magenta",
     "markdown.code": "yellow",
 }))
+
+
 console.print(Markdown("*fetching sheet state...*"))
 
 toolkit = ToolKit(GOOGLE_CLIENT)

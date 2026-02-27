@@ -1,1 +1,4 @@
-2026-02-26 22:55:37,634 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_summary, call args: None
+2026-02-27 00:53:10,506 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: set_starting_balance, call args: {'balance': 2000.0}
+2026-02-27 00:53:10,507 [DEBUG] tools: logging_config.py:wrapper:11 | Tool called. name: get_starting_balance, call args: None
+2026-02-27 00:53:14,421 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: get_starting_balance | call args: None
+2026-02-27 00:53:18,313 [INFO] tools: logging_config.py:wrapper:31 | tool succeeded | status=done | name: set_starting_balance | call args: {'balance': 2000.0}

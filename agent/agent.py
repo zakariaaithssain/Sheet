@@ -99,10 +99,15 @@ class Agent:
                 if isinstance(msg_chunk, AIMessageChunk):
                     if msg_chunk.content:
                         full_resp+= msg_chunk.content
-                        live.update(Panel(Markdown(full_resp),
-                                           title="Sheet",
-                                           subtitle="press Q to quit, H to show history",
-                                             box=box.ROUNDED))
+                        live.update(Panel(
+                                        Markdown(full_resp),
+                                        title="SHEET",
+                                        box=box.HEAVY,
+                                        border_style="#00E5FF",
+                                        padding=(0, 1),
+                                        subtitle="[dim]press [bold white]Q[/bold white] to quit  ·  [bold white]H[/bold white] for history[/dim]",
+                                        subtitle_align="center",
+                                    ))
                         called_tool = False
 
                 elif isinstance(msg_chunk, ToolMessage):
@@ -118,9 +123,10 @@ class Agent:
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
         desc = INTERRUPT_DESC.get(action['name'], "")
-        console.print(Markdown(f"**APPROVAL NEEDED:** `{desc}` with args: `{action['args']}`"))
+        with Live(console=console, refresh_per_second=15) as live:
+            live.update(Markdown(f"**APPROVAL NEEDED:** `{desc}` with args: `{action['args']}`"), refresh=True)
+
         feedback = console.input(Markdown("**press `R` to reject, `Any` other key to approve:** ")).strip().lower()
-        
         feedback = feedback.strip().lower()
         if feedback == "r":
             reason = console.input(Markdown("*reason for rejection:* "))
