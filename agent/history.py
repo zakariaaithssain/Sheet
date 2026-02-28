@@ -46,7 +46,7 @@ class History:
                 (thread_id, title, datetime.now())
             )
 
-    def load_conversations(self):
+    def load_all_conversations(self):
         with self.conn.cursor() as cursor:
             cursor.execute(
                 """
@@ -55,9 +55,11 @@ class History:
                 ORDER BY created_at DESC
                 """
             )
-            yield from cursor   # cursor is still open while generator is alive
+            return cursor.fetchall()
+        
 
-    def load_conversation(self, thread_id: str):
+
+    def load_convo_by_id(self, thread_id: str):
         with self.conn.cursor() as cursor:
             results = cursor.execute(
                 "SELECT thread_id, title, created_at FROM conversations WHERE thread_id = %s",

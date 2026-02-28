@@ -56,7 +56,7 @@ def main():
         thread_id=str(uuid.uuid4())
     )
     logger.info("starting interface...")
-    start_api(runtime)
+    start_api(runtime, enter_hist=True)
     
 
 
