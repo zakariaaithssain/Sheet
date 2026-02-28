@@ -1,4 +1,5 @@
 import logging 
+import inquirer
 
 from datetime import datetime
 from config.settings import Settings
@@ -66,3 +67,23 @@ class History:
                 (thread_id,)
             )
             return results.fetchone()
+        
+    
+
+    def _pick_conversation(self):
+        convos_list = self.load_all_conversations()
+        
+        choices = [
+            (f"{row['title']} — {row['created_at'].strftime('%b %d, %Y')}", row['thread_id'])
+            for row in convos_list
+        ]
+        
+        questions = [
+            inquirer.List("conversation",
+                message="Select a conversation",
+                choices=choices,
+            )
+        ]
+        
+        answer = inquirer.prompt(questions)
+        return answer["conversation"]  # returns the thread_id
