@@ -28,12 +28,11 @@ def start_api(agent_runtime:AgentRuntime, enter_hist:False):
              
         with agent_runtime as runtime:
             logger.debug("inside runtime context manager")
+            chosen_id = None #no old convo selected
             if enter_hist: 
                 console.print(Markdown("*history:* "))
-                convos_list = runtime.history.load_all_conversations()
-                thread_id = _pick_conversation(convos_list)
-                print(thread_id)  
-        
+                chosen_id = runtime.history._pick_conversation()
+
             steps = 0 
             while True:
                 
@@ -48,9 +47,9 @@ def start_api(agent_runtime:AgentRuntime, enter_hist:False):
                 else:
                     #generate the title if first message
                     if steps == 0: 
-                        runtime.step(user_input, first_message=True)
+                        runtime.step(user_input, first_message=True, thread_id=chosen_id)
                     else: 
-                         runtime.step(user_input)
+                         runtime.step(user_input, thread_id=chosen_id)
 
                     steps+=1
                     logger.debug(f"step (1-indexed): {steps}")
@@ -120,21 +119,3 @@ def _render_banner():
 
 
 
-
-def _pick_conversation(convo_list: list):
-    
-    # Format choices as "title (date)" -> thread_id
-    choices = [
-        (f"{row['title']} — {row['created_at'].strftime('%b %d, %Y')}", row['thread_id'])
-        for row in convo_list
-    ]
-    
-    questions = [
-        inquirer.List("conversation",
-            message="Select a conversation",
-            choices=choices,
-        )
-    ]
-    
-    answer = inquirer.prompt(questions)
-    return answer["conversation"]  # returns the thread_id
