@@ -6,6 +6,7 @@ from rich import box
 from agent.runtime import AgentRuntime
 from config.settings import Settings
 
+import inquirer
 import logging 
 import datetime
 
@@ -14,37 +15,36 @@ logger = logging.getLogger("interface")
 console = Settings.console
 console.set_window_title("Sheet, THE SHEET AGENT")
 
+QUIT_STR = "/quit"
 
 
 
 
-def start_api(agent_runtime:AgentRuntime):
+def start_api(agent_runtime:AgentRuntime, enter_hist:False):
+        """`agent_runtime`: instance of AgentRuntime class  
+        `enter_hist`: if True: enter the history of conversations"""
         _render_banner()
         logger.debug("called Interface.start_api")
+             
         with agent_runtime as runtime:
             logger.debug("inside runtime context manager")
-            history_gen = None
+            if enter_hist: 
+                console.print(Markdown("*history:* "))
+                convos_list = runtime.history.load_all_conversations()
+                thread_id = _pick_conversation(convos_list)
+                print(thread_id)  
+        
             steps = 0 
             while True:
+                
                 user_input = ""
                 while user_input == "": 
-                    user_input = str(console.input())
+                    user_input = console.input("❯ ")
 
                 console.print()
-                if user_input.lower().strip() == "q":
-                    logger.info("user input was 'q', breaked from loop.")
+                if user_input.lower().strip() == QUIT_STR:
+                    logger.info("user input was '/quit', breaked from loop.")
                     break
-                elif user_input.lower().strip() == "h": 
-                    if history_gen is None: 
-                         history_gen = runtime.history.load_conversations()
-                    try:
-                        console.print(Markdown("*history:* "))
-                        row = next(history_gen)
-                        console.print(f"{row['title']} - {row['created_at']}")
-                    except StopIteration:
-                        console.print("No more conversations.")
-                        history_gen = None  # reset so next h starts over
-
                 else:
                     #generate the title if first message
                     if steps == 0: 
@@ -93,7 +93,7 @@ def _render_banner():
     tip.append("  - ", style="bold #FFD700")
     tip.append("Ask anything about your budget — Sheet will read, analyze, and update your spreadsheet.\n", style="dim white")
     tip.append("  - ", style="bold #FF6B6B")
-    tip.append("Always review changes before confirming writes to your sheet.", style="dim white")
+    tip.append("Always review changes before confirming edits to your sheet.", style="dim white")
 
     #combine everything
     content = Text()
@@ -109,10 +109,32 @@ def _render_banner():
         box=box.HEAVY,
         border_style="#00E5FF",
         padding=(0, 1),
-        subtitle="[dim]type [bold white]exit[/bold white] to quit  ·  [bold white]hist[/bold white] for history[/dim]",
+        subtitle=f"[dim]type [bold white]{QUIT_STR}[/bold white] to quit",
         subtitle_align="center",
     )
 
     console.print()
     console.print(panel)
     console.print()
+
+
+
+
+
+def _pick_conversation(convo_list: list):
+    
+    # Format choices as "title (date)" -> thread_id
+    choices = [
+        (f"{row['title']} — {row['created_at'].strftime('%b %d, %Y')}", row['thread_id'])
+        for row in convo_list
+    ]
+    
+    questions = [
+        inquirer.List("conversation",
+            message="Select a conversation",
+            choices=choices,
+        )
+    ]
+    
+    answer = inquirer.prompt(questions)
+    return answer["conversation"]  # returns the thread_id

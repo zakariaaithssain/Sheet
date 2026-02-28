@@ -1,4 +1,3 @@
-2026-02-27 00:52:49,016 [DEBUG] interface: interface.py:start_api:23 | called Interface.start_api
-2026-02-27 00:52:49,016 [DEBUG] interface: interface.py:start_api:25 | inside runtime context manager
-2026-02-27 00:53:19,590 [DEBUG] interface: interface.py:start_api:56 | step (1-indexed): 1
-2026-02-27 00:53:56,181 [INFO] interface: interface.py:start_api:35 | user input was 'q', breaked from loop.
+2026-02-28 23:44:14,054 [DEBUG] interface: interface.py:start_api:27 | called Interface.start_api
+2026-02-28 23:44:14,054 [DEBUG] interface: interface.py:start_api:30 | inside runtime context manager
+2026-02-28 23:44:21,868 [INFO] interface: interface.py:start_api:46 | user input was '/quit', breaked from loop.

@@ -158,7 +158,7 @@ class Agent:
         #remove reasoning 
         title = re.sub(r"<think>.*?</think>", "",
                         response.content, flags=re.DOTALL).strip()
-        return title
+        return title if title else "New Conversation"
 
 
 

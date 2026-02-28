@@ -26,6 +26,7 @@ dependencies = [
     "httpcore==1.0.9",
     "httpx==0.28.1",
     "idna==3.11",
+    "inquirer>=3.4.1",
     "ipykernel==7.1.0",
     "ipython==9.8.0",
     "ipython-pygments-lexers==1.1.1",
