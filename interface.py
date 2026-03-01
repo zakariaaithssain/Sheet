@@ -81,9 +81,9 @@ class Interface:
         info.append("  Agent   ", style="bold #888888")
         info.append("Sheet v0.1.0\n", style="bold white")
         info.append("  Target  ", style="bold #888888")
-        info.append("Monthly Budget\n", style="bold #00E5FF")
+        info.append("Monthly Budget Template\n", style="bold #00E5FF")
         info.append("  Source  ", style="bold #888888")
-        info.append("Google Sheets\n", style="bold white")
+        info.append("Shared Google Drive Folder\n", style="bold white")
         info.append("  Session ", style="bold #888888")
         info.append(f"{now.strftime('%Y-%m-%d  %H:%M')}\n", style="dim white")
 

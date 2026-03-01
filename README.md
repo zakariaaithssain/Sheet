@@ -26,19 +26,24 @@ uv run main.py
 uv run main.py --resume 
 ```
 ## run using Docker:   
-*Note*: always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.
+*Note*:  
+- always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.  
+- use `--rm` flag to remove the container after quitting, this avoids orphans.  
 
 ```bash
-#new conversation
+#build 
+docker compose build
+
+#then start new conversation
 docker compose run --rm app
 
-#show past conversations and pick one to resume
+# to show past conversations and pick one to resume
 docker compose run --rm app --resume
 
 #stop everything
 docker compose down
 
-#stop and wipe past conversations (all history is gone)
+#stop and wipe volumes (all past history will be gone)
 docker compose down -v 
 
 ```
@@ -61,12 +66,11 @@ docker compose down -v
 - Set planned expenses and incomes per category
 
 **Transactions:**
-- Add expense transactions
-- Add income transactions
+- Add expense transactions to specific dates
+- Add income transactions with specific dates
 
 **Summary & Reporting:**
-- Get comprehensive summary (remaining balance, savings, expenses, incomes)
-- Get current date
+- Get comprehensive summary (remaining balance, savings, expenses, incomes, ...)
 
 **Spreadsheet Access:**
 - List available spreadsheets
