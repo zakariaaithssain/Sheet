@@ -19,9 +19,29 @@ uv sync
 ```
 - run: 
 ```bash
-uv run main.py
-```
+#new conversation
+uv run main.py 
 
+#show past conversations and pick one to resume
+uv run main.py --resume 
+```
+## run using Docker:   
+*Note*: always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.
+
+```bash
+#new conversation
+docker compose run --rm app
+
+#show past conversations and pick one to resume
+docker compose run --rm app --resume
+
+#stop everything
+docker compose down
+
+#stop and wipe past conversations (all history is gone)
+docker compose down -v 
+
+```
 
 ## Current Capabilities
 
