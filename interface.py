@@ -24,29 +24,37 @@ class Interface:
     def start_api(self, agent_runtime: AgentRuntime):
         self.logger.debug("called Interface.start_api")
 
+        #get first non-empty and non '/quit' input before entering runtime
+        #this avoids empty records in database
+        user_input = self._prompt()
+        if user_input == self.quit_str:
+            return
+
         with agent_runtime as runtime:
             self.logger.debug("inside runtime context manager")
-            steps = 0 
+            steps = 0
+
             while True:
-                
-                user_input = ""
-                while user_input == "": 
-                    user_input = self.console.input("❯ ")
-
                 self.console.print()
-                if user_input.lower().strip() == self.quit_str:
-                    self.logger.info("user input was '/quit', breaked from loop.")
-                    break
-                else:
-                    #generate the title if first message
-                    if steps == 0: 
-                        runtime.step(user_input, first_message=True)
-                    else: 
-                         runtime.step(user_input)
+                runtime.step(user_input, first_message=(steps == 0))
+                steps += 1
+                self.logger.debug(f"step (1-indexed): {steps}")
+                self.console.print()
 
-                    steps+=1
-                    self.logger.debug(f"step (1-indexed): {steps}")
-                    self.console.print()
+                user_input = self._prompt()
+                if user_input == self.quit_str:
+                    self.logger.info("user input was '/quit', breaking from loop.")
+                    break
+
+
+
+
+    def _prompt(self) -> str:
+        """prompt user until non-empty input is received"""
+        user_input = ""
+        while not user_input.strip():
+            user_input = self.console.input("❯ ").lower().strip()
+        return user_input
 
 
 
