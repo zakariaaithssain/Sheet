@@ -19,7 +19,6 @@ class AgentRuntime:
 
     def __enter__(self):
         logger.debug("__enter__ was called.")
-    #TODO: later we should load the  old conversation corresponding to the given thread id
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
