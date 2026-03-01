@@ -1,6 +1,6 @@
 # Sheet 
 
-## setup:  
+## setup: (basically creating a gmail acc for the agent)  
 
 - create Google Cloud project  
 - enable: Google Sheets API and Google Drive API.  
@@ -45,7 +45,7 @@ docker compose down -v
 
 ## Current Capabilities
 
-The AI agent can perform the following operations:
+**Sheet** is able to analyse your sheets and perform financial suggestions and guidance based on them, and can also perform the following agentic actions:  
 
 **Balance Management:**
 - Get and set starting balance
