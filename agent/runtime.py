@@ -29,11 +29,9 @@ class AgentRuntime:
         #to propagate exceptions normally
         return False
 
-    def step(self, user_input: str, first_message = False, thread_id = None):
+    def step(self, user_input: str, first_message = False):
         logger.debug("Runtime.step was called.")
         if first_message: 
             self.title = self.agent.generate_convo_title(user_1st_prompt=user_input)
         
-        #use the given id (one of an old convo) sinon use the new one given by main (new convo case)
-        session_id = thread_id if thread_id else self.thread_id
-        self.agent.run_step(session_id, user_input)
+        self.agent.run_step(self.thread_id, user_input)

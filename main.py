@@ -24,14 +24,14 @@ load_dotenv(dotenv_path=env_path, override=True)
 
 
 
-def main():
+def main(enter_hist: bool = True):
 
     from config.settings import Settings
     from config.logging_config import setup_logging
     from agent.runtime import AgentRuntime
     from agent.history import History
     from agent.agent import Agent
-    from interface import start_api
+    from interface import Interface
 
     import os
     import uuid 
@@ -40,23 +40,37 @@ def main():
     settings = Settings()
     setup_logging(settings)
 
-    logger.info("setting memory...")
-    history = History()
-
     logger.info("setting agent...")
     agent = Agent(
         model_provider=settings.model_provider, 
         tools=settings.tools, 
         system_prompt=settings.system_prompt
     )
+
+    logger.info("setting memory...")
+    history = History()
+    #new thread_id if a new conversation
+    thread_id = str(uuid.uuid4())
+
+    interface = Interface()
+    interface.render_banner()
+
+    if enter_hist: 
+                to_resume = history.pick_conversation()
+                #existing thread id if we pick an old conversation
+                if to_resume:
+                    thread_id = to_resume
+
     logger.info("setting runtime...")
     runtime = AgentRuntime(
         agent=agent, 
         history=history, 
-        thread_id=str(uuid.uuid4())
+        thread_id=thread_id
     )
-    logger.info("starting interface...")
-    start_api(runtime, enter_hist=True)
+    
+    logger.info("starting api...")
+    interface.start_api(runtime)
+
     
 
 

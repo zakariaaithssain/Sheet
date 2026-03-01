@@ -105,7 +105,7 @@ class Agent:
                                         box=box.HEAVY,
                                         border_style="#00E5FF",
                                         padding=(0, 1),
-                                        subtitle="[dim]press [bold white]Q[/bold white] to quit  ·  [bold white]H[/bold white] for history[/dim]",
+                                        subtitle="[dim]type [bold white]/quit[/bold white] to quit",
                                         subtitle_align="center",
                                     ))
                         called_tool = False
@@ -123,13 +123,23 @@ class Agent:
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
         desc = INTERRUPT_DESC.get(action['name'], "")
-        with Live(console=console, refresh_per_second=15) as live:
-            live.update(Markdown(f"**APPROVAL NEEDED:** `{desc}` with args: `{action['args']}`"), refresh=True)
-
-        feedback = console.input(Markdown("**press `R` to reject, `Any` other key to approve:** ")).strip().lower()
-        feedback = feedback.strip().lower()
-        if feedback == "r":
-            reason = console.input(Markdown("*reason for rejection:* "))
+        args_str = "\n".join(f"- {arg}: {action['args'][arg]}" for arg in action['args'])
+        panel = Panel(
+                    Markdown(f"""**APPROVAL NEEDED:** `{desc}`  
+                *args*:  
+                `{args_str}`"""),
+                    title="SHEET",
+                    box=box.DOUBLE,
+                    border_style="yellow",
+                    padding=(0, 1),
+                    subtitle="[dim]type [bold white]/reject[/bold white] to reject  ·  [dim]type [bold white]anything else[/bold white] to approve",
+                    subtitle_align="center")
+        
+        console.print(panel)
+        feedback = console.input("❯ ").strip().lower()
+        if feedback == "/reject":
+            console.print(Markdown("**REASON FOR REJECTION:**"))
+            reason = console.input("❯ ")
             decision = {"type": "reject", "message": reason}
 
         # elif feedback == "e":

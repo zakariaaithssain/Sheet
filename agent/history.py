@@ -47,7 +47,7 @@ class History:
                 (thread_id, title, datetime.now())
             )
 
-    def load_all_conversations(self):
+    def _load_all_conversations(self):
         with self.conn.cursor() as cursor:
             cursor.execute(
                 """
@@ -70,11 +70,12 @@ class History:
         
     
 
-    def _pick_conversation(self):
-        convos_list = self.load_all_conversations()
+    def pick_conversation(self) -> str:
+        """pick an old conversation and return its thread id"""
+        convos_list = self._load_all_conversations()
         
         choices = [
-            (f"{row['title']} — {row['created_at'].strftime('%b %d, %Y')}", row['thread_id'])
+            (f"{row['title']} — {row['created_at'].strftime('%Y-%m-%d  %H:%M:%S')}", row['thread_id'])
             for row in convos_list
         ]
         
