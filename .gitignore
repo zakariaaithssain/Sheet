@@ -4,6 +4,3 @@
 __pycache__
 *.json
 
-
-#some private files 
-prv.*
