@@ -113,7 +113,7 @@ class Settings:
 }
 
 
-    model_provider: str = os.getenv("MODEL_PROVIDER","groq:qwen/qwen3-32b" )
+    model_provider: str = os.getenv("MODEL_PROVIDER")
     max_context_messages: int = int(os.getenv("MAX_CONTEXT_MESSAGES", "30"))
     system_prompt = SystemMessage("""
 You are Sheet, a stateful financial assistant that manages financial data stored in the "Monthly Budget" sheet template.
