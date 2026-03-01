@@ -2,6 +2,8 @@ import logging
 import inquirer
 
 from datetime import datetime
+from rich.markdown import Markdown
+
 from config.settings import Settings
 
 #TODO: FIX HISTORY ITS NOT WORKING PROPERLY, check also interface.py
@@ -14,13 +16,11 @@ when the user selects one convo, I use that thread id to start from
  and stored in the checkpointer"""
 
 logger = logging.getLogger("memory")
-#later we can swap with redis, postgres or vector DB
-
 
 class History:
     def __init__(self):
         self.conn = Settings.postgres_connection
-
+        self.console = Settings.console
         #setup conversations table if it doesn't exist
         CREATE_CONVERSATIONS_TABLE = """
         CREATE TABLE IF NOT EXISTS conversations (
@@ -85,4 +85,5 @@ class History:
             return answer["conversation"]  # returns the thread_id
         else: 
             #empty history
+            self.console.print(Markdown("*`no conversations to show`*"))
             return None

@@ -79,7 +79,7 @@ class Interface:
         info = Text()
         info.append("\n")
         info.append("  Agent   ", style="bold #888888")
-        info.append("Sheet v1.0.0\n", style="bold white")
+        info.append("Sheet v0.1.0\n", style="bold white")
         info.append("  Target  ", style="bold #888888")
         info.append("Monthly Budget\n", style="bold #00E5FF")
         info.append("  Source  ", style="bold #888888")

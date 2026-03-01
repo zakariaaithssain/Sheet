@@ -161,13 +161,14 @@ PRIORITY ORDER:
     #agent tools
     tools = TOOLS
     #postgres checkpointer and db connection (we build the uri from env vars)
-    postgres_db_uri = (
+    postgres_db_uri = os.getenv("DATABASE_URL", 
+                                default=(
     f"postgresql://{os.getenv('POSTGRES_USER')}:"
     f"{os.getenv('POSTGRES_PASSWORD')}@"
     f"{os.getenv('POSTGRES_HOST', 'localhost')}:"
     f"{os.getenv('POSTGRES_PORT', '5432')}/"
     f"{os.getenv('POSTGRES_DB')}"
-)   
+))
     try:
         postgres_connection = psycopg.connect(
                                     postgres_db_uri,
