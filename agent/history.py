@@ -60,19 +60,13 @@ class History:
             return cursor.fetchall()
         
 
-
-    def load_convo_by_id(self, thread_id: str):
-        with self.conn.cursor() as cursor:
-            results = cursor.execute(
-                "SELECT thread_id, title, updated_at FROM conversations WHERE thread_id = %s",
-                (thread_id,)
-            )
-            return results.fetchone()
-        
     
 
     def pick_conversation(self) -> str:
-        """pick an old conversation and return its thread id"""
+        """pick an old conversation and return its thread id  
+        once the thread id is given to the agent's checkpointer, it automatically 
+        loads the state corresponding to that id, and resumes agent's graph from there, so no need for a 
+        load conversation function"""
         convos_list = self._load_all_conversations()
         if convos_list: 
             choices = [

@@ -2,6 +2,7 @@
 from dotenv import load_dotenv
 from pathlib import Path
 
+import argparse
 import logging
 import warnings
 
@@ -22,9 +23,14 @@ if not env_path.exists():
 load_dotenv(dotenv_path=env_path, override=True)
 
 
+parser = argparse.ArgumentParser(prog="Sheet's Agent", 
+                                 description="AI agent for managing the Monthly Budget Google sheet.")
+
+parser.add_argument("--resume", action="store_true", help="resume a previous conversation")
 
 
-def main(resume: bool = True):
+
+def main(resume: bool = False):
 
     from config.settings import Settings
     from config.logging_config import setup_logging
@@ -34,7 +40,7 @@ def main(resume: bool = True):
     from interface import Interface
 
     import os
-    import uuid 
+    import ulid 
 
     os.makedirs("logs", exist_ok = True)
     settings = Settings()
@@ -50,16 +56,16 @@ def main(resume: bool = True):
     logger.info("setting memory...")
     history = History()
     #new thread_id if a new conversation
-    thread_id = str(uuid.uuid4())
+    thread_id = str(ulid.ULID())
 
     interface = Interface()
     interface.render_banner()
 
     if resume: 
-                to_resume = history.pick_conversation()
-                #existing thread id if we pick an old conversation
-                if to_resume:
-                    thread_id = to_resume
+        to_resume = history.pick_conversation()
+        #existing thread id if we pick an old conversation
+        if to_resume:
+            thread_id = to_resume
 
     logger.info("setting runtime...")
     runtime = AgentRuntime(
@@ -78,7 +84,8 @@ def main(resume: bool = True):
 
 if __name__ == "__main__":
     try:
-        main()
+        args = parser.parse_args()
+        main(resume=args.resume)
     except KeyboardInterrupt: 
         logger.error("interrupted manually.")
         exit(0)
