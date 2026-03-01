@@ -17,7 +17,7 @@ services:
 
   app:
     build: .
-    container_name: sheet-agent
+    container_name: sheet
     depends_on:
       postgres:
         condition: service_healthy
@@ -25,8 +25,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     env_file:
       - .env
-    volumes:
-      - ./logs:/app/logs
+    #these two enable interactivity
     stdin_open: true
     tty: true
 
