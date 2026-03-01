@@ -30,17 +30,17 @@ toolkit = ToolKit(GOOGLE_CLIENT)
 
 # description to show when interrupting
 INTERRUPT_DESC = {
-  "set_starting_balance": "modify balance:",
-  "set_planned_expense": "change budget:",
-  "set_planned_income": "change budget:",
-  "create_expense_categs": "add categories:",
-  "create_income_categs": "add categories:",
-  "rename_expense_categ": "rename category:",
-  "rename_income_categ": "rename category:",
-  "delete_income_categs": "delete categories:",
-  "delete_expense_categs": "delete categories:",
-  "add_expense_transactions": "add transactions:",
-  "add_income_transactions": "add transactions:",
+  "set_starting_balance": "modify starting balance:",
+  "set_planned_expense": "modify planned expense:",
+  "set_planned_income": "modify planned income:",
+  "create_expense_categs": "add expense categories:",
+  "create_income_categs": "add income categories:",
+  "rename_expense_categ": "rename expense category:",
+  "rename_income_categ": "rename income category:",
+  "delete_income_categs": "delete income categories:",
+  "delete_expense_categs": "delete expense categories:",
+  "add_expense_transactions": "add expense transactions:",
+  "add_income_transactions": "add income transactions:",
 }
 
 methods = [

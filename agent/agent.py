@@ -132,7 +132,7 @@ class Agent:
                     box=box.DOUBLE,
                     border_style="yellow",
                     padding=(0, 1),
-                    subtitle="[dim]type [bold white]/reject[/bold white] to reject  ·  [dim]type [bold white]anything else[/bold white] to approve",
+                    subtitle="[dim]type [bold white]/reject[/bold white] to reject  ·  [dim]press [bold white]enter[/bold white] or type [bold white]anything else[/bold white] to approve",
                     subtitle_align="center")
         
         console.print(panel)
