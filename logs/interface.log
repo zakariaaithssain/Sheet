@@ -1,5 +1,2 @@
-2026-03-01 08:27:12,942 [INFO] interface: interface.py:render_banner:110 | banner rendered.
-2026-03-01 08:27:20,057 [DEBUG] interface: interface.py:start_api:25 | called Interface.start_api
-2026-03-01 08:27:20,058 [DEBUG] interface: interface.py:start_api:28 | inside runtime context manager
-2026-03-01 08:27:29,753 [DEBUG] interface: interface.py:start_api:48 | step (1-indexed): 1
-2026-03-01 08:27:34,328 [INFO] interface: interface.py:start_api:38 | user input was '/quit', breaked from loop.
+2026-03-01 08:42:12,750 [INFO] interface: interface.py:render_banner:117 | banner rendered.
+2026-03-01 08:42:26,949 [DEBUG] interface: interface.py:start_api:25 | called Interface.start_api
