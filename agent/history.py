@@ -26,7 +26,7 @@ class History:
         CREATE TABLE IF NOT EXISTS conversations (
             thread_id TEXT PRIMARY KEY,
             title TEXT NOT NULL, 
-            created_at TIMESTAMP NOT NULL
+            updated_at TIMESTAMP NOT NULL
         );
         """
         with self.conn.cursor() as cursor:
@@ -40,9 +40,10 @@ class History:
         with self.conn.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO conversations (thread_id, title, created_at)
+                INSERT INTO conversations (thread_id, title, updated_at)
                 VALUES (%s, %s, %s)
-                ON CONFLICT (thread_id) DO NOTHING
+                ON CONFLICT (thread_id) DO UPDATE
+                SET updated_at = EXCLUDED.updated_at
                 """,
                 (thread_id, title, datetime.now())
             )
@@ -51,9 +52,9 @@ class History:
         with self.conn.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT thread_id, title, created_at 
+                SELECT thread_id, title, updated_at 
                 FROM conversations 
-                ORDER BY created_at DESC
+                ORDER BY updated_at DESC
                 """
             )
             return cursor.fetchall()
@@ -63,7 +64,7 @@ class History:
     def load_convo_by_id(self, thread_id: str):
         with self.conn.cursor() as cursor:
             results = cursor.execute(
-                "SELECT thread_id, title, created_at FROM conversations WHERE thread_id = %s",
+                "SELECT thread_id, title, updated_at FROM conversations WHERE thread_id = %s",
                 (thread_id,)
             )
             return results.fetchone()
@@ -73,18 +74,21 @@ class History:
     def pick_conversation(self) -> str:
         """pick an old conversation and return its thread id"""
         convos_list = self._load_all_conversations()
-        
-        choices = [
-            (f"{row['title']} — {row['created_at'].strftime('%Y-%m-%d  %H:%M:%S')}", row['thread_id'])
-            for row in convos_list
-        ]
-        
-        questions = [
-            inquirer.List("conversation",
-                message="Select a conversation",
-                choices=choices,
-            )
-        ]
-        
-        answer = inquirer.prompt(questions)
-        return answer["conversation"]  # returns the thread_id
+        if convos_list: 
+            choices = [
+                (f"{row['title']} — last update: {row['updated_at'].strftime('%Y-%m-%d  %H:%M')}", row['thread_id'])
+                for row in convos_list
+            ]
+
+            questions = [
+                inquirer.List("conversation",
+                    message="select a conversation",
+                    choices=choices,
+                )
+            ]
+            
+            answer = inquirer.prompt(questions)
+            return answer["conversation"]  # returns the thread_id
+        else: 
+            #empty history
+            return None

@@ -24,7 +24,7 @@ load_dotenv(dotenv_path=env_path, override=True)
 
 
 
-def main(enter_hist: bool = True):
+def main(resume: bool = True):
 
     from config.settings import Settings
     from config.logging_config import setup_logging
@@ -55,7 +55,7 @@ def main(enter_hist: bool = True):
     interface = Interface()
     interface.render_banner()
 
-    if enter_hist: 
+    if resume: 
                 to_resume = history.pick_conversation()
                 #existing thread id if we pick an old conversation
                 if to_resume:
@@ -67,7 +67,7 @@ def main(enter_hist: bool = True):
         history=history, 
         thread_id=thread_id
     )
-    
+
     logger.info("starting api...")
     interface.start_api(runtime)
 

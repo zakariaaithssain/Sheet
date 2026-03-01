@@ -77,7 +77,7 @@ class Interface:
         info.append("  Source  ", style="bold #888888")
         info.append("Google Sheets\n", style="bold white")
         info.append("  Session ", style="bold #888888")
-        info.append(f"{now.strftime('%Y-%m-%d  %H:%M:%S')}\n", style="dim white")
+        info.append(f"{now.strftime('%Y-%m-%d  %H:%M')}\n", style="dim white")
 
         #tip line
         tip = Text()

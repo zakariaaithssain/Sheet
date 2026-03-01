@@ -122,13 +122,14 @@ class Agent:
 
     def _get_approval(self, action): 
         """get human feedback regarding a risky tool"""
-        desc = INTERRUPT_DESC.get(action['name'], "")
-        args_str = "\n".join(f"- {arg}: {action['args'][arg]}" for arg in action['args'])
+        desc = INTERRUPT_DESC.get(action['name'], "").upper()
+        args_str = "\n"
+        for arg in action['args']:
+            args_str += f"- {arg}: `{action['args'][arg]}`   \n"
         panel = Panel(
-                    Markdown(f"""**APPROVAL NEEDED:** `{desc}`  
-                *args*:  
-                `{args_str}`"""),
-                    title="SHEET",
+                    Markdown(f"""*action*: **{desc}**  
+                *args*:  {args_str}  \n"""),
+                    title="APPROVAL NEEDED",
                     box=box.DOUBLE,
                     border_style="yellow",
                     padding=(0, 1),
