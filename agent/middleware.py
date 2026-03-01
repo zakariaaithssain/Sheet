@@ -8,7 +8,8 @@ class SeqState(AgentState):
     queued_tool_calls: NotRequired[list[dict[str, Any]]]
 
 
-#this is no longer necessary, because I fixed the problem via new tools implementation.
+#this is no longer necessary, because I fixed the problem by re-implementing the tools 
+#in a thread-safe way
 
 @after_model(state_schema=SeqState, name="SequenceToolCalls")
 def sequence_tool_calls(state: SeqState, runtime) -> dict[str, Any] | None:
@@ -25,14 +26,14 @@ def sequence_tool_calls(state: SeqState, runtime) -> dict[str, Any] | None:
     last = state["messages"][-1]
     queued = list(state.get("queued_tool_calls") or [])
 
-    # Model just emitted multiple tool calls — intercept and queue extras
+    #model just emitted multiple tool calls, we intercept and queue extras
     if isinstance(last, AIMessage) and getattr(last, "tool_calls", None) and len(last.tool_calls) > 1:
         rest = last.tool_calls[1:]
-        last.tool_calls = [last.tool_calls[0]]  # Keep only the first
+        last.tool_calls = [last.tool_calls[0]]  #keep only the first
         queued.extend(rest)
         return {"queued_tool_calls": queued}
 
-    # Model was called again but we still have queued calls — skip model, replay next
+    #model was called again but we still have queued calls we skip model node, replay next
     elif queued:
         next_call = queued.pop(0)
         synthetic = AIMessage(content="", tool_calls=[next_call])
