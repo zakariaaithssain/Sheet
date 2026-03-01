@@ -6,14 +6,9 @@ from rich.markdown import Markdown
 
 from config.settings import Settings
 
-#TODO: FIX HISTORY ITS NOT WORKING PROPERLY, check also interface.py
-#NOTE: DO NOT USE f-strings for queries, that causes SQL injection
-#TODO: 
-"""I need a persistent checkpointer to save the graph state to a database for each thread, 
-and then a table for metadata of each convo (thread id, title, ..), 
-when the user selects one convo, I use that thread id to start from
- the exact graph state associated to the the selected thread id 
- and stored in the checkpointer"""
+
+
+
 
 logger = logging.getLogger("memory")
 
@@ -36,6 +31,7 @@ class History:
 
 
 
+
     def save_conversation(self, thread_id: str, title: str):
         with self.conn.cursor() as cursor:
             cursor.execute(
@@ -47,6 +43,10 @@ class History:
                 """,
                 (thread_id, title, datetime.now())
             )
+
+
+
+
 
     def _load_all_conversations(self):
         with self.conn.cursor() as cursor:
@@ -62,11 +62,16 @@ class History:
 
     
 
+
+
+
+
     def pick_conversation(self) -> str:
         """pick an old conversation and return its thread id  
         once the thread id is given to the agent's checkpointer, it automatically 
         loads the state corresponding to that id, and resumes agent's graph from there, so no need for a 
         load conversation function"""
+        
         convos_list = self._load_all_conversations()
         if convos_list: 
             choices = [
