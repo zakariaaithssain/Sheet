@@ -75,7 +75,7 @@ docker compose down -v
 - use `--rm` flag to remove the container after quitting, this avoids orphans.  
 
 
-## Current Capabilities
+## current capabilities
 
 **Sheet** is able to analyse your sheets and perform financial suggestions and guidance based on them, and can also perform the following agentic actions:  
 
@@ -104,3 +104,9 @@ docker compose down -v
 - List worksheets in a given spreadsheet
 - Get spreadsheet and worksheet metadata (URL, title, last modification time)
 
+## images
+
+![new conversation](imgs/new_convo.png)
+--- 
+---
+![resume past conversations](imgs/resume_convo.png)
