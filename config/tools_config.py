@@ -22,127 +22,129 @@ console = Console(theme = Theme({
     "markdown.h1": "bold magenta",
     "markdown.code": "yellow",
 }))
+
+
 console.print(Markdown("*fetching sheet state...*"))
 
 toolkit = ToolKit(GOOGLE_CLIENT)
+
+# description to show when interrupting
+INTERRUPT_DESC = {
+  "set_starting_balance": "modify starting balance:",
+  "set_planned_expense": "modify planned expense:",
+  "set_planned_income": "modify planned income:",
+  "create_expense_categs": "add expense categories:",
+  "create_income_categs": "add income categories:",
+  "rename_expense_categ": "rename expense category:",
+  "rename_income_categ": "rename income category:",
+  "delete_income_categs": "delete income categories:",
+  "delete_expense_categs": "delete expense categories:",
+  "add_expense_transactions": "add expense transactions:",
+  "add_income_transactions": "add income transactions:",
+}
+
 methods = [
-    {"tool": toolkit.get_starting_balance, 
-     "desc": "get the starting balance"},
+  {"tool": toolkit.get_starting_balance, 
+   "desc": "get the starting balance",
+   "interrupt": False},
 
-     {"tool": toolkit.set_starting_balance, 
-      "desc": "set the starting balance to given value"}, 
+   {"tool": toolkit.set_starting_balance, 
+    "desc": "set the starting balance to given value",
+    "interrupt": True}, 
 
-     {"tool": toolkit.get_expenses_categories, 
-      "desc": "get expenses categories names"}, 
+   {"tool": toolkit.get_expenses_categories, 
+    "desc": "get expenses categories names",
+    "interrupt": False}, 
 
-     {"tool": toolkit.get_income_categories, 
-      "desc": "get income categories names"}, 
+   {"tool": toolkit.get_income_categories, 
+    "desc": "get income categories names",
+    "interrupt": False}, 
 
-     {"tool": toolkit.get_planned_expenses, 
-      "desc": "get planned expense per category"}, 
+   {"tool": toolkit.get_planned_expenses, 
+    "desc": "get planned expense per category",
+    "interrupt": False}, 
 
-     {"tool": toolkit.get_planned_incomes, 
-      "desc": "get planned income per category"}, 
+   {"tool": toolkit.get_planned_incomes, 
+    "desc": "get planned income per category",
+    "interrupt": False}, 
 
-     {"tool": toolkit.get_actual_expenses, 
-      "desc": "get actual expenses per category calculated from transactions sheet"}, 
+   {"tool": toolkit.get_actual_expenses, 
+    "desc": "get actual expenses per category calculated from transactions sheet",
+    "interrupt": False}, 
 
-     {"tool": toolkit.get_actual_incomes, 
-      "desc": "get actual incomes per category calculated from transactions sheet"}, 
+   {"tool": toolkit.get_actual_incomes, 
+    "desc": "get actual incomes per category calculated from transactions sheet",
+    "interrupt": False}, 
 
-     {"tool": toolkit.set_planned_expense, 
-      "desc": "set planned expense for given expense category"}, 
+   {"tool": toolkit.set_planned_expense, 
+    "desc": "set planned expense for given expense category",
+    "interrupt": True}, 
 
-     {"tool": toolkit.set_planned_income, 
-      "desc": "set planned income for given income category"}, 
+   {"tool": toolkit.set_planned_income, 
+    "desc": "set planned income for given income category",
+    "interrupt": True}, 
 
-     {"tool": toolkit.create_expense_categs, 
-      "desc": "add given expenses categories"}, 
+   {"tool": toolkit.create_expense_categs, 
+    "desc": "add given expenses categories",
+    "interrupt": True}, 
 
-     {"tool": toolkit.create_income_categs, 
-      "desc": "add given income categories"}, 
+   {"tool": toolkit.create_income_categs, 
+    "desc": "add given income categories",
+    "interrupt": True}, 
 
-     {"tool": toolkit.rename_expense_categ, 
-      "desc": "rename given expense category"}, 
+   {"tool": toolkit.rename_expense_categ, 
+    "desc": "rename given expense category",
+    "interrupt": True}, 
 
-     {"tool": toolkit.rename_income_categ, 
-      "desc": "rename given income category"}, 
-      
-      {"tool": toolkit.delete_income_categs, 
-      "desc": "delete given income categories"}, 
+   {"tool": toolkit.rename_income_categ, 
+    "desc": "rename given income category",
+    "interrupt": True}, 
+    
+    {"tool": toolkit.delete_income_categs, 
+    "desc": "delete given income categories",
+    "interrupt": True}, 
 
-     {"tool": toolkit.delete_expense_categs, 
-      "desc": "delete given expense categories"},
+   {"tool": toolkit.delete_expense_categs, 
+    "desc": "delete given expense categories",
+    "interrupt": True},
 
-      {"tool": toolkit.get_summary, 
-       "desc": "get a summary of current state: remaining balance, current saving, decrease in total saving, and total planned (resp. actual) expenses and income"},
+    {"tool": toolkit.get_summary, 
+     "desc": "get a summary of current state: remaining balance, current saving, decrease in total saving, and total planned (resp. actual) expenses and income",
+     "interrupt": False},
 
+    {"tool": toolkit.add_expense_transactions, 
+    "desc": "add given expenses to transactions sheet",
+    "interrupt": True},
 
-      ## transactions sheet tools
+    {"tool": toolkit.add_income_transactions, 
+    "desc": "add given incomes to transactions sheet",
+    "interrupt": True},
 
-     {"tool": toolkit.add_expense_transactions, 
-      "desc": "add given expenses to transactions sheet"},
-
-      {"tool": toolkit.add_income_transactions, 
-      "desc": "add given incomes to transactions sheet"},
-
-    {"tool":toolkit.get_today_date,
-      "desc": "get current day's date"},
-
-
-
-  #========================GENERAL PURPOSE ====================
+  {"tool":toolkit.get_today_date,
+    "desc": "get current day's date",
+    "interrupt": False},
 
    {"tool":toolkit.list_spreadsheets,
-      "desc": "list available spreadsheets names"}, 
+    "desc": "list available spreadsheets names",
+    "interrupt": False}, 
 
-    {"tool":toolkit.list_worksheets,
-      "desc": "list available worksheets names belonging to given spreadsheet"},
-    
-    {"tool":toolkit.get_sheets_metadata,
-      "desc": "get URL, title and last modification time if available for given sheets"}, 
-
-
-
-
-
-
-
-
-    # {"tool":toolkit.create_worksheet, 
-    #  "desc": "create worksheet with given title and headers inside given spreadsheet"},
-
-    # {"tool":toolkit.create_spreadsheet,
-    #   "desc": "create spreadsheet with given title"},
-
-    # {"tool":toolkit.delete_spreadsheet,
-    #   "desc": "delete spreadsheet with given title"}, 
-
-    # {"tool":toolkit.delete_worksheet,
-    #   "desc": "delete worksheet with given title if found in given spreadsheet"},
-
-    
-    # {"tool": toolkit.get_worksheet_metadata, 
-    #  "desc": "get given worksheet id, title, index inside given spreadsheet, no of cols and no of rows"},
-
-    # {"tool":toolkit.get_worksheet_headers,
-    #   "desc": "get headers of given worksheet"},
-
-    # {"tool":toolkit.insert_row,
-    #   "desc": "insert given data to new row in given worksheet"},
-
-    # {"tool":toolkit.get_worksheet_data,
-    #   "desc": "get data from given worksheet"},
-
-    # #{"tool":toolkit.set_active_sheet,
-    #  # "desc": "set context sheets to given sheets"},
-    ]
+  {"tool":toolkit.list_worksheets,
+    "desc": "list available worksheets names belonging to given spreadsheet",
+    "interrupt": False},
+  
+  {"tool":toolkit.get_sheets_metadata,
+    "desc": "get URL, title and last modification time if available for given sheets",
+    "interrupt": False},
+]
 
 TOOLS = []
 
 for method in methods: 
     TOOLS.append(
-                  tool(method["tool"], description=method["desc"])
+                  {
+                    "tool": tool(method["tool"], description=method["desc"]), 
+                   "interrupt": method["interrupt"]
+                   }
         )
 
 

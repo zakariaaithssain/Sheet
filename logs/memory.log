@@ -1,3 +1,1 @@
-2026-02-17 11:43:39,061 [INFO] memory: memory.py:__init__:13 | memory initialized.
-2026-02-17 11:43:39,192 [DEBUG] memory: memory.py:load:17 | called Memory.load with session id zakaria123
-2026-02-17 11:45:02,142 [DEBUG] memory: memory.py:save:22 | called Memory.save with session id zakaria123
+2026-03-01 23:46:33,345 [INFO] memory: history.py:__init__:30 | memory initialized.
