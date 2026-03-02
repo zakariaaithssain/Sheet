@@ -1,6 +1,2 @@
-2026-02-17 11:43:39,192 [DEBUG] interface: interface.py:start_api:14 | called Interface.start_api
-2026-02-17 11:43:39,192 [DEBUG] interface: interface.py:start_api:16 | inside runtime context manager
-2026-02-17 11:43:41,238 [DEBUG] interface: interface.py:start_api:28 | step (1-indexed): 1
-2026-02-17 11:43:48,897 [DEBUG] interface: interface.py:start_api:28 | step (1-indexed): 2
-2026-02-17 11:44:56,271 [DEBUG] interface: interface.py:start_api:28 | step (1-indexed): 3
-2026-02-17 11:45:02,142 [INFO] interface: interface.py:start_api:23 | user input was 'q', breaked from loop.
+2026-03-01 23:46:33,348 [INFO] interface: interface.py:render_banner:118 | banner rendered.
+2026-03-01 23:46:43,137 [DEBUG] interface: interface.py:start_api:25 | called Interface.start_api

@@ -1,15 +1,38 @@
-# GestAI 
+# Sheet 
 
-## setup:  
+## setup
 
-- create Google Cloud project  
-- enable: Google Sheets API and Google Drive API.  
-- Create Service Account  
-- Download the JSON file and  use it to fill in the `.env` file (see `.env.example`)  
-- create a `google drive folder` and put your sheets inside it  
-- share it with the `service account email` and give it editor access   
+### 1. setup service account
 
-this setup will give the agent full access to `only the files inside that shared folder`.   
+1. [go to Google Cloud Console](https://console.cloud.google.com)
+
+2. click the **project dropdown** at the top of the page and click **"New Project"** to create a project
+
+3. [go to IAM & Admin → Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts)
+ 
+4. 
+- click **"+ Create Service Account"**
+- enter a **Name**, **Service Account ID**, and an optional **Description**
+- click **"Create and Continue"**
+
+5. assign `editor` or `owner` role to the service account.  
+
+6. generate the JSON authentication file:  
+- click on the newly created service account name
+- go to the **"Keys"** tab
+- click **"Add Key"** → **"Create new key"**
+- select **JSON** format → click **"Create"**
+- the key file will **download automatically**, use it to fill in the env variables (see `.env.example` file)  
+
+### 2. enable Google Sheets and Drive APIs  
+1. go to: https://console.cloud.google.com/apis/library
+2. click **Select a project** and select the project you created  
+3. then in the same page look for **Google Drive API** and **Google Sheets API** and enable them.  
+4. create a folder in your drive and share it with `<your_service_acc_project>@project-id.iam.gserviceaccount.com`
+5. go to: https://docs.google.com/spreadsheets/u/0/, click the `Monthly budget` template, and **move** it to the drive folder that you've created.  
+
+this setup will give the agent full access only to **spreadsheets contained in the folder**, so whenever you want it to access a spreadsheet, just put it inside that shared folder.    
+
 
 ## how to run: 
 - clone the repo
@@ -19,13 +42,38 @@ uv sync
 ```
 - run: 
 ```bash
-uv run main.py
-```
+#new conversation
+uv run main.py 
 
+#show past conversations and pick one to resume
+uv run main.py --resume 
+```
+## run using Docker:   
+*Note*:  
+- always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.  
+- use `--rm` flag to remove the container after quitting, this avoids orphans.  
+
+```bash
+#build 
+docker compose build
+
+#then start new conversation
+docker compose run --rm app
+
+# to show past conversations and pick one to resume
+docker compose run --rm app --resume
+
+#stop everything
+docker compose down
+
+#stop and wipe volumes (all past history will be gone)
+docker compose down -v 
+
+```
 
 ## Current Capabilities
 
-The AI agent can perform the following operations:
+**Sheet** is able to analyse your sheets and perform financial suggestions and guidance based on them, and can also perform the following agentic actions:  
 
 **Balance Management:**
 - Get and set starting balance
@@ -41,12 +89,11 @@ The AI agent can perform the following operations:
 - Set planned expenses and incomes per category
 
 **Transactions:**
-- Add expense transactions
-- Add income transactions
+- Add expense transactions to specific dates
+- Add income transactions with specific dates
 
 **Summary & Reporting:**
-- Get comprehensive summary (remaining balance, savings, expenses, incomes)
-- Get current date
+- Get comprehensive summary (remaining balance, savings, expenses, incomes, ...)
 
 **Spreadsheet Access:**
 - List available spreadsheets

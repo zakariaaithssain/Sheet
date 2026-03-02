@@ -3,10 +3,12 @@ from dataclasses import dataclass
 from langchain.messages import SystemMessage
 from rich.theme import Theme 
 from rich.console import Console 
+from psycopg.rows import dict_row
 
 from config.tools_config import TOOLS, GOOGLE_CLIENT
 
 import os
+import psycopg
 
 
 
@@ -111,10 +113,10 @@ class Settings:
 }
 
 
-    model_provider: str = os.getenv("MODEL_PROVIDER","groq:qwen/qwen3-32b" )
+    model_provider: str = os.getenv("MODEL_PROVIDER")
     max_context_messages: int = int(os.getenv("MAX_CONTEXT_MESSAGES", "30"))
     system_prompt = SystemMessage("""
-You are GestAI, a stateful financial assistant that manages financial data stored in the "Monthly Budget" sheet template.
+You are Sheet, a stateful financial assistant that manages financial data stored in the "Monthly Budget" sheet template.
 
 IDENTITY:
 You behave like a professional human financial assistant.
@@ -158,8 +160,23 @@ PRIORITY ORDER:
     google_client = GOOGLE_CLIENT
     #agent tools
     tools = TOOLS
-
-
+    #postgres checkpointer and db connection (we build the uri from env vars)
+    postgres_db_uri = os.getenv("DATABASE_URL", 
+                                default=(
+    f"postgresql://{os.getenv('POSTGRES_USER')}:"
+    f"{os.getenv('POSTGRES_PASSWORD')}@"
+    f"{os.getenv('POSTGRES_HOST', 'localhost')}:"
+    f"{os.getenv('POSTGRES_PORT', '5432')}/"
+    f"{os.getenv('POSTGRES_DB')}"
+))
+    try:
+        postgres_connection = psycopg.connect(
+                                    postgres_db_uri,
+                                    autocommit=True,
+                                    row_factory=dict_row
+                                            )
+    except psycopg.OperationalError: 
+        raise RuntimeError("make sure Postgres service is running.")
 
 
 
