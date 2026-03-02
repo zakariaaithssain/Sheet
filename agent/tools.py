@@ -30,13 +30,30 @@ class ToolKit:
 
         self.spreadsheet = None
         self.worksheet = None
-
+###------------these names are case sensitive------------------------
         #spreadsheet title
         self.spread_title: str = "Monthly budget"
         #summary worksheet title
         self.summary_title: str = "Summary"
         #transactions worksheet title
         self.transactions_title: str = "Transactions"
+        
+        #health check: 
+        try: 
+            spread = self.google_client.open(self.spread_title)
+            spread.worksheet(self.summary_title)
+            spread.worksheet(self.transactions_title)
+
+            logger.info("health check: sheets are healthy.")
+        except gspread.SpreadsheetNotFound: 
+            logger.critical(f"health check: '{self.spread_title}'spreadsheet not found. make sure you setup the project correctly, see README.md file for more details.")
+            raise RuntimeError(f"'{self.spread_title}' spreadsheet not found. make sure you setup the project correctly, see README.md file for more details.")
+        except gspread.WorksheetNotFound: 
+            logger.critical(f"health check: either '{self.summary_title}' or '{self.transactions_title}' sheet is missing from '{self.spread_title}' spreadsheet.")
+            raise RuntimeError(f"either '{self.summary_title}' or '{self.transactions_title}' sheet is missing from '{self.spread_title}' spreadsheet. ")
+
+
+
         #cannot be changed
         self.transactions_headers: {"date", "amount", "description", "category"}
 
@@ -71,9 +88,15 @@ class ToolKit:
         should always be called **after** any change related to categories (to avoid stale state issues)  
         create a json schema of `expense` and `income` categories with `corresponding indexes` and save it to `self.map`
          """
-        
-        self.spreadsheet = self.google_client.open(self.spread_title)
-        self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+        try: 
+            self.spreadsheet = self.google_client.open(self.spread_title)
+            self.worksheet = self.spreadsheet.worksheet(self.summary_title)
+        except gspread.SpreadsheetNotFound: 
+            logger.critical(f"'{self.spread_title}'spreadsheet not found. make sure you setup the project correctly, see README.md file for more details.")
+            raise RuntimeError(f"'{self.spread_title}' spreadsheet not found. make sure you setup the project correctly, see README.md file for more details.")
+        except gspread.WorksheetNotFound: 
+            logger.critical(f"'{self.summary_title}'sheet not found inside '{self.spread_title}' spreadsheet.")
+            raise RuntimeError(f"'{self.summary_title}' sheet not found inside '{self.spread_title}' spreadsheet. ")
 
         exp_categs = self.worksheet.get_values(range_name= self.expenses_categ_range)
         exp_map = {}
