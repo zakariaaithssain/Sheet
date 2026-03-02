@@ -1,5 +1,5 @@
 # Sheet 
-
+Your personal budgeting assistant. tell it about your day to day income and expenses in plain language, and it will log, categorize, and update your **"Monthly Budget"** Google sheet template, just like you would, but faster.
 ## setup
 
 ### 1. setup service account
@@ -35,12 +35,14 @@ this setup will give the agent full access only to **spreadsheets contained in t
 
 
 ## how to run: 
-- clone the repo
-- then let uv do the rest: 
+
+### dev mode (using uv package manager)
+1. clone the repo  
+2. let uv setup things for you
 ```bash 
 uv sync
 ```
-- run: 
+3. make sure a Postgres Database instance is running, and run: 
 ```bash
 #new conversation
 uv run main.py 
@@ -48,11 +50,9 @@ uv run main.py
 #show past conversations and pick one to resume
 uv run main.py --resume 
 ```
-## run using Docker:   
-*Note*:  
-- always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.  
-- use `--rm` flag to remove the container after quitting, this avoids orphans.  
-
+### run using Docker:   
+1. clone the repo  
+2. run: 
 ```bash
 #build 
 docker compose build
@@ -70,6 +70,10 @@ docker compose down
 docker compose down -v 
 
 ```
+*Note*:  
+- always use `docker compose run` (not `up`) to launch the app, it properly attaches the terminal for interactive input.  
+- use `--rm` flag to remove the container after quitting, this avoids orphans.  
+
 
 ## Current Capabilities
 
