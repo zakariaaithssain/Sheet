@@ -22,7 +22,7 @@ Your personal budgeting assistant. tell it about your day to day income and expe
 - go to the **"Keys"** tab
 - click **"Add Key"** → **"Create new key"**
 - select **JSON** format → click **"Create"**
-- the key file will **download automatically**, use it to fill in the env variables (see `.env.example` file)  
+- the key file will **download automatically**, use it to **fill in the env variables inside `.env` file** (see `.env.example`)  
 
 ### 2. enable Google Sheets and Drive APIs  
 1. go to: https://console.cloud.google.com/apis/library
@@ -58,10 +58,10 @@ uv run main.py --resume
 docker compose build
 
 #then start new conversation
-docker compose run --rm app
+docker compose run --rm sheet
 
 # to show past conversations and pick one to resume
-docker compose run --rm app --resume
+docker compose run --rm sheet --resume
 
 #stop everything
 docker compose down
