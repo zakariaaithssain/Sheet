@@ -104,9 +104,45 @@ docker compose down -v
 - List worksheets in a given spreadsheet
 - Get spreadsheet and worksheet metadata (URL, title, last modification time)
 
-## images
+## structure and architecture 
 
-![new conversation](imgs/new_convo.png)
+```bash
+
+├── README.md
+├── docker-compose.yml
+├── Dockerfile
+├── interface.py
+├── LICENSE
+├── main.py
+├── pyproject.toml
+├── requirements.txt
+├── .dockerignore
+├── .env.example
+├── .python-version
+├── agent/
+│   ├── __init__.py
+│   ├── agent.py
+│   ├── history.py
+│   ├── middleware.py
+│   ├── runtime.py
+│   └── tools.py
+└── config/
+    ├── __init__.py
+    ├── google_config.py
+    ├── logging_config.py
+    ├── settings.py
+    └── tools_config.py
+
+```
+
+![](imgs/architecture.svg)
 --- 
----
+
+## screenshots  
+new conversation
+![new conversation](imgs/new_convo.png)
+
+--- 
+--- 
+resume a past conversation
 ![resume past conversations](imgs/resume_convo.png)
